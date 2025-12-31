@@ -1,0 +1,156 @@
+/*==============================================================*/
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     2025/12/18 20:20:19                          */
+/*==============================================================*/
+
+/*==============================================================*/
+/* Table: Activity                                              */
+/*==============================================================*/
+create table Activity
+(
+   activity_id          bigint not null  comment '',
+   activity_status_id   bigint not null  comment '',
+   title                varchar(64)  comment '',
+   description          varchar(255)  comment '',
+   location             varchar(64)  comment '',
+   start_time           datetime  comment '',
+   end_time             datetime  comment '',
+   capacity             int  comment '',
+   created_at           datetime  comment '',
+   primary key (activity_id)
+);
+
+/*==============================================================*/
+/* Table: ActivityStatus                                        */
+/*==============================================================*/
+create table ActivityStatus
+(
+   activity_status_id   bigint not null  comment '',
+   status_name          varchar(64)  comment '',
+   status_desc          varchar(255)  comment '',
+   primary key (activity_status_id)
+);
+
+/*==============================================================*/
+/* Table: Application                                           */
+/*==============================================================*/
+create table Application
+(
+   application_id       bigint not null  comment '',
+   user_id              bigint not null  comment '',
+   activity_id          bigint not null  comment '',
+   application_status_id bigint not null  comment '',
+   apply_time           datetime  comment '',
+   remark               varchar(255)  comment '',
+   primary key (application_id)
+);
+
+/*==============================================================*/
+/* Table: ApplicationStatus                                     */
+/*==============================================================*/
+create table ApplicationStatus
+(
+   application_status_id bigint not null  comment '',
+   status_name          varchar(64)  comment '',
+   status_desc          varchar(255)  comment '',
+   primary key (application_status_id)
+);
+
+/*==============================================================*/
+/* Table: AuditLog                                              */
+/*==============================================================*/
+create table AuditLog
+(
+   log_id               bigint not null  comment '',
+   user_id              bigint not null  comment '',
+   action_type          varchar(64)  comment '',
+   target_type          varchar(64)  comment '',
+   target_id            bigint  comment '',
+   action_time          datetime  comment '',
+   primary key (log_id)
+);
+
+/*==============================================================*/
+/* Table: Review                                                */
+/*==============================================================*/
+create table Review
+(
+   review_id            bigint not null  comment '',
+   application_id       bigint not null  comment '',
+   admin_id           bigint not null  comment '',
+   decision             varchar(64)  comment '',
+   comment              varchar(255)  comment '',
+   review_time          datetime  comment '',
+   primary key (review_id)
+);
+
+alter table Review comment '审核人必须是管理员';
+
+/*==============================================================*/
+/* Table: Role                                                  */
+/*==============================================================*/
+create table Role
+(
+   role_id              bigint not null  comment '',
+   role_name            varchar(64)  comment '',
+   role_desc            varchar(255)  comment '',
+   primary key (role_id)
+);
+
+alter table Role comment '定义用户在系统中的角色类型，如：ADMIN、USER';
+
+/*==============================================================*/
+/* Table: Users                                                  */
+/*==============================================================*/
+create table Users
+(
+   user_id              bigint not null  comment '',
+   username             varchar(64) not null  comment '',
+   password             varchar(255)  comment '',
+   phone                varchar(20)  comment '',
+   email                varchar(64)  comment '',
+   created_at           datetime  comment '',
+   primary key (user_id)
+);
+
+alter table Users comment '系统中的所有使用者，包括普通用户和管理员';
+
+/*==============================================================*/
+/* Table: UserRole                                              */
+/*==============================================================*/
+create table UserRole
+(
+   user_role_id         bigint not null  comment '',
+   user_id              bigint not null  comment '',
+   role_id              bigint not null  comment '',
+   assigned_time        datetime  comment '',
+   primary key (user_role_id)
+);
+
+alter table Activity add constraint FK_ACTIVITY_ACTIVITYS_ACTIVITY foreign key (activity_status_id)
+      references ActivityStatus (activity_status_id) on delete restrict on update restrict;
+
+alter table Application add constraint FK_APPLICAT_APPLICATI_APPLICAT foreign key (application_status_id)
+      references ApplicationStatus (application_status_id) on delete restrict on update restrict;
+
+alter table Application add constraint FK_APPLICAT_ACTIVITY__ACTIVITY foreign key (activity_id)
+      references Activity (activity_id) on delete restrict on update restrict;
+
+alter table Application add constraint FK_APPLICAT_USER_APPL_USER foreign key (user_id)
+      references Users (user_id) on delete restrict on update restrict;
+
+alter table AuditLog add constraint FK_AUDITLOG_USER_AUDI_USER foreign key (user_id)
+      references Users (user_id) on delete restrict on update restrict;
+
+alter table Review add constraint FK_REVIEW_ADMIN_REV_USER foreign key (admin_id)
+      references Users (user_id) on delete restrict on update restrict;
+
+alter table Review add constraint FK_REVIEW_APPLICATI_APPLICAT foreign key (application_id)
+      references Application (application_id) on delete restrict on update restrict;
+
+alter table UserRole add constraint FK_USERROLE_USERROLE__ROLE foreign key (role_id)
+      references Role (role_id) on delete restrict on update restrict;
+
+alter table UserRole add constraint FK_USERROLE_USER_USER_USER foreign key (user_id)
+      references Users (user_id) on delete restrict on update restrict;
+
