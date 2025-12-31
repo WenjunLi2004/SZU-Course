@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="ubuntu@192.168.6.128:22" type="ssh/sftp" uuid="5d1b029e-d1c4-4ccd-b4f7-8d018875cd56">
+        <config>
+          <option name="projectRootOnTarget" value="/home/ubuntu/Chisel" />
+          <option name="serverName" value="ubuntu@192.168.6.128:22 password" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/" />
+            <option name="javaVersionString" value="11.0.20.1" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

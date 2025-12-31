@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="9dbb8c3b-1a46-49b8-9cb2-082c9f3358be" name="ubuntu">
+        <fileTransfer rootFolder="/home/ubuntu/Chisel" accessType="SFTP" host="192.168.6.128" port="22" sshConfigId="8234d808-f38e-4edd-a36f-a94aeffa47c7" sshConfig="ubuntu@192.168.6.128:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

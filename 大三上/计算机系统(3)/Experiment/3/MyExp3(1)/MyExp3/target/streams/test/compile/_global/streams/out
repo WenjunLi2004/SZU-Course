@@ -1,0 +1,7 @@
+[0m[[0m[31merror[0m] [0m[0m/home/ubuntu64-1/Desktop/MyExp3/src/test/scala/mydesign/JunctionTest.scala:37:18: value sel is not a member of chisel3.Bundle{val wrAddr: chisel3.UInt; val wrData: chisel3.UInt; val wrEna: chisel3.UInt; val add_op: chisel3.UInt; val sub_op: chisel3.UInt; val lw_op: chisel3.UInt; val sw_op: chisel3.UInt; val nop: chisel3.UInt; val RS1_out: chisel3.UInt; val RS2_out: chisel3.UInt; val pcIn: chisel3.UInt; val pc_sel: chisel3.UInt}[0m
+[0m[[0m[31merror[0m] [0m[0m            c.io.sel.poke(1.U)[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/ubuntu64-1/Desktop/MyExp3/src/test/scala/mydesign/JunctionTest.scala:42:18: value sel is not a member of chisel3.Bundle{val wrAddr: chisel3.UInt; val wrData: chisel3.UInt; val wrEna: chisel3.UInt; val add_op: chisel3.UInt; val sub_op: chisel3.UInt; val lw_op: chisel3.UInt; val sw_op: chisel3.UInt; val nop: chisel3.UInt; val RS1_out: chisel3.UInt; val RS2_out: chisel3.UInt; val pcIn: chisel3.UInt; val pc_sel: chisel3.UInt}[0m
+[0m[[0m[31merror[0m] [0m[0m            c.io.sel.poke(0.U)[0m
+[0m[[0m[31merror[0m] [0m[0m                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

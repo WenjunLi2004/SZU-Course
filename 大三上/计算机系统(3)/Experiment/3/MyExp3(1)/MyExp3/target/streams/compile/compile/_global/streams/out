@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/home/ubuntu64-1/Desktop/MyExp3/src/main/scala/mdesign/RegFile.scala:18:20: not found: value vec[0m
+[0m[[0m[31merror[0m] [0m[0m    val regs = Reg(vec(32, UInt(32.W)))[0m
+[0m[[0m[31merror[0m] [0m[0m                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

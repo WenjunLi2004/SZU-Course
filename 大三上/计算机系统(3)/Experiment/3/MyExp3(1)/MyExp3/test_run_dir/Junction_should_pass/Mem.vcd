@@ -1,0 +1,134 @@
+$date
+2023-09-18T13:18+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ns  $end
+$scope module Mem $end
+ $var wire 5 ! io_rdAddr $end
+ $var wire 5 # mem_io_rdData_MPORT_addr_pipe_0 $end
+ $var wire 32 % io_wrData $end
+ $var wire 32 ( io_rdData $end
+ $var wire 1 * mem_io_rdData_MPORT_en_pipe_0 $end
+ $var wire 32 + mem $end
+ $var wire 1 . clock $end
+ $var wire 1 2 io_wrEna $end
+ $var wire 5 4 io_wrAddr $end
+ $var wire 1 5 reset $end
+  $scope module mem $end
+   $var wire 32 , MPORT $end
+    $scope module MPORT $end
+     $var wire 1 " en $end
+     $var wire 1 $ mask $end
+     $var wire 32 ' pipeline_data_0 $end
+     $var wire 5 ) addr $end
+     $var wire 1 / pipeline_valid_0 $end
+     $var wire 32 0 data $end
+     $var wire 1 1 valid $end
+     $var wire 1 6 clk $end
+     $var wire 5 7 pipeline_addr_0 $end
+    $upscope $end
+    $scope module io_rdData_MPORT $end
+     $var wire 32 & data $end
+     $var wire 1 - clk $end
+     $var wire 1 3 en $end
+     $var wire 5 8 addr $end
+    $upscope $end
+  $upscope $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+b00000000000000000000000000000000 &
+b00000 #
+1$
+b00000000000000000000000000000000 '
+05
+0-
+b00000000000000000000000000000000 (
+b00000 4
+0.
+0/
+b00000000000000000000000000000000 0
+06
+0"
+01
+b00000 !
+0*
+b00000000000000000000000000000000 +
+b00000 7
+b00000000000000000000000000000000 ,
+b00000 )
+b00000 8
+02
+b00000000000000000000000000000000 %
+03
+$end
+#0
+15
+#1
+13
+1-
+1.
+1*
+16
+#6
+0-
+0.
+05
+06
+#11
+1-
+1.
+16
+#16
+b00000000010000110000100000100000 0
+0-
+b00000000010000110000100000100000 %
+1"
+11
+0.
+12
+06
+#21
+1-
+1.
+b00000000010000110000100000100000 &
+b00000000010000110000100000100000 '
+16
+b00000000010000110000100000100000 (
+1/
+#26
+0-
+b00001 4
+0.
+06
+b00001 )
+#31
+1-
+1.
+16
+b00001 7
+#36
+0-
+b00010 4
+0.
+06
+b00010 )
+#41
+1-
+1.
+16
+b00010 7
+#46
+b00000 !
+0-
+b00000000000000000000000000000000 %
+b00000 4
+0.
+02
+06
+b00011 )

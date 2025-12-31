@@ -1,0 +1,96 @@
+$date
+2023-09-18T13:18+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ns  $end
+$scope module Decoder $end
+ $var wire 1 ! io_sw_op $end
+ $var wire 1 " decoderSignals_0 $end
+ $var wire 1 # decoderSignals_3 $end
+ $var wire 1 $ io_lw_op $end
+ $var wire 32 % io_Instr_word $end
+ $var wire 1 & decoderSignals_2 $end
+ $var wire 1 ' io_sub_op $end
+ $var wire 1 ( clock $end
+ $var wire 1 ) io_add_op $end
+ $var wire 1 * decoderSignals_1 $end
+ $var wire 1 + decoderSignals_4 $end
+ $var wire 1 , reset $end
+ $var wire 1 - io_nop $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+0"
+0)
+0&
+0#
+0-
+0*
+0'
+0+
+0,
+b00000000000000000000000000000000 %
+0!
+0$
+0(
+$end
+#0
+1-
+1+
+1,
+#1
+1(
+#6
+0-
+b00000000010000110000100000100000 %
+1"
+0+
+0(
+0,
+1)
+#11
+1(
+#16
+b00000000101001100000000000100010 %
+0"
+1*
+1'
+0(
+0)
+#21
+1(
+#26
+b10001100010001010000000001100100 %
+1&
+0*
+0'
+1$
+0(
+#31
+1(
+#36
+1!
+b10101100010001010000000001101000 %
+0&
+1#
+0$
+0(
+#41
+1(
+#46
+0!
+1-
+b00001100000000000000000000000000 %
+0#
+1+
+0(
+#51
+1(
+#56
+b00000000000000000000000000000000 %
+0(

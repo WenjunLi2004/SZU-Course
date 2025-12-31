@@ -1,0 +1,1 @@
+程序运行前请将configure->architecture->division latency改为10

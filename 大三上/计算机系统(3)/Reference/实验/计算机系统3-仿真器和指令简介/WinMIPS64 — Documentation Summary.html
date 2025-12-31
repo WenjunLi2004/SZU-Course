@@ -1,0 +1,1405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!-- saved from url=(0067)http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="AsciiDoc 8.6.9">
+<title>WinMIPS64 — Documentation Summary</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+  padding: 0;
+  margin: 0;
+}
+pre {
+  white-space: pre-wrap;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; vertical-align: text-bottom; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+@media screen {
+  body {
+    max-width: 50em; /* approximately 80 characters wide */
+    margin-left: 16em;
+  }
+
+  #toc {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 13em;
+    padding: 0.5em;
+    padding-bottom: 1.5em;
+    margin: 0;
+    overflow: auto;
+    border-right: 3px solid #f8f8f8;
+    background-color: white;
+  }
+
+  #toc .toclevel1 {
+    margin-top: 0.5em;
+  }
+
+  #toc .toclevel2 {
+    margin-top: 0.25em;
+    display: list-item;
+    color: #aaaaaa;
+  }
+
+  #toctitle {
+    margin-top: 0.5em;
+  }
+}
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install(2);
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>WinMIPS64 — Documentation Summary</h1>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript>&lt;p&gt;&lt;b&gt;JavaScript must be enabled in your browser to display the table of contents.&lt;/b&gt;&lt;/p&gt;</noscript>
+<div class="toclevel1"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_directives">1. Directives</a></div><div class="toclevel1"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_instructions">2. Instructions</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_miscellaneous">2.1. Miscellaneous</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_loads_stores">2.2. Loads/Stores</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_arithmetic">2.3. Arithmetic</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_logical">2.4. Logical</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_set">2.5. Set</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_branch_jump">2.6. Branch/Jump</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_shifts">2.7. Shifts</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_moves">2.8. Moves</a></div><div class="toclevel2"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#_misc_floating_point">2.9. Misc. Floating Point</a></div><div class="toclevel1"><a href="http://www.computing.dcu.ie/~ray/teaching/CA226/mips/winmips64.html#io">3. Memory-Mapped IO</a></div></div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_directives">1. Directives</h2>
+<div class="sectionbody">
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Directive </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>data</code></p></td>
+<td align="left" valign="top"><p class="table">start of data segment</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>text</code></p></td>
+<td align="left" valign="top"><p class="table">start of code segment</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>code</code></p></td>
+<td align="left" valign="top"><p class="table">start of code segment (same as .text)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>org    &lt;n&gt;</code></p></td>
+<td align="left" valign="top"><p class="table">start address</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>space  &lt;n&gt;</code></p></td>
+<td align="left" valign="top"><p class="table">leave n empty bytes</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>asciiz &lt;s&gt;</code></p></td>
+<td align="left" valign="top"><p class="table">enters zero terminated ascii string</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>ascii  &lt;s&gt;</code></p></td>
+<td align="left" valign="top"><p class="table">enter ascii string</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>align  &lt;n&gt;</code></p></td>
+<td align="left" valign="top"><p class="table">align to n-byte boundary</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>word   &lt;n1&gt;,&lt;n2&gt;..</code></p></td>
+<td align="left" valign="top"><p class="table">enters word(s) of data (64-bits)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>byte   &lt;n1&gt;,&lt;n2&gt;..</code></p></td>
+<td align="left" valign="top"><p class="table">enter bytes</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>word32 &lt;n1&gt;,&lt;n2&gt;..</code></p></td>
+<td align="left" valign="top"><p class="table">enters 32 bit number(s)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>word16 &lt;n1&gt;,&lt;n2&gt;..</code></p></td>
+<td align="left" valign="top"><p class="table">enters 16 bit number(s)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>double &lt;n1&gt;,&lt;n2&gt;..</code></p></td>
+<td align="left" valign="top"><p class="table">enters floating-point number(s)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph"><p>Above, <code>&lt;n&gt;</code> denotes a number like <code>24</code>, <code>&lt;s&gt;</code> denotes a string  like  <code>"fred"</code>,  and
+<code>&lt;n1&gt;,&lt;n2&gt;..</code> denotes numbers separated by commas. The integer  registers  can
+be referred to as <code>r0</code>-<code>r31</code>, or  <code>R0</code>-<code>R31</code>,  or  <code>$0</code>-<code>$31</code>  or  using  standard  MIPS
+pseudo-names, like <code>$zero</code> for <code>r0</code>, <code>$t0</code> for <code>r8</code>, etc.
+Floating point registers can be referred to as <code>f0</code>-<code>f31</code>, or <code>F0</code>-<code>F31</code>.</p></div>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_instructions">2. Instructions</h2>
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph"><p>Below, <code>reg</code> is an  integer  register, <code>freg</code> is a floating-point register,
+and <code>imm</code> is an immediate value.</p></div>
+</div></div>
+<div class="sect2">
+<h3 id="_miscellaneous">2.1. Miscellaneous</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>halt</code></p></td>
+<td align="left" valign="top"><p class="table">stops the program</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>nop</code></p></td>
+<td align="left" valign="top"><p class="table">no operation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_loads_stores">2.2. Loads/Stores</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lb reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load byte</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lbu reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load byte unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sb reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">store byte</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lh reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load 16-bit half-word</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lhu reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load 16-bit half word unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sh reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">store 16-bit half-word</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lw reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load 32-bit word</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lwu reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load 32-bit word unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sw reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">store 32-bit word</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>ld reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load 64-bit double-word</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sd reg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">store 64-bit double-word</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>l.d freg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">load 64-bit floating-point</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>s.d freg,imm(reg)</code></p></td>
+<td align="left" valign="top"><p class="table">store 64-bit floating-point</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>lui  reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">load upper half of register immediate</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_arithmetic">2.3. Arithmetic</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>daddi reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">add immediate</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>daddui reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">add immediate unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dadd reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">add integers</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>daddu reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">add integers unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsub reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">subtract integers</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsubu reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">subtract integers unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dmul reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">signed integer multiplication</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dmulu reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">unsigned integer multiplication</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>ddiv reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">signed integer division</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>ddivu reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">unsigned integer division</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>add.d freg,freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">add floating-point</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sub.d freg,freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">subtract floating-point</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>mul.d freg,freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">multiply floating-point</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>div.d freg,freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">divide floating-point</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_logical">2.4. Logical</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>and reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">logical and</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>or reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">logical or</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>xor reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">logical xor</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>andi reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">logical and immediate</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>ori reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">logical or immediate</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>xori reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">logical exclusive or immediate</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_set">2.5. Set</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>slt reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">set if less than</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sltu reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">set if less than unsigned</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>slti reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">set if less than or equal immediate</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>sltiu reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">set if less than or equal immediate unsigned</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_branch_jump">2.6. Branch/Jump</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>beq reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">branch if pair of registers are equal</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>bne reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">branch if pair of registers are not equal</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>beqz reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">branch if register is equal to zero</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>bnez reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">branch if register is not equal to zero</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>j imm</code></p></td>
+<td align="left" valign="top"><p class="table">jump to address</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>jr reg</code></p></td>
+<td align="left" valign="top"><p class="table">jump to address in register</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>jal imm</code></p></td>
+<td align="left" valign="top"><p class="table">jump and link to address (call subroutine, return address is in <code>r31</code>)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>jalr reg</code></p></td>
+<td align="left" valign="top"><p class="table">jump and link to address in register</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_shifts">2.7. Shifts</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsll reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">shift left logical</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsrl reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">shift right logical</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsra reg,reg,imm</code></p></td>
+<td align="left" valign="top"><p class="table">shift right arithmetic</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsllv reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">shift left logical by variable amount</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsrlv reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">shift right logical by variable amount</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>dsrav reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">shift right arithmetic by variable amount</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_moves">2.8. Moves</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>movz reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">move if register equals zero</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>movn reg,reg,reg</code></p></td>
+<td align="left" valign="top"><p class="table">move if register not equal to zero</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>mov.d freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">move floating-point</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>mtc1 reg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">move data from integer register to FP register</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>mfc1 reg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">move data from FP register to integer register</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_misc_floating_point">2.9. Misc. Floating Point</h3>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> Instruction </th>
+<th align="left" valign="top"> Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><code>cvt.d.l freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">convert 64-bit integer to a double FP format</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>cvt.l.d freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">convert double FP to a 64-bit integer format</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>c.lt.d freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">set FP flag if less than</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>c.le.d freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">set FP flag if less than or equal to</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>c.eq.d freg,freg</code></p></td>
+<td align="left" valign="top"><p class="table">set FP flag if equal to</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>bc1f imm</code></p></td>
+<td align="left" valign="top"><p class="table">branch to address if FP flag is FALSE</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>bc1t imm</code></p></td>
+<td align="left" valign="top"><p class="table">branch to address if FP flag is TRUE</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="io">3. Memory-Mapped IO</h2>
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph"><p>The WinMIPS64 simulator supports a memory-mapped IO model for writing to or
+reading from the WinMIPS64 terminal.</p></div>
+<div class="paragraph"><p>To write to the terminal:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+set the <code>DATA</code> memory address to the value to be written
+</p>
+</li>
+<li>
+<p>
+write the appropriate value to the <code>CONTROL</code> memory address
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>To read from the terminal:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+write the appropriate value to the <code>CONTROL</code> memory address
+</p>
+</li>
+<li>
+<p>
+read the input from the <code>DATA</code> memory address
+</p>
+</li>
+</ol></div>
+</div></div>
+<div class="listingblock">
+<div class="title">Addresses of <code>CONTROL</code> and <code>DATA</code>:</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #000080">CONTROL:</span> <span style="color: #990000">.</span><span style="color: #009900">word</span> <span style="color: #993399">0x10000</span>
+<span style="color: #000080">DATA:</span>    <span style="color: #990000">.</span><span style="color: #009900">word</span> <span style="color: #993399">0x10008</span></tt></pre></div></div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Values written to <code>CONTROL</code> are as follows:</div>
+<div class="tableblock">
+<table rules="all" width="100%" frame="border" cellspacing="0" cellpadding="4">
+<colgroup><col width="36%">
+<col width="63%">
+</colgroup><thead>
+<tr>
+<th align="left" valign="top"> <code>CONTROL</code> </th>
+<th align="left" valign="top"> Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Write Operations</strong></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>1</code></p></td>
+<td align="left" valign="top"><p class="table">set <code>DATA</code> to an unsigned integer for output</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>2</code></p></td>
+<td align="left" valign="top"><p class="table">set <code>DATA</code> to a signed integer for output</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>3</code></p></td>
+<td align="left" valign="top"><p class="table">set <code>DATA</code> to a floating point value for output</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>4</code></p></td>
+<td align="left" valign="top"><p class="table">set <code>DATA</code> to the memory address of a string for output</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>5</code></p></td>
+<td align="left" valign="top"><p class="table">set <code>DATA+5</code> to the <code>x</code> coordinate, <code>DATA+4</code>  to  the <code>y</code>  coordinate,  and <code>DATA</code> to the RGB colour for the pixel (using, respectively, byte, byte and word32 stores)</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Read Operations</strong></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>8</code></p></td>
+<td align="left" valign="top"><p class="table">read <code>DATA</code> (either an integer or a floating-point value) from the terminal/keyboard</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>9</code></p></td>
+<td align="left" valign="top"><p class="table">read one byte from <code>DATA</code>, no character is echoed</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><strong>Other Operations</strong></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>6</code></p></td>
+<td align="left" valign="top"><p class="table">clear the terminal screen</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table"><code>7</code></p></td>
+<td align="left" valign="top"><p class="table">clear the graphics screen</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-03-11 16:20:17 GMT
+</div>
+</div>
+
+
+</body></html>

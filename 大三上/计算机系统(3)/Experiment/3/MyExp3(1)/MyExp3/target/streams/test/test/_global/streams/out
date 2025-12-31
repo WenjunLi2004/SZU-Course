@@ -1,0 +1,26 @@
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(mydesign.RegFileTest, org.scalatest.tools.Framework$$anon$1@6c7a4368, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(mydesign.DecoderTest, org.scalatest.tools.Framework$$anon$1@6c7a4368, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mDecoderTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mDecoder[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should pass[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mRegFileTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mRegFile[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should pass[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(mydesign.MemTest, org.scalatest.tools.Framework$$anon$1@6c7a4368, false, [SuiteSelector])[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning TaskDef(mydesign.JunctionTest, org.scalatest.tools.Framework$$anon$1@6c7a4368, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mMemTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mJunction[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should pass[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mJunctionTest:[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mJunction[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32m- should pass[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mRun completed in 3 seconds, 22 milliseconds.[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTotal number of tests run: 4[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mSuites: completed 4, aborted 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[36mTests: succeeded 4, failed 0, canceled 0, ignored 0, pending 0[0m[0m
+[0m[[0m[0minfo[0m] [0m[0m[32mAll tests passed.[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	mydesign.MemTest[0m
+[0m[[0m[0mdebug[0m] [0m[0m	mydesign.DecoderTest[0m
+[0m[[0m[0mdebug[0m] [0m[0m	mydesign.JunctionTest[0m
+[0m[[0m[0mdebug[0m] [0m[0m	mydesign.RegFileTest[0m
