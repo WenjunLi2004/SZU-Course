@@ -1,0 +1,10 @@
+^C:\USERS\LIUGENGXIN\DESKTOP\CG2022\实验\实验2.3\实验2.3_留空代码\CMAKELISTS.TXT
+setlocal
+F:\CMake\bin\cmake.exe -SC:/Users/Liugengxin/Desktop/CG2022/实验/实验2.3/实验2.3_留空代码 -BC:/Users/Liugengxin/Desktop/CG2022/实验/实验2.3/实验2.3_留空代码/build --check-stamp-file C:/Users/Liugengxin/Desktop/CG2022/实验/实验2.3/实验2.3_留空代码/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

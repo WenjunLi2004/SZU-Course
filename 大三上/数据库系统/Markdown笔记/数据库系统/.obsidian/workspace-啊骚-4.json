@@ -1,0 +1,223 @@
+{
+  "main": {
+    "id": "c8613aad5932e648",
+    "type": "split",
+    "children": [
+      {
+        "id": "18db06f7f00feac6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "30f5df66952e0b9a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "CSAPP/笔记/Ch3 程序的机器级表示/3.1程序编码.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "3.1程序编码"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "270effba6f70b7ed",
+    "type": "split",
+    "children": [
+      {
+        "id": "98730a079957c8fa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "76249909b701e2f0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "e9d6bb65d4e11a75",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "a0080ff31e987306",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 221.5
+  },
+  "right": {
+    "id": "7f632b336ae526d5",
+    "type": "split",
+    "children": [
+      {
+        "id": "eeb5020d737d642a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b41be9c351476a44",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "2.3 整数运算 的反向链接列表"
+            }
+          },
+          {
+            "id": "27ffd47425d9f374",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "2.3 整数运算 的出链列表"
+            }
+          },
+          {
+            "id": "60a586226afd32d6",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "9eec1465bdffd4ea",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "2.3 整数运算 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "remotely-save:Remotely Save": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false
+    }
+  },
+  "active": "30f5df66952e0b9a",
+  "lastOpenFiles": [
+    "CSAPP/Image/调用被调用者保存.png",
+    "CSAPP/Image/mstore.s.png",
+    "CSAPP/笔记/Ch2/2.4 浮点数.md",
+    "CSAPP/笔记/Ch3/程序的机器级表示.md",
+    "CSAPP/笔记/Ch2/2.3 整数运算.md",
+    "CSAPP/笔记/Ch2/2.2 整数表示.md",
+    "CSAPP/笔记/Ch2/2.1 信息存储.md",
+    "CSAPP/Experiment/Data Lab/Data Lab.md",
+    "CSAPP/Experiment/Data Lab/floatPower2.md",
+    "CSAPP/Experiment/Data Lab/Float to Int 思考过程.md",
+    "CSAPP/Experiment/Data Lab/2.int tmin(void);.md",
+    "CSAPP/Experiment/Data Lab/3.int isTmax(int x);.md",
+    "CSAPP/Experiment/Data Lab/5.int negate(int x);.md",
+    "CSAPP/Experiment/Data Lab/9.int logicalNeg(int x);.md",
+    "CSAPP/Experiment/Data Lab/6.int isAsciiDigit(int x);.md",
+    "CSAPP/Experiment/Data Lab/4.int allOddBits(int x);.md",
+    "CSAPP/Experiment/Data Lab/1.int bitXor(int x, int y);.md",
+    "CSAPP/Experiment/Data Lab/10.int howManyBits(int x);.md",
+    "CSAPP/Experiment/Data Lab/13.unsigned floatPower2(int x);.md",
+    "CSAPP/Experiment/Data Lab/11.unsigned floatScale2(unsigned uf);.md",
+    "CSAPP/Experiment/Data Lab/8.int isLessOrEqual(int x, int y);.md",
+    "CSAPP/Experiment/Data Lab/7.int conditional(int x, int y, int z);.md",
+    "CSAPP/Experiment/Data Lab/12.int floatFloat2Int(unsigned uf);.md",
+    "CSAPP/笔记/Ch3",
+    "CSAPP/笔记/Ch2",
+    "CSAPP/Experiment/Data Lab",
+    "CSAPP/Experiment",
+    "rs-test-folder-q8QMCsmbMalzp-01FDZ11",
+    "调用被调用者保存.png",
+    "寄存器16个.png",
+    "mstore.s.png",
+    "CSAPP/笔记/Lecture 1 Course Overview.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.1程序编码.md",
+    "编译系统.png",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.3 整数运算.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.2 整数表示.md",
+    "CSAPP/Image/补码乘法例子.png",
+    "CSAPP/Image/无穷大.png",
+    "CSAPP/Image/练习题2.49.png",
+    "CSAPP/Image/不同类型的边缘.png",
+    "CSAPP/Image/规格化.png",
+    "CSAPP/笔记/Ch3 程序的机器级表示",
+    "CSAPP/笔记/Ch2 信息表示和处理",
+    "CSAPP/笔记/Ch1",
+    "Excalidraw"
+  ]
+}

@@ -1,0 +1,3 @@
+/Users/wenjun/Documents/CG/Experiment1/Codes1/build/CMakeFiles/main.dir
+/Users/wenjun/Documents/CG/Experiment1/Codes1/build/CMakeFiles/edit_cache.dir
+/Users/wenjun/Documents/CG/Experiment1/Codes1/build/CMakeFiles/rebuild_cache.dir

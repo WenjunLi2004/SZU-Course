@@ -1,0 +1,220 @@
+{
+  "main": {
+    "id": "c8613aad5932e648",
+    "type": "split",
+    "children": [
+      {
+        "id": "fe761345e9016ac8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4741eb1a1518728d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "期末总结.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "期末总结"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "270effba6f70b7ed",
+    "type": "split",
+    "children": [
+      {
+        "id": "98730a079957c8fa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "76249909b701e2f0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "e9d6bb65d4e11a75",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "a0080ff31e987306",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 221.5
+  },
+  "right": {
+    "id": "7f632b336ae526d5",
+    "type": "split",
+    "children": [
+      {
+        "id": "eeb5020d737d642a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b41be9c351476a44",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "2.3 整数运算 的反向链接列表"
+            }
+          },
+          {
+            "id": "27ffd47425d9f374",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "2.3 整数运算 的出链列表"
+            }
+          },
+          {
+            "id": "60a586226afd32d6",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "9eec1465bdffd4ea",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "CSAPP/Experiment/Bomb Lab/Gdb常用命令.md"
+              },
+              "icon": "lucide-list",
+              "title": "Gdb常用命令 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "remotely-save:Remotely Save": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false
+    }
+  },
+  "active": "4741eb1a1518728d",
+  "lastOpenFiles": [
+    "2025-06-10 计系2第二章重点梳理.md",
+    "2025-06-10 计系2第二章重点梳理_tmp.html",
+    "2025-06-10 计系2第二章重点梳理.html",
+    "2025-06-10 计系2第二章重点梳理.pdf",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.4 浮点数.md",
+    "期末总结.md",
+    "浮点数乘法.png",
+    "浮点乘法例子.png",
+    "乘法例子.png",
+    "浮点数加法例子.png",
+    "Unsigned and signed.png",
+    "CSAPP/笔记/Ch2 信息表示和处理/经典考点与习题.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.3 整数运算.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.2 整数表示.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.1 信息存储.md",
+    "CSAPP/笔记/Ch1/1.计算机系统漫游.md",
+    "CSAPP/笔记/Ch7 链接/链接总体 and 目标文件.md",
+    "CSAPP/笔记/Ch7 链接/符号和符号表.md",
+    "CSAPP/知识点梳理/CH1/四个流程及其命令.md",
+    "例子.png",
+    "同名符号.png",
+    "CSAPP/笔记/Lecture 1 Course Overview.md",
+    "符号.png",
+    "符号解析.png",
+    "section.png",
+    "链接.md~RF237814.TMP",
+    "CSAPP/笔记/Ch2 信息表示和处理-啊骚/2.1 信息存储.md",
+    "CSAPP/笔记/Ch7 链接",
+    "CSAPP/笔记/Ch2 信息表示和处理-啊骚/2.4 浮点数.md",
+    "CSAPP/知识点梳理/课程总结梳理.md",
+    "CSAPP/知识点梳理/CH1",
+    "CSAPP/知识点梳理",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.3 程序编码.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.6 控制.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.7 过程.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.6.7 循环.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.4 高速缓存存储器.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.8 数组的分配和访问.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.9 结构.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.5 算术和逻辑操作.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.3 存储器层次结构.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.1.存储技术.md",
+    "CSAPP/笔记/Ch6 存储器层次架构",
+    "寄存器局部保存.png~RF3adbcf02.TMP",
+    "规定寄存器.png~RF3adbce27.TMP"
+  ]
+}

@@ -1,0 +1,3 @@
+/Users/wenjun/Documents/CG/Experiment3.4/实验3.4_留空代码/build/CMakeFiles/main.dir
+/Users/wenjun/Documents/CG/Experiment3.4/实验3.4_留空代码/build/CMakeFiles/edit_cache.dir
+/Users/wenjun/Documents/CG/Experiment3.4/实验3.4_留空代码/build/CMakeFiles/rebuild_cache.dir

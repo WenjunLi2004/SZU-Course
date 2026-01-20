@@ -1,0 +1,304 @@
+{
+  "main": {
+    "id": "c8613aad5932e648",
+    "type": "split",
+    "children": [
+      {
+        "id": "ca7231770887f169",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2f083c8631adaa53",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "CSAPP/笔记/Ch3 程序的机器级表示/3.4 访问信息.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "3.4 访问信息"
+            }
+          },
+          {
+            "id": "f31b52697cdaf8f9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "第三章总结.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "第三章总结"
+            }
+          },
+          {
+            "id": "7a6acb8d0653f06c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "CSAPP/知识点梳理/课程总结梳理.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "课程总结梳理"
+            }
+          },
+          {
+            "id": "a775532aa33cf998",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "期末总结(易错点).md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "期末总结(易错点)"
+            }
+          },
+          {
+            "id": "7530484e2cefe71b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "立即数和数据大小.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "立即数和数据大小"
+            }
+          },
+          {
+            "id": "acaf8d8f66304e5e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "简答题思考.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "简答题思考"
+            }
+          },
+          {
+            "id": "d6ef45049bde849e",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "270effba6f70b7ed",
+    "type": "split",
+    "children": [
+      {
+        "id": "98730a079957c8fa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "76249909b701e2f0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "e9d6bb65d4e11a75",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "a0080ff31e987306",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 221.5
+  },
+  "right": {
+    "id": "7f632b336ae526d5",
+    "type": "split",
+    "children": [
+      {
+        "id": "eeb5020d737d642a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b41be9c351476a44",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "2.3 整数运算 的反向链接列表"
+            }
+          },
+          {
+            "id": "27ffd47425d9f374",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "2.3 整数运算 的出链列表"
+            }
+          },
+          {
+            "id": "60a586226afd32d6",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "9eec1465bdffd4ea",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "第二章重点梳理.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "第二章重点梳理 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "remotely-save:Remotely Save": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false
+    }
+  },
+  "active": "a775532aa33cf998",
+  "lastOpenFiles": [
+    "期末总结(易错点）.md",
+    "CSAPP/Image/练习.png",
+    "CSAPP/Image/Union.png",
+    "第三章后半部分总结.md",
+    "立即数和数据大小.md",
+    "CSAPP/知识点梳理/课程总结梳理.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.4 访问信息.md",
+    "第二章重点梳理.md",
+    "第三章总结.md",
+    "简答题思考.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.4 浮点数.md",
+    "掌握整数寄存器.md",
+    "第二章练习（重做）.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.3 程序编码.md",
+    "反汇编器objdump.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.3 整数运算.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.1 信息存储.md",
+    "CSAPP/知识点梳理/CH1/四个流程及其命令.md",
+    "CSAPP/Image/浮点乘法例子.png",
+    "CSAPP/Image/乘法例子.png",
+    "CSAPP/Image/Unsigned and signed.png",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.6 控制.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.5 算术和逻辑操作.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.9 结构.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.8 数组的分配和访问.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.7 过程.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.6.7 循环.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.6.md",
+    "2025-06-10 计系2第二章重点梳理_tmp.html",
+    "2025-06-10 计系2第二章重点梳理.html",
+    "2025-06-10 计系2第二章重点梳理.pdf",
+    "CSAPP/Image/浮点数乘法.png",
+    "CSAPP/Image/浮点数加法例子.png",
+    "CSAPP/笔记/Ch2 信息表示和处理/经典考点与习题.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.2 整数表示.md",
+    "CSAPP/Image/例子 1.png",
+    "CSAPP/Image/同名符号.png",
+    "CSAPP/Image/符号.png",
+    "链接.md~RF237814.TMP",
+    "CSAPP/笔记/Ch7 链接",
+    "CSAPP/知识点梳理/CH1",
+    "CSAPP/知识点梳理",
+    "CSAPP/笔记/Ch6 存储器层次架构",
+    "寄存器局部保存.png~RF3adbcf02.TMP",
+    "规定寄存器.png~RF3adbce27.TMP"
+  ]
+}

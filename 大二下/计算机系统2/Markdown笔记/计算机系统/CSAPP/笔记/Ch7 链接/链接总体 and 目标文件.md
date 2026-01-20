@@ -11,7 +11,7 @@
 `as -o main.o main.s`
 `ld -o main main.o sum.o`
 
-![[IMG_0296.jpeg]]
+![[IMG_0296 1.jpeg]]
 # 静态链接
 
 **可重定位目标文件(.o)** +**静态链接器** =**可执行目标文件** 

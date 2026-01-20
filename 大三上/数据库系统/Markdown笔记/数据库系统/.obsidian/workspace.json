@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "c8613aad5932e648",
+    "type": "split",
+    "children": [
+      {
+        "id": "fe4b04fefb49d31f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7c125b1cfa1ccdd6",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "270effba6f70b7ed",
+    "type": "split",
+    "children": [
+      {
+        "id": "98730a079957c8fa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "76249909b701e2f0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "e9d6bb65d4e11a75",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "简答",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "a0080ff31e987306",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 221.5
+  },
+  "right": {
+    "id": "7f632b336ae526d5",
+    "type": "split",
+    "children": [
+      {
+        "id": "eeb5020d737d642a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b41be9c351476a44",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "2.3 整数运算 的反向链接列表"
+            }
+          },
+          {
+            "id": "27ffd47425d9f374",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "CSAPP/笔记/2.3 整数运算.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "2.3 整数运算 的出链列表"
+            }
+          },
+          {
+            "id": "60a586226afd32d6",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "9eec1465bdffd4ea",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "第二章重点梳理.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "第二章重点梳理 的大纲"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "bases:新建数据库": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-excalidraw-plugin:新建绘图文件": false
+    }
+  },
+  "active": "7c125b1cfa1ccdd6",
+  "lastOpenFiles": [
+    "第四章.md",
+    "第三章 SQL基础.md",
+    "第二章 Data Model.md",
+    "Pasted image 20260112013736.png",
+    "Pasted image 20260112013645.png",
+    "Pasted image 20260112011656.png",
+    "Pasted image 20260112010430.png",
+    "Pasted image 20260112010410.png",
+    "第一章 Database System.md",
+    "-1.png",
+    "未命名",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.4 高速缓存存储器.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/总览 Memory Hierarchy.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.3 存储器层次结构.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.2 局部性.md",
+    "CSAPP/笔记/Ch6 存储器层次架构/6.1.存储技术.md",
+    "反汇编器objdump.md",
+    "简答题思考.md",
+    "立即数和数据大小.md",
+    "CSAPP/Image/IMG_0296 1.jpeg",
+    "未命名 1.md",
+    "掌握整数寄存器.md",
+    "期末总结(易错点）.md",
+    "链接.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/第二章重点梳理.md",
+    "CSAPP/笔记/Ch3 程序的机器级表示/3.6 控制.md",
+    "CSAPP/笔记/Ch7 链接/符号和符号表.md",
+    "CSAPP/知识点梳理/课程总结梳理.md",
+    "rs-test-folder-5Q2XDI4XSTo8QHZ4JTW9z",
+    "CSAPP/笔记/Ch7 链接/链接总体 and 目标文件.md",
+    "CSAPP/知识点梳理/CH1/四个流程及其命令.md",
+    "CSAPP/笔记/Lecture 1 Course Overview.md",
+    "Ch7 链接",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.3 整数运算.md",
+    "CSAPP/笔记/Ch2 信息表示和处理/2.4 浮点数.md",
+    "CSAPP/Image/练习.png",
+    "CSAPP/Image/Union.png",
+    "CSAPP/Image/浮点乘法例子.png",
+    "2025-06-10 计系2第二章重点梳理_tmp.html",
+    "2025-06-10 计系2第二章重点梳理.html",
+    "2025-06-10 计系2第二章重点梳理.pdf",
+    "链接.md~RF237814.TMP",
+    "CSAPP/笔记/Ch7 链接",
+    "CSAPP/知识点梳理/CH1",
+    "CSAPP/知识点梳理"
+  ]
+}

@@ -1,0 +1,1 @@
+/usr/bin/clang++ -g -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/main.dir/Camera.cpp.o CMakeFiles/main.dir/InitShader.cpp.o CMakeFiles/main.dir/TriMesh.cpp.o CMakeFiles/main.dir/glad.c.o CMakeFiles/main.dir/main.cpp.o -o main  -Wl,-rpath,/opt/homebrew/lib /opt/homebrew/lib/libglfw.3.4.dylib /opt/homebrew/lib/libglm.dylib

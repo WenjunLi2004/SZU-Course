@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/build",
+  "command": "/usr/bin/clang++  -I/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/include -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -o CMakeFiles/main.dir/Camera.cpp.o -c /Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/Camera.cpp",
+  "file": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/Camera.cpp",
+  "output": "CMakeFiles/main.dir/Camera.cpp.o"
+},
+{
+  "directory": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/build",
+  "command": "/usr/bin/clang++  -I/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/include -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -o CMakeFiles/main.dir/InitShader.cpp.o -c /Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/InitShader.cpp",
+  "file": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/InitShader.cpp",
+  "output": "CMakeFiles/main.dir/InitShader.cpp.o"
+},
+{
+  "directory": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/build",
+  "command": "/usr/bin/clang++  -I/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/include -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -o CMakeFiles/main.dir/TriMesh.cpp.o -c /Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/TriMesh.cpp",
+  "file": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/TriMesh.cpp",
+  "output": "CMakeFiles/main.dir/TriMesh.cpp.o"
+},
+{
+  "directory": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/build",
+  "command": "/usr/bin/clang  -I/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/include -isystem /opt/homebrew/include -g -arch arm64 -o CMakeFiles/main.dir/glad.c.o -c /Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/glad.c",
+  "file": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/glad.c",
+  "output": "CMakeFiles/main.dir/glad.c.o"
+},
+{
+  "directory": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/build",
+  "command": "/usr/bin/clang++  -I/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/include -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -o CMakeFiles/main.dir/main.cpp.o -c /Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/main.cpp",
+  "file": "/Users/wenjun/Documents/CG/Experiment3.2/实验3.2_留空代码/main.cpp",
+  "output": "CMakeFiles/main.dir/main.cpp.o"
+}
+]

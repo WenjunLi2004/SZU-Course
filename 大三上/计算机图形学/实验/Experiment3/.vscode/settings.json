@@ -1,0 +1,12 @@
+{
+    "cmake.debugConfig": {
+        "cwd": "${workspaceFolder}"
+    },
+    "files.associations": {
+        "algorithm": "cpp",
+        "ios": "cpp",
+        "locale": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp"
+    }
+}

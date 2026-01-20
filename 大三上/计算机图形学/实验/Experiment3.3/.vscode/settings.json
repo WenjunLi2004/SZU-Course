@@ -1,0 +1,10 @@
+{
+    "cmake.sourceDirectory": "/Users/wenjun/Documents/CG/Experiment3.3/实验3.3_留空代码",
+    "files.associations": {
+        "algorithm": "cpp",
+        "concepts": "cpp",
+        "ios": "cpp",
+        "istream": "cpp",
+        "locale": "cpp"
+    }
+}
