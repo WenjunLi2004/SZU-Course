@@ -1,0 +1,22 @@
+=== 5-fold CV RMSE (log SalePrice) ===
+      LinearRegression  0.1208 (0.0094)
+                 Ridge  0.1160 (0.0087)
+                 Lasso  0.1107 (0.0068)
+            ElasticNet  0.1106 (0.0069)
+           KernelRidge  0.1825 (0.0149)
+           Bagging(LR)  0.1207 (0.0091)
+          RandomForest  0.1386 (0.0055)
+          AdaBoost(LR)  0.1644 (0.0083)
+      GradientBoosting  0.1163 (0.0080)
+               XGBoost  0.1180 (0.0066)
+              LightGBM  0.1165 (0.0063)
+    AveragedBaseModels  0.1137 (0.0076)
+      StackingAveraged  0.1079 (0.0073)
+
+=== Final ensemble train RMSE ===
+Stacking train RMSE : 0.0806
+XGBoost  train RMSE : 0.0867
+LightGBM train RMSE : 0.0721
+Weighted blend RMSE : 0.0781
+
+Submission rows: 1459

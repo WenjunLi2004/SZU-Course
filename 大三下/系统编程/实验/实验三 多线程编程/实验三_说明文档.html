@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>系统编程 实验三 多线程编程 —— 操作说明文档</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --muted: #5d6066;
+    --accent: #2563eb;
+    --accent-2: #0d9488;
+    --border: #e2e4e8;
+    --code-bg: #1e1e1e;
+    --code-fg: #d4d4d4;
+    --inline-code-bg: #eef0f4;
+    --inline-code-fg: #c7254e;
+    --warn-bg: #fff7e0;
+    --warn-border: #f5b400;
+    --good-bg: #ecfdf5;
+    --good-border: #10b981;
+  }
+  html { font-size: 16px; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    line-height: 1.75; max-width: 980px; margin: 0 auto; padding: 32px 28px 80px;
+  }
+  h1 { font-size: 2rem; border-bottom: 3px solid var(--accent); padding-bottom: 8px; margin-top: 0.4em; }
+  h2 { font-size: 1.5rem; color: var(--accent); margin-top: 1.6em; border-left: 4px solid var(--accent); padding-left: 10px; }
+  h3 { font-size: 1.2rem; color: var(--accent-2); margin-top: 1.4em; }
+  h4 { font-size: 1.05rem; color: #2a2a2a; margin-top: 1em; }
+  p { margin: 0.6em 0; }
+  pre {
+    background: var(--code-bg); color: var(--code-fg);
+    padding: 14px 18px; border-radius: 8px;
+    overflow-x: auto; font-size: 0.9rem; line-height: 1.55;
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", "Menlo", monospace;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+  code {
+    background: var(--inline-code-bg); color: var(--inline-code-fg);
+    padding: 1px 6px; border-radius: 4px; font-size: 0.9em;
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", "Menlo", monospace;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  table { border-collapse: collapse; margin: 12px 0; width: 100%; font-size: 0.93rem; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: #f1f3f7; }
+  blockquote {
+    border-left: 4px solid var(--warn-border);
+    background: var(--warn-bg);
+    margin: 12px 0; padding: 10px 16px; border-radius: 0 6px 6px 0;
+  }
+  .good { background: var(--good-bg); border-left-color: var(--good-border); }
+  .toc { background: #ffffff; border: 1px solid var(--border); padding: 14px 22px; border-radius: 8px; }
+  .toc ol { margin: 0; padding-left: 24px; }
+  .toc li { margin: 4px 0; }
+  .img-figure { text-align: center; margin: 18px 0; }
+  .img-figure img { max-width: 100%; border: 1px solid var(--border); border-radius: 6px; }
+  .img-figure figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+  .keyword { color: #569cd6; }
+  .string  { color: #ce9178; }
+  .comment { color: #6a9955; font-style: italic; }
+  .type    { color: #4ec9b0; }
+  .number  { color: #b5cea8; }
+  .function { color: #dcdcaa; }
+  .preprocessor { color: #c586c0; }
+  .meta {
+    color: var(--muted); font-size: 0.9rem;
+    border-top: 1px solid var(--border); padding-top: 14px; margin-top: 32px;
+  }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<h1>系统编程实验三 ── 多线程编程操作说明文档</h1>
+
+<p class="meta">
+姓名：李文俊 &nbsp;|&nbsp; 学号：2023150001 &nbsp;|&nbsp; 班级：高性能 &nbsp;|&nbsp; 实验时间：2026.5.31<br>
+环境：openEuler / aarch64（Taishan 容器），gcc + pthread + POSIX semaphore
+</p>
+
+<div class="toc">
+<strong>目录</strong>
+<ol>
+  <li><a href="#overview">实验概览</a></li>
+  <li><a href="#env">环境与目录结构</a></li>
+  <li><a href="#q1">题1：四种 int 操作的同步分析</a></li>
+  <li><a href="#q2">题2：图1 源程序分析与修改</a></li>
+  <li><a href="#q3">题3：互斥锁与信号量实现 counter 互斥</a></li>
+  <li><a href="#q4">题4：主线程与子线程交替循环</a></li>
+  <li><a href="#q5">题5：四线程按 p1*p2**p3***p4**** 输出</a></li>
+  <li><a href="#oneshot">一键编译/运行命令</a></li>
+  <li><a href="#trouble">常见问题与排查</a></li>
+</ol>
+</div>
+
+<h2 id="overview">1. 实验概览</h2>
+<p>本次实验共有 5 道题，分为理论分析（1 题）与代码实现（4 题）。代码均基于 POSIX 线程库（pthread）与 POSIX 信号量（semaphore.h），编译指令统一为：</p>
+<pre><code>gcc -Wall -o &lt;output&gt; &lt;source&gt;.c -lpthread</code></pre>
+
+<table>
+<tr><th>题号</th><th>类型</th><th>对应文件</th><th>核心要点</th></tr>
+<tr><td>1</td><td>理论分析</td><td>— （仅写入报告）</td><td>判断 x=y / x++ / ++x / x=1 哪些需要同步</td></tr>
+<tr><td>2</td><td>代码改写</td><td>q2_original.c / q2_fixed.c</td><td>分析图1非原子读改写并用 mutex 修复</td></tr>
+<tr><td>3</td><td>代码实现</td><td>q3_no_sync.c / q3_mutex.c / q3_sem.c</td><td>三种实现对比：无锁（错）/ mutex / semaphore</td></tr>
+<tr><td>4</td><td>代码实现</td><td>q4_alternate.c</td><td>主线程 4 次 ↔ 子线程 2 次，交替 5 轮</td></tr>
+<tr><td>5</td><td>代码实现</td><td>q5_pattern.c</td><td>4 线程按 p1*p2**p3***p4**** 模式输出 5 轮</td></tr>
+</table>
+
+<h2 id="env">2. 环境与目录结构</h2>
+
+<h3>2.1 本地工作目录</h3>
+<pre><code>~/Library/CloudStorage/OneDrive-个人(2)/Course/系统编程/实验/实验三 多线程编程/
+├── 多线程编程(1).doc              # 实验要求原始 doc
+├── 多线程编程_李文俊_2023150001.docx   # 最终实验报告（本次提交）
+├── 进程间通信_李文俊_2023150001.docx   # 实验报告样式模板（来自实验二）
+├── 实验三_说明文档.html           # 本文档
+├── code/                          # 全部源代码
+│   ├── q2_original.c
+│   ├── q2_fixed.c
+│   ├── q3_no_sync.c
+│   ├── q3_mutex.c
+│   ├── q3_sem.c
+│   ├── q4_alternate.c
+│   ├── q5_pattern.c
+│   └── figure_source.png          # 从 .doc 抽取的 图1/图2 源代码图
+└── snapshot/                      # 所有终端运行截图
+    ├── 01_q2_original_race.png
+    ├── 02_q2_fixed.png
+    ├── 03_q3_no_sync.png
+    ├── 04_q3_mutex.png
+    ├── 05_q3_sem.png
+    ├── 06_q4_alternate.png
+    └── 07_q5_pattern.png</code></pre>
+
+<h3>2.2 服务器目录</h3>
+<p>实验在 Taishan/aarch64 + openEuler 容器（<code>172.31.234.194</code>）上完成，用户为 <code>liwenjun2023150001</code>，实验目录为 <code>~/exp3</code>。代码与可执行文件均已上传：</p>
+<pre><code>$ ssh liwenjun2023150001@172.31.234.194
+$ cd ~/exp3 &amp;&amp; ls
+q2_fixed       q2_original.c  q3_mutex.c    q3_no_sync.c  q3_sem.c       q4_alternate.c  q5_pattern.c
+q2_fixed.c     q3_mutex       q3_no_sync    q3_sem        q4_alternate   q5_pattern</code></pre>
+
+<h3>2.3 本地 → 服务器同步</h3>
+<pre><code># 一次性上传所有源代码
+cd "~/Library/CloudStorage/OneDrive-个人(2)/Course/系统编程/实验/实验三 多线程编程/code"
+scp *.c liwenjun2023150001@172.31.234.194:exp3/
+
+# 服务器上批量编译
+ssh liwenjun2023150001@172.31.234.194 "cd exp3 &amp;&amp; \
+  for f in q2_original q2_fixed q3_no_sync q3_mutex q3_sem q4_alternate q5_pattern; do \
+    gcc -Wall -o \$f \$f.c -lpthread; \
+  done"</code></pre>
+
+<!-- ============================================================== Q1 -->
+<h2 id="q1">3. 题1：四种 int 操作的同步分析（10 分）</h2>
+<p>题目要求判断对 int 型变量 x 的下面 4 种操作哪些需要同步：</p>
+<pre><code>x = y;
+x++;
+++x;
+x = 1;</code></pre>
+
+<table>
+<tr><th>操作</th><th>是否需要同步</th><th>原因</th></tr>
+<tr><td><code>x = y;</code></td><td>需要</td>
+    <td>展开成 "load y → store x"，是两步操作。两步之间另一线程改 y、或同时写 x，结果都不可预测。</td></tr>
+<tr><td><code>x++;</code></td><td>需要</td>
+    <td>展开成 "load x → add 1 → store x" 的读-改-写三步。C 标准不保证 ++ 是原子指令，多线程并发会丢失更新。</td></tr>
+<tr><td><code>++x;</code></td><td>需要</td>
+    <td>与 <code>x++</code> 原子性完全等价，区别只在表达式取值时机。</td></tr>
+<tr><td><code>x = 1;</code></td><td>一般不需要</td>
+    <td>只是把常量写入 x，没有读其它内存。对自然对齐的 int 单次写是原子的，无论谁先谁后结果都是 1。<br>
+        例外：未对齐写、宽度大于平台原子宽度、需要保证可见性时仍需同步或 atomic。</td></tr>
+</table>
+
+<!-- ============================================================== Q2 -->
+<h2 id="q2">4. 题2：图1 源程序分析与修改（40 分）</h2>
+
+<h3>4.1 图1 源程序</h3>
+<p>题面 <strong>图 1</strong> 给出的是一个有数据竞争的累加程序（图像已抽取保存在 <code>code/figure_source.png</code>）。原始代码（带行注释）：</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+
+#define NLOOP 5000
+int counter;                              /* incremented by threads */
+
+void *increase(void *vptr);
+
+int main(int argc, char **argv) {
+    pthread_t threadIdA, threadIdB;
+    pthread_create(&amp;threadIdA, NULL, &amp;increase, NULL);
+    pthread_create(&amp;threadIdB, NULL, &amp;increase, NULL);
+    pthread_join(threadIdA, NULL);
+    pthread_join(threadIdB, NULL);
+    return 0;
+}
+
+void *increase(void *vptr) {
+    int i, val;
+    for (i = 0; i &lt; NLOOP; i++) {
+        val = counter;                                          /* ← 步骤①：读 */
+        printf("%x: %d\n", (unsigned int)pthread_self(), val+1);
+        counter = val + 1;                                      /* ← 步骤②：写 */
+    }
+    return NULL;
+}</code></pre>
+
+<h3>4.2 问题分析</h3>
+<blockquote>
+<strong>① 线程安全：</strong>步骤 ① 与步骤 ② 之间不是原子的，两个线程读到同一个旧值会导致丢失更新。<br>
+<strong>② 结果可见性：</strong>main 没有打印最终 counter，无法直观看到错误。<br>
+<strong>③ 打印格式：</strong>64 位平台上 <code>(unsigned int)pthread_self()</code> 会截断高 32 位。
+</blockquote>
+
+<h3>4.3 修改：q2_fixed.c</h3>
+<p>修改要点：①在 increase() 外定义 <code>pthread_mutex_t lock</code>，把 val/printf/counter 三行整体锁起来；②main 末尾打印 counter；③把 <code>%x + (unsigned int)</code> 改为 <code>%lx + (unsigned long)</code>。完整代码：</p>
+<details><summary>展开查看 q2_fixed.c</summary>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+
+#define NLOOP 5000
+
+int counter = 0;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+void *increase(void *vptr);
+
+int main(int argc, char **argv) {
+    pthread_t threadIdA, threadIdB;
+    pthread_create(&amp;threadIdA, NULL, &amp;increase, NULL);
+    pthread_create(&amp;threadIdB, NULL, &amp;increase, NULL);
+    pthread_join(threadIdA, NULL);
+    pthread_join(threadIdB, NULL);
+    pthread_mutex_destroy(&amp;lock);
+    printf("期望 counter = %d，实际 counter = %d\n", 2*NLOOP, counter);
+    return 0;
+}
+
+void *increase(void *vptr) {
+    int i, val;
+    for (i = 0; i &lt; NLOOP; i++) {
+        pthread_mutex_lock(&amp;lock);
+        val = counter;
+        printf("%lx: %d\n", (unsigned long)pthread_self(), val+1);
+        counter = val + 1;
+        pthread_mutex_unlock(&amp;lock);
+    }
+    return NULL;
+}</code></pre>
+</details>
+
+<h3>4.4 编译与运行</h3>
+<pre><code>gcc -Wall -o q2_original q2_original.c -lpthread
+gcc -Wall -o q2_fixed    q2_fixed.c    -lpthread
+
+# 运行原程序 10 次, 观察结果在 5000 / 10000 / 5xxx 之间跳变
+for i in {1..10}; do ./q2_original 2&gt;/dev/null | tail -1; done
+
+# 运行修改后程序 5 次, 结果稳定为 10000
+for i in {1..5}; do ./q2_fixed 2&gt;/dev/null | tail -1; done</code></pre>
+
+<figure class="img-figure">
+  <img src="snapshot/01_q2_original_race.png" alt="原程序 10 次运行"/>
+  <figcaption>图 4.1 原程序 10 次运行 —— 结果在 10000 和 5000、5628 之间跳变</figcaption>
+</figure>
+<figure class="img-figure">
+  <img src="snapshot/02_q2_fixed.png" alt="修改后程序 5 次运行"/>
+  <figcaption>图 4.2 加锁后 5 次运行 —— 结果稳定为 10000</figcaption>
+</figure>
+
+<!-- ============================================================== Q3 -->
+<h2 id="q3">5. 题3：互斥锁与信号量实现共享 counter 互斥（40 分）</h2>
+<p>题目要求两个线程各对共享 counter 自增 5000 次，期望 counter = 10000。先做一个无同步的基线版本演示不可再现性，再分别用 mutex 和 semaphore 修复。</p>
+
+<h3>5.1 基线（无同步）：q3_no_sync.c</h3>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+static long counter = 0;
+static void *worker(void *arg) {
+    for (int i = 0; i &lt; 5000; ++i)
+        counter++;                     /* 读-加-写 三条指令, 非原子 */
+    return NULL;
+}
+int main(void) {
+    pthread_t a, b;
+    pthread_create(&amp;a, NULL, worker, NULL);
+    pthread_create(&amp;b, NULL, worker, NULL);
+    pthread_join(a, NULL); pthread_join(b, NULL);
+    printf("期望 counter = 10000，实际 counter = %ld\n", counter);
+    return 0;
+}</code></pre>
+<p>编译与运行：</p>
+<pre><code>gcc -Wall -o q3_no_sync q3_no_sync.c -lpthread
+for i in {1..5}; do ./q3_no_sync | tail -1; done
+# 实际 counter 经常 != 10000, 例如 4750, 9218, ...</code></pre>
+<figure class="img-figure">
+  <img src="snapshot/03_q3_no_sync.png" alt="q3_no_sync 5 次运行"/>
+  <figcaption>图 5.1 无同步版本 5 次运行 —— 结果不可再现</figcaption>
+</figure>
+
+<h3>5.2 互斥锁版本：q3_mutex.c</h3>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+static long counter = 0;
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static void *worker(void *arg) {
+    for (int i = 0; i &lt; 5000; ++i) {
+        pthread_mutex_lock(&amp;lock);
+        counter++;
+        pthread_mutex_unlock(&amp;lock);
+    }
+    return NULL;
+}</code></pre>
+<pre><code>gcc -Wall -o q3_mutex q3_mutex.c -lpthread
+for i in {1..5}; do ./q3_mutex | tail -1; done
+# 5 次都是 10000</code></pre>
+<figure class="img-figure">
+  <img src="snapshot/04_q3_mutex.png" alt="q3_mutex 5 次运行"/>
+  <figcaption>图 5.2 互斥锁版本 5 次运行 —— 结果稳定为 10000</figcaption>
+</figure>
+
+<h3>5.3 信号量版本：q3_sem.c</h3>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;semaphore.h&gt;
+static long counter = 0;
+static sem_t sem;
+static void *worker(void *arg) {
+    for (int i = 0; i &lt; 5000; ++i) {
+        sem_wait(&amp;sem);     /* P 操作 */
+        counter++;
+        sem_post(&amp;sem);     /* V 操作 */
+    }
+    return NULL;
+}
+int main(void) {
+    pthread_t a, b;
+    sem_init(&amp;sem, 0, 1);    /* 0=线程内共享, 1=资源可用 (二元信号量) */
+    pthread_create(&amp;a, NULL, worker, NULL);
+    pthread_create(&amp;b, NULL, worker, NULL);
+    pthread_join(a, NULL); pthread_join(b, NULL);
+    sem_destroy(&amp;sem);
+    printf("期望 counter = 10000，实际 counter = %ld\n", counter);
+    return 0;
+}</code></pre>
+<pre><code>gcc -Wall -o q3_sem q3_sem.c -lpthread
+for i in {1..5}; do ./q3_sem | tail -1; done</code></pre>
+<figure class="img-figure">
+  <img src="snapshot/05_q3_sem.png" alt="q3_sem 5 次运行"/>
+  <figcaption>图 5.3 信号量版本 5 次运行 —— 结果稳定为 10000</figcaption>
+</figure>
+
+<h3>5.4 两种同步方式的差异</h3>
+<table>
+<tr><th></th><th>pthread_mutex</th><th>POSIX semaphore</th></tr>
+<tr><td>语义</td><td>互斥锁（有所有者）</td><td>资源计数（无所有者）</td></tr>
+<tr><td>解锁限制</td><td>只能由加锁线程解锁</td><td>任意线程可 post</td></tr>
+<tr><td>用法</td><td>纯互斥</td><td>互斥（初值 1）+ 同步（初值 N）</td></tr>
+<tr><td>开销</td><td>稍低</td><td>略高（含系统调用路径）</td></tr>
+<tr><td>本题适合</td><td>更贴合语义</td><td>等价可用</td></tr>
+</table>
+
+<!-- ============================================================== Q4 -->
+<h2 id="q4">6. 题4：主线程与子线程交替循环（5 分）</h2>
+<p>需求：子线程循环 2 次 → 主线程循环 4 次 → 再回到子线程 2 次 …… 共 5 轮。</p>
+
+<h3>6.1 思路</h3>
+<p>使用 "互斥锁 + 条件变量 + turn 标志" 实现：</p>
+<ul>
+  <li><code>turn = 0</code>：子线程跑；<code>turn = 1</code>：主线程跑。</li>
+  <li>每段跑完后翻转 <code>turn</code> 并 <code>pthread_cond_broadcast</code> 唤醒对方。</li>
+  <li>使用 <code>while (turn != …)</code> 防止虚假唤醒。</li>
+</ul>
+
+<h3>6.2 核心片段</h3>
+<pre><code>static void *child(void *arg) {
+    for (int r = 0; r &lt; ROUNDS; ++r) {
+        pthread_mutex_lock(&amp;lock);
+        while (turn != 0) pthread_cond_wait(&amp;cond, &amp;lock);
+        for (int i = 0; i &lt; 2; ++i)
+            printf("  [子线程] 第 %d 轮，第 %d 次循环\n", r+1, i+1);
+        turn = 1;
+        pthread_cond_broadcast(&amp;cond);
+        pthread_mutex_unlock(&amp;lock);
+    }
+    return NULL;
+}</code></pre>
+
+<h3>6.3 编译与运行</h3>
+<pre><code>gcc -Wall -o q4_alternate q4_alternate.c -lpthread
+./q4_alternate</code></pre>
+<figure class="img-figure">
+  <img src="snapshot/06_q4_alternate.png" alt="q4_alternate 运行结果"/>
+  <figcaption>图 6.1 主线程 4 次 ↔ 子线程 2 次, 交替 5 轮</figcaption>
+</figure>
+
+<!-- ============================================================== Q5 -->
+<h2 id="q5">7. 题5：四线程按 p1*p2**p3***p4**** 模式输出（5 分）</h2>
+<p>需求：开启 4 个线程 p1~p4，每线程把自己的真实 pthread_t 打印 5 次，整体输出严格按 p1*p2**p3***p4**** 模式。</p>
+
+<h3>7.1 思路</h3>
+<p>同样使用 "互斥锁 + 条件变量 + turn"，区别在于 turn 有 4 个值，每个线程做完后 <code>turn = (turn + 1) % 4</code>。</p>
+
+<h3>7.2 核心片段</h3>
+<pre><code>static void *worker(void *arg) {
+    thread_arg_t *t = arg;
+    for (int r = 0; r &lt; ROUNDS; ++r) {
+        pthread_mutex_lock(&amp;lock);
+        while (turn != t-&gt;idx) pthread_cond_wait(&amp;cond, &amp;lock);
+
+        printf("p%lx", (unsigned long)t-&gt;tid &amp; 0xFFFFFFul);
+        for (int s = 0; s &lt;= t-&gt;idx; ++s) putchar('*');
+        if (t-&gt;idx == NTHREAD - 1) putchar('\n');
+
+        turn = (turn + 1) % NTHREAD;
+        pthread_cond_broadcast(&amp;cond);
+        pthread_mutex_unlock(&amp;lock);
+    }
+    return NULL;
+}</code></pre>
+<p>pthread_t 在 64 位 Linux 是 8 字节，直接打印太长，取低 24 位（与 ID 增量大小相当）便于阅读。</p>
+
+<h3>7.3 编译与运行</h3>
+<pre><code>gcc -Wall -o q5_pattern q5_pattern.c -lpthread
+./q5_pattern</code></pre>
+<figure class="img-figure">
+  <img src="snapshot/07_q5_pattern.png" alt="q5_pattern 运行结果"/>
+  <figcaption>图 7.1 严格按 p1*p2**p3***p4**** 输出 5 轮</figcaption>
+</figure>
+
+<!-- ============================================================== One-shot -->
+<h2 id="oneshot">8. 一键编译与运行命令</h2>
+<p>在服务器 <code>~/exp3</code> 目录下：</p>
+<pre><code># 编译全部
+for f in q2_original q2_fixed q3_no_sync q3_mutex q3_sem q4_alternate q5_pattern; do
+  gcc -Wall -o $f $f.c -lpthread
+done
+
+# 题1: 理论, 无代码
+echo "题2: 原程序 10 次"
+for i in {1..10}; do ./q2_original 2&gt;/dev/null | tail -1; done
+
+echo "题2: 加锁后 5 次"
+for i in {1..5}; do ./q2_fixed 2&gt;/dev/null | tail -1; done
+
+echo "题3: 无同步 5 次 (常出错)"
+for i in {1..5}; do ./q3_no_sync | tail -1; done
+
+echo "题3: mutex 5 次 (稳定 10000)"
+for i in {1..5}; do ./q3_mutex | tail -1; done
+
+echo "题3: semaphore 5 次 (稳定 10000)"
+for i in {1..5}; do ./q3_sem | tail -1; done
+
+echo "题4: 交替循环"
+./q4_alternate
+
+echo "题5: 模式输出"
+./q5_pattern</code></pre>
+
+<h2 id="trouble">9. 常见问题与排查</h2>
+
+<h4>9.1 编译报错：<code>undefined reference to pthread_create</code></h4>
+<p>必须加 <code>-lpthread</code>，并放在源文件之后，例如：</p>
+<pre><code>gcc -Wall -o q3_mutex q3_mutex.c -lpthread     # 正确
+gcc -Wall -lpthread -o q3_mutex q3_mutex.c     # 部分链接器顺序敏感, 可能失败</code></pre>
+
+<h4>9.2 q3_no_sync 偶尔输出 10000</h4>
+<p>无同步并不意味着每次都错——只是结果不可再现。Linux 调度和 CPU cache 偶尔会让两个线程几乎串行执行，从而得到正确结果。多跑几次（5~10 次）一定会观察到偏差。</p>
+
+<h4>9.3 q2_original 跑出 10000 的频率高于 5000</h4>
+<p>原程序的临界区里有 printf，I/O 系统调用大概率把另一线程切换出去，竞争窗口被 I/O 拉长但单点冲突反而减少。这本身也是非原子操作的一种典型现象——加上锁就稳定了。</p>
+
+<h4>9.4 pthread_self() 打印很长</h4>
+<p>aarch64 上的 pthread_t 是 8 字节指针，<code>%lu</code> 输出 18 位以上数字。可以用 <code>(unsigned long)tid &amp; 0xFFFFFFul</code> 取低 24 位（不同线程低位差异很大，足够区分），或者用 <code>%lx</code> 改为十六进制。</p>
+
+<h4>9.5 q5_pattern 启动时打印 tid 出现在中间</h4>
+<p>这是因为创建子线程后立即 <code>printf("线程 #%d 的 pthread_t = …")</code>，主线程和子线程同时输出，顺序无保证。我把这个 "宣告" 阶段放在 puts("---- 开始 ----") 之前，再让 4 个 worker 严格按 turn 顺序输出，整体看起来就是 "宣告 → 分隔线 → 严格模式输出"。</p>
+
+<p class="meta">本说明文档与实验报告 <code>多线程编程_李文俊_2023150001.docx</code> 同步维护。代码均存放在 <code>code/</code>，运行截图均存放在 <code>snapshot/</code>。如需重新生成截图，直接重新运行服务器上的可执行文件，把 stdout 重定向到 <code>/tmp/make_terminal.py</code> 即可。</p>
+
+</body>
+</html>

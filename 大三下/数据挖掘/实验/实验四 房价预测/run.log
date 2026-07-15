@@ -1,0 +1,74 @@
+train shape before drop Id: (1460, 81)
+test  shape before drop Id: (1459, 80)
+all_data size: (2917, 79)
+
+Top missing features (%):
+PoolQC          99.691464
+MiscFeature     96.400411
+Alley           93.212204
+Fence           80.425094
+MasVnrType      60.541652
+FireplaceQu     48.680151
+LotFrontage     16.660953
+GarageFinish     5.450806
+GarageQual       5.450806
+GarageCond       5.450806
+GarageYrBlt      5.450806
+GarageType       5.382242
+BsmtExposure     2.811107
+BsmtCond         2.811107
+BsmtQual         2.776826
+BsmtFinType2     2.742544
+BsmtFinType1     2.708262
+MasVnrArea       0.788481
+MSZoning         0.137127
+BsmtFullBath     0.068564
+dtype: float64
+
+Missing features after fill: 0
+
+Box-Cox transforming 21 skewed features
+MiscVal          21.939672
+PoolArea         17.688664
+LotArea          13.109495
+LowQualFinSF     12.084539
+3SsnPorch        11.372080
+KitchenAbvGr      4.300550
+BsmtFinSF2        4.144503
+EnclosedPorch     4.002344
+ScreenPorch       3.945101
+BsmtHalfBath      3.929996
+dtype: float64
+
+Feature matrix after dummy encoding: (2917, 220)
+PCA shape: (2917, 100), explained variance ratio sum: 1.0000
+
+=== Single regression models ===
+      LinearRegression  RMSE = 0.1208 (0.0094)
+                 Ridge  RMSE = 0.1160 (0.0087)
+                 Lasso  RMSE = 0.1107 (0.0068)
+            ElasticNet  RMSE = 0.1106 (0.0069)
+           KernelRidge  RMSE = 0.1825 (0.0149)
+
+=== Bagging models ===
+           Bagging(LR)  RMSE = 0.1207 (0.0091)
+          RandomForest  RMSE = 0.1386 (0.0055)
+
+=== Boosting models ===
+          AdaBoost(LR)  RMSE = 0.1644 (0.0083)
+      GradientBoosting  RMSE = 0.1163 (0.0080)
+               XGBoost  RMSE = 0.1180 (0.0066)
+              LightGBM  RMSE = 0.1165 (0.0063)
+
+=== Stacking (averaging) ===
+    AveragedBaseModels  RMSE = 0.1137 (0.0076)
+      StackingAveraged  RMSE = 0.1079 (0.0073)
+
+=== Final weighted ensemble: 0.70 Stacking + 0.15 XGBoost + 0.15 LightGBM ===
+Stacking train RMSE: 0.0806
+XGBoost  train RMSE: 0.0867
+LightGBM train RMSE: 0.0721
+Weighted blend train RMSE: 0.0781
+
+Submission written: /Users/wenjun/Library/CloudStorage/OneDrive-个人(2)/Course/数据挖掘/实验/实验四 房价预测/submission.csv
+Metrics summary written: /Users/wenjun/Library/CloudStorage/OneDrive-个人(2)/Course/数据挖掘/实验/实验四 房价预测/metrics.txt
