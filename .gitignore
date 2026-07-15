@@ -1,0 +1,25 @@
+.claude/
+.DS_Store
+.history/
+__pycache__/
+*.py[cod]
+*.swp
+~$*
+.cache/
+
+# 本机 Obsidian 工作区状态，仅忽略仓库根目录
+/.obsidian/
+
+# 并行计算实验的本机 Python 环境选择
+/大三下/并行计算/实验/实验二 Cannon矩阵乘法的MPI并行程序/.vscode/
+
+# 课程整理过程中使用的本机 AI 工作文件
+/大三下/操作系统/CLAUDE.md
+/大三下/操作系统/修改要求.rtf
+/大三下/操作系统/实验/prompt.md
+/大三下/并行计算/实验/prompt.md
+/大三下/数据挖掘/实验/实验二 可视化分析/prompt.md
+
+# >100MiB 教材（GitHub 硬限制），仅保留在本地/OneDrive，不进入 Git
+/大三下/操作系统/Book/汤小丹《计算机操作系统 第4版》/汤小丹《计算机操作系统 第4版》.pdf
+/大三下/操作系统/Book/计算机操作系统（第四版） (汤小丹) (z-library.sk, 1lib.sk, z-lib.sk).pdf
