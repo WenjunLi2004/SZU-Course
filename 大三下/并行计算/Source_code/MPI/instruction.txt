@@ -1,0 +1,8 @@
+编译:
+mpic++ [-O3] [-g] [-Wall] -o mpi.o mpi.cpp
+mpic++ -O3 -g -Wall -o hello_world.o hello_world.cpp
+
+运行:
+mpiexec -n 2 -f machinefile /home/bxjs/2023150001/test/mpi.o
+mpiexec -n 4  /home/bxjs/2023150001/test/hello_world.o
+mpiexec -n 16  /home/bxjs/2023150001/a.o

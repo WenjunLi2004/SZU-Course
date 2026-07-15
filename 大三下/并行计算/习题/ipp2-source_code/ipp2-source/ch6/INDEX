@@ -1,0 +1,63 @@
+"Section" refers to the first section or subsection in "An Introduction 
+to Parallel Programming, 2nd ed" that discusses the program.  "Page" refers 
+to the first page in the hard copy of the book.
+
+Section Page    File                    Description
+------- ----    ----                    -----------
+6.4.1   296     ch6/cuda_hello.cu       CUDA program that starts a block
+                                        of threads and prints a greeting
+                                        from each
+6.6     299     ch6/cuda_hello1.cu      CUDA program that can start 
+                                        multiple thread blocks and print
+                                        a greeting from each.
+6.8     302     ch6/cuda_vec_add.cu     CUDA program that adds two vectors
+6.8.5   309     ch6/cuda_vec_add_cp.cu  CUDA program that adds two vectors.
+                                        This version uses cudaMemcpy to
+                                        explicitly transfer data between
+                                        host and device
+6.9     312     ch6/pass_by_ref1.cu     Attempt to use C pass-by-reference
+                                        to return a value from the device
+                                        to the host.
+6.9     312     ch6/pass_by_ref2.cu     Return a value from the device
+                                        to the host using unified memory
+6.9     312     ch6/pass_by_ref2_cp.cu  Return a value from the device
+                                        to the host using cudaMemcpy
+6.9     312     ch6/pass_by_ref2_glbl.cu  Return a value from the 
+                                        device to the host using global
+                                        managed memory
+6.10.1  314     ch6/trap.c              Serial trapezoidal rule
+6.10    314     ch6/cuda_trap1.cu       First CUDA implementation of the
+                                        trapezoidal rule.  This version
+                                        uses atomicAdd to add each thread's
+                                        computation into the total estimate
+6.11    320     ch6/cuda_trap2a.cu      This CUDA implementation of the
+                                        trapezoidal rule uses warp shuffles
+                                        to form each thread block's partial
+                                        sum.  Thread block size should be
+                                        the same as the warp size (currently
+                                        32).
+6.11    320     ch6/cuda_trap2b.cu      This CUDA implementation of the
+                                        trapezoidal rule uses shared memory
+                                        sums to form each thread block's 
+                                        partial sum.  Thread block size should
+                                        be the same as the warp size (currently
+                                        32).
+6.13    331     ch6/cuda_trap3a.cu      This CUDA implementation of the
+                                        trapezoidal rule uses warp
+                                        shuffles to form each thread block's
+                                        partial sum.  Then the threads
+                                        in warp 0 of each block add the 
+                                        warp sums
+6.13    331     ch6/cuda_trap3b.cu      This CUDA implementation of the
+                                        trapezoidal rule uses shared memory
+                                        sums to form each thread block's
+                                        partial sum.  Then the threads
+                                        in warp 0 of each block add the 
+                                        warp sums in the block.
+6.14.1  338     ch6/serial_bitonic.c    Serial bitonic sort in C.
+6.14.3  338     ch6/cuda_bitonic_one.cu CUDA implementation of bitonic
+                                        sort that uses a single thread
+                                        block
+6.14.4  347     ch6/cuda_bitonic_mult.cu CUDA implementation of bitonic
+                                        sort that uses multiple thread
+                                        blocks
