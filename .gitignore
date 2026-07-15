@@ -5,12 +5,18 @@ __pycache__/
 *.py[cod]
 *.swp
 ~$*
+*~
+*.bak
 .cache/
 
 # 编译与调试生成物
 *.o
 *.obj
 *.dSYM/
+/大三下/并行计算/习题/ipp-source-main/ipp-source-main/ipp-source-use/ch3/bin/
+/大三下/操作系统/Reference/实验/综合实验一/yubei1/*-demo
+/大三下/操作系统/Reference/实验/综合实验一/yubei1/helloworld
+/大三下/操作系统/Reference/实验/综合实验一/yubei1/helloworld-getchar
 /大三下/系统编程/习题/课后练习题/sigaction_bug_ok
 /大三下/系统编程/习题/课后练习题/sigaction_bug_bad
 /大三下/系统编程/习题/课后练习题/sigaction_bug_debug
