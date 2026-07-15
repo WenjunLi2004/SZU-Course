@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, Microsoft YaHei, sans-serif", "primaryColor": "#f8fafc", "primaryTextColor": "#0f172a", "primaryBorderColor": "#334155", "lineColor": "#475569", "secondaryColor": "#eef6ff", "tertiaryColor": "#f7fee7", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart TB
+    A["准备工作目录<br/>~/exp4"]
+    B["创建原始文件<br/>target.txt"]
+    C["建立硬链接<br/>ln target.txt hardlink"]
+    D["硬链接证据<br/>inode 相同<br/>nlink = 2<br/>任一名字修改同步可见"]
+    E["建立软链接<br/>ln -s target.txt softlink"]
+    F["软链接证据<br/>独立 inode<br/>保存目标路径<br/>ls -l 显示箭头"]
+    G["删除原文件<br/>rm target.txt"]
+    H["访问结果对比<br/>hardlink 仍可读<br/>softlink 悬空报错"]
+
+    A --> B
+    B --> C --> D --> G
+    B --> E --> F --> G
+    G --> H
+
+    classDef base fill:#f8fafc,stroke:#334155,stroke-width:1.2px,color:#0f172a;
+    classDef hard fill:#ecfdf5,stroke:#047857,stroke-width:1.2px,color:#064e3b;
+    classDef soft fill:#eff6ff,stroke:#2563eb,stroke-width:1.2px,color:#1e3a8a;
+    classDef verify fill:#fff7ed,stroke:#c2410c,stroke-width:1.2px,color:#7c2d12;
+    class A,B base;
+    class C,D hard;
+    class E,F soft;
+    class G,H verify;

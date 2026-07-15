@@ -1,0 +1,26 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, Microsoft YaHei, sans-serif", "primaryColor": "#f8fafc", "primaryTextColor": "#0f172a", "primaryBorderColor": "#334155", "lineColor": "#475569", "secondaryColor": "#eef6ff", "tertiaryColor": "#f7fee7", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart TB
+    A["清理旧目录<br/>rm -rf private"]
+    B["创建目录骨架<br/>mkdir -p private/a/d<br/>private/b private/c/f private/c/g"]
+    C["创建普通文件<br/>touch private/a/e"]
+    D["创建软链接<br/>private/b/软链接 → ../c/f"]
+    E["创建硬链接<br/>private/c/g/硬链接 → private/a/e"]
+    F["展示目录结构<br/>find private -maxdepth 3 -print<br/>或 tree private"]
+    G["验证软链接<br/>ls -l / readlink"]
+    H["验证硬链接<br/>ls -li 比较 inode"]
+    I["结构与链接关系确认"]
+
+    A --> B --> C
+    C --> D --> F
+    C --> E --> F
+    F --> G --> I
+    F --> H --> I
+
+    classDef build fill:#f8fafc,stroke:#334155,stroke-width:1.2px,color:#0f172a;
+    classDef symlink fill:#eff6ff,stroke:#2563eb,stroke-width:1.2px,color:#1e3a8a;
+    classDef hardlink fill:#ecfdf5,stroke:#047857,stroke-width:1.2px,color:#064e3b;
+    classDef verify fill:#fff7ed,stroke:#c2410c,stroke-width:1.2px,color:#7c2d12;
+    class A,B,C build;
+    class D,G symlink;
+    class E,H hardlink;
+    class F,I verify;

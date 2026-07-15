@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>1. 操作系统引论</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #fff8f0;
+  --paper: #ffffff;
+  --paper-soft: #fff3e3;
+  --ink: #2d2a26;
+  --muted: #7c6f64;
+  --line: #ead8c5;
+  --line-strong: #dfbc98;
+  --accent: #d97706;
+  --accent-deep: #9a3412;
+  --accent-soft: #fff2df;
+  --sky: #fff7ed;
+  --warm: #ea580c;
+  --warm-soft: #fff7ed;
+  --gold: #f2b84b;
+  --mark: #fff1a8;
+  --code-bg: #fff1df;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(90deg, rgba(217, 119, 6, 0.07) 0 1px, transparent 1px 100%),
+    linear-gradient(0deg, rgba(242, 184, 75, 0.07) 0 1px, transparent 1px 100%),
+    linear-gradient(135deg, #fffdf9 0%, #fff7ed 48%, #fff3e3 100%);
+  background-size: 34px 34px, 34px 34px, auto;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.78;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 900px);
+  gap: 34px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 34px 28px 76px;
+}
+
+.toc {
+  align-self: start;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 18px 14px 20px;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 242, 223, 0.96), rgba(255, 255, 255, 0.94));
+  box-shadow: 0 16px 34px rgba(34, 49, 63, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.toc-title {
+  margin: 0 0 12px;
+  padding: 0 4px 10px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.18);
+  font-size: 14px;
+  color: var(--accent-deep);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.toc a {
+  display: block;
+  margin: 2px 0;
+  padding: 6px 8px;
+  border-radius: 7px;
+  color: #50606a;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.45;
+  border-left: 3px solid transparent;
+}
+
+.toc a:hover {
+  color: var(--accent-deep);
+  background: rgba(255, 255, 255, 0.86);
+  border-left-color: var(--warm);
+}
+.toc .lv3 { padding-left: 12px; }
+.toc .lv4, .toc .lv5, .toc .lv6 { padding-left: 24px; font-size: 13px; }
+
+main {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 50px 60px 68px;
+  border: 1px solid rgba(223, 188, 152, 0.95);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 242, 223, 0.82), rgba(255, 255, 255, 0) 220px),
+    var(--paper);
+  box-shadow: 0 24px 60px rgba(34, 49, 63, 0.10);
+}
+
+main::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 8px;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent), var(--gold));
+}
+
+.doc-title {
+  position: relative;
+  margin: 0;
+  padding: 0 0 20px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.18);
+  font-size: 38px;
+  line-height: 1.22;
+  color: #3b2618;
+  letter-spacing: 0;
+}
+
+.meta {
+  display: inline-block;
+  margin: 14px 0 34px;
+  padding: 8px 12px;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 242, 223, 0.78);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+h2, h3, h4, h5, h6 {
+  color: #33251b;
+  line-height: 1.35;
+  scroll-margin-top: 18px;
+}
+
+h2 {
+  margin: 44px 0 16px;
+  padding: 13px 18px;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-left: 6px solid var(--accent);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255, 242, 223, 0.96), rgba(255, 250, 240, 0.78));
+  font-size: 26px;
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.08);
+}
+
+h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 30px 0 11px;
+  font-size: 21px;
+}
+
+h3::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--warm);
+  box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.13);
+}
+
+h4 {
+  margin: 24px 0 8px;
+  padding-left: 10px;
+  border-left: 3px solid var(--gold);
+  font-size: 17px;
+}
+h5, h6 { margin: 18px 0 6px; font-size: 15px; }
+p { margin: 12px 0; }
+strong { color: #111827; }
+mark {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, transparent 12%, var(--mark) 12%, var(--mark) 88%, transparent 88%);
+  box-decoration-break: clone;
+}
+
+ul, ol { padding-left: 1.55em; margin: 10px 0 16px; }
+li { margin: 6px 0; padding-left: 2px; }
+li::marker { color: var(--accent); font-weight: 700; }
+ol ol > li::marker { content: "(" counter(list-item) ") "; }
+ol ol ol > li::marker { content: counter(list-item) ") "; }
+
+blockquote {
+  margin: 20px 0;
+  padding: 14px 18px;
+  border: 1px solid rgba(217, 119, 6, 0.16);
+  border-left: 5px solid var(--accent);
+  background: linear-gradient(90deg, var(--accent-soft), rgba(255, 255, 255, 0.88));
+  color: #6b3414;
+  border-radius: 8px;
+}
+
+.callout {
+  margin: 20px 0;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  border-left: 5px solid var(--accent);
+  border-radius: 8px;
+  background: linear-gradient(90deg, #fff7ed, #ffffff);
+  overflow: hidden;
+}
+
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.14);
+  color: var(--accent-deep);
+  font-weight: 800;
+}
+
+.callout-title span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.callout-body {
+  padding: 10px 16px 14px;
+}
+
+.callout-body p {
+  margin: 8px 0;
+}
+
+.callout-check {
+  border-color: rgba(234, 88, 12, 0.28);
+  border-left-color: #ea580c;
+}
+
+.callout-help {
+  border-color: rgba(180, 83, 9, 0.24);
+  border-left-color: #b45309;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--code-bg);
+  color: #9a3412;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
+}
+
+pre {
+  overflow: auto;
+  margin: 18px 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(20, 35, 44, 0.18);
+  border-radius: 8px;
+  background: #2f241d;
+  color: #ecfdf5;
+  line-height: 1.58;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 12px 26px rgba(34, 49, 63, 0.12);
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(31, 41, 51, 0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+  background: #ffffff;
+}
+
+th, td {
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #fff2df;
+  color: #7c2d12;
+  font-weight: 700;
+}
+
+tbody tr:nth-child(even) td { background: rgba(255, 247, 237, 0.72); }
+tr:last-child td { border-bottom: 0; }
+
+hr {
+  height: 1px;
+  border: 0;
+  margin: 30px 0;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+
+.note-image {
+  margin: 22px auto;
+  text-align: center;
+}
+
+.note-image img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  padding: 8px;
+  border: 1px solid rgba(223, 188, 152, 0.95);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(34, 49, 63, 0.10);
+}
+
+.math {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.li-extra {
+  margin: 6px 0 4px;
+  color: #31424d;
+}
+
+.fold-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin: 0 8px 0 0;
+  border: 1px solid rgba(217, 119, 6, 0.30);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--accent-deep);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: 2px;
+  box-shadow: 0 2px 8px rgba(34, 49, 63, 0.06);
+}
+
+.fold-toggle:hover {
+  background: var(--accent-soft);
+  border-color: rgba(217, 119, 6, 0.46);
+}
+
+.list-extra {
+  margin-top: 6px;
+}
+
+li.is-folded {
+  color: #43515b;
+}
+
+.study-tools {
+  margin: -14px 0 34px;
+  padding: 14px;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 24px rgba(34, 49, 63, 0.06);
+}
+
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  flex: 1 1 280px;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.search-box span {
+  flex: 0 0 auto;
+  padding: 0 12px;
+  color: var(--accent-deep);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 11px 12px;
+  border-left: 1px solid rgba(217, 119, 6, 0.16);
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tool-actions button {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+  border-radius: 8px;
+  background: #fff2df;
+  color: var(--accent-deep);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tool-actions button:hover {
+  background: var(--warm-soft);
+  color: #8a3f20;
+}
+
+.tool-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.search-status {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.search-hit {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: #ffd166;
+  color: #1d2935;
+  box-shadow: 0 0 0 1px rgba(214, 158, 46, 0.25);
+}
+
+.search-hit.current-hit {
+  background: #f97316;
+  color: #fff;
+}
+
+.read-progress {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(217, 119, 6, 0.12);
+}
+
+.read-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent), var(--gold));
+}
+
+@media (max-width: 900px) {
+  .page {
+    display: block;
+    padding: 20px 14px 40px;
+  }
+
+  .toc {
+    position: static;
+    max-height: 240px;
+    margin-bottom: 16px;
+  }
+
+  .toc a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  main {
+    padding: 32px 20px 42px;
+  }
+
+  .doc-title {
+    font-size: 29px;
+  }
+
+  h2 {
+    padding: 11px 13px;
+    font-size: 23px;
+  }
+
+  .study-tools {
+    margin-top: -16px;
+  }
+
+  .tool-actions {
+    width: 100%;
+  }
+
+  .tool-actions button {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+</style>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  <div class="page">
+    <nav class="toc" aria-label="目录">
+      <p class="toc-title">目录</p>
+      <a class="lv2" href="#预习">预习</a>
+<a class="lv3" href="#操作系统的目标">操作系统的目标</a>
+<a class="lv3" href="#OS-发展">OS 发展</a>
+<a class="lv4" href="#两条发展路径">两条发展路径</a>
+<a class="lv3" href="#操作系统四大基本特性">操作系统四大基本特性</a>
+    </nav>
+    <main>
+      <h1 class="doc-title">1. 操作系统引论</h1>
+      <p class="meta">由原始 Markdown 笔记转换生成，保留高亮、表格、代码块与 Obsidian 图片。</p>
+      <section class="study-tools" aria-label="复习工具">
+        <div class="tool-row">
+          <label class="search-box" for="note-search">
+            <span>全文搜索</span>
+            <input id="note-search" type="search" placeholder="输入关键词，例如 PCB、信号量、阻塞">
+          </label>
+          <div class="tool-actions">
+            <button id="search-prev" type="button">上一处</button>
+            <button id="search-next" type="button">下一处</button>
+            <button id="search-clear" type="button">清除</button>
+            <button id="collapse-all" type="button">全部折叠</button>
+            <button id="expand-all" type="button">全部展开</button>
+          </div>
+        </div>
+        <p id="search-status" class="search-status">输入关键词后会高亮正文中的匹配内容。</p>
+      </section>
+      <h2 id="预习">预习</h2>
+<h3 id="操作系统的目标">操作系统的目标</h3>
+<p><strong>疑问：难道计算机可以没有操作系统吗？</strong></p>
+<ul>
+<li>其实是可以的，人工操作硬件：用户独占全机，CPU等待人工操作
+</li>
+<li><strong>方便性</strong>：​没有OS，你想打开一个文档文件，需要<strong>自己写驱动</strong>去读硬盘、解析文件格式、驱动显卡显示像素。OS提供了图形界面、文件管理、命令解释器等，让普通人也能轻松使用计算机。
+</li>
+<li><strong>有效性</strong>​ ：没有OS，内存如何分配给多个程序？CPU如何在多个任务间切换？外设谁先用谁后用？OS作为“大管家”，统一管理和调度所有硬件资源（CPU、内存、硬盘、网络等），让它们高效、合理地协同工作，避免冲突和浪费
+</li>
+<li><strong>可扩充性</strong>​ ：没有OS，每增加一个新硬件（比如新型号的显卡），所有软件都可能需要重写来适配它。OS提供了标准的驱动接口，硬件厂商只需提供针对OS的驱动，所有应用软件就都能使用它
+</li>
+<li><strong>开放性</strong>​ ：没有OS，每个软件开发商都要为一台计算机单独开发，没有通用标准。OS定义了应用程序和计算机交互的标准接口（API），使得软件可以在遵循同一标准的任何计算机上运行，实现了软硬件的解耦和生态繁荣
+</li>
+</ul>
+<h3 id="OS-发展">OS 发展</h3>
+<ol>
+<li>从人工操作硬件发展到<strong>脱机输入/输出</strong>(Off-Line I/O)方式
+<ul>
+<li>增加一个额外的硬件脱离主机来处理输入和输出，从而减少了CPU的空闲时间和提高I/O效率
+</li>
+</ul>
+</li>
+<li>进一步发展到早期的批处理操作系统：单通道 -&gt; 多通道，分为 Input - Execute - Output 
+<ul>
+<li>资源利用率高，吞吐量大
+<p class="li-extra"><strong>面临的问题：并发和资源共享引发的管理难题</strong></p>
+</li>
+</ul>
+<ol>
+<li><strong>处理机管理问题</strong>（谁该用CPU？用多久？）
+</li>
+<li><strong>内存管理问题</strong>（程序放哪？互不干扰？）
+</li>
+<li><strong>I/O设备管理问题</strong>（谁先用打印机？）
+</li>
+<li><strong>文件管理问题</strong>（数据如何组织、保护？）
+</li>
+<li><strong>作业管理问题</strong>（如何组织作业流？）
+</li>
+</ol>
+</li>
+</ol>
+<p>所以<strong>操作系统的定义</strong> ： 一组 <strong>控制和管理</strong>计算机硬件和软件资源，合理对各类作业进行调度 ，方便用户使用 的 <strong>程序的集合</strong></p>
+<p>它不是一个单一的程序，而是由许多模块化、各司其职的程序共同构成的，例如：</p>
+<ul>
+<li><strong>内核</strong>​：最核心的部分，负责管理CPU、内存、进程等关键资源。它通常不是一个可以直接运行的“应用”，而是为其他程序提供服务的底层基础
+</li>
+<li><strong>系统程序</strong>：例如用于文件操作的命令（<code>cp</code>, <code>mv</code>）、用于进程查看的命令（<code>ps</code>）、Shell（命令解释器）等
+</li>
+<li><strong>驱动程序</strong>​ ：用于和特定硬件（如显卡、声卡）通信的特殊程序
+</li>
+<li><strong>用户接口程序</strong>​：如图形界面（GUI）的窗口管理器、桌面环境等
+</li>
+</ul>
+<h4 id="两条发展路径">两条发展路径</h4>
+<ol>
+<li><strong>解决效率问题</strong>
+<ol>
+<li><strong>多道批处理系统</strong>：实现了自动调度和资源管理，但缺乏交互性(用户提交作业后只能等待)
+</li>
+<li><strong>分时系统</strong>：引入了 <strong><mark>“时间片”</mark></strong> 概念
+<p class="li-extra">CPU时间切成极小的片段，轮流分配给多个联机用户。由于切换速度极快，每个用户都感觉自己在独占主机</p>
+</li>
+<li><strong>实时系统</strong>：在分时系统“及时”的基础上，对“时间”的要求达到了<strong>严格、可预测的级别</strong>
+</li>
+</ol>
+</li>
+<li><strong>普及到个人</strong>
+<ol>
+<li><strong>单用户单任务（如MS-DOS）</strong>：这是操作系统理念的“简化版”或“回溯”。由于早期微机性能极弱，它只实现了最基础的<strong>文件管理</strong>和<strong>设备驱动</strong>，没有分时多任务能力
+<p class="li-extra"><strong>用户一次只能运行一个程序，命令行操作</strong></p>
+</li>
+<li><strong>单用户多任务（如Windows系列、经典Mac OS）</strong>：<strong>分时系统思想</strong>在个人电脑上的实现
+</li>
+<li><strong>多用户多任务（如Unix、Linux及衍生的macOS）</strong>：<strong>完整的分时系统</strong>在服务器和高端工作站上的体现
+<p class="li-extra"><strong>多个用户能够同时、独立地使用同一台计算机</strong>：每个用户拥有自己的账户、文件、设置和运行环境，操作系统负责安全地隔离和管理这些资源，确保彼此互不干扰—— <mark><strong>并发</strong></mark></p>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="操作系统四大基本特性">操作系统四大基本特性</h3>
+<ol>
+<li><strong>并发 Concurrence</strong>：多核并行，单核并发——宏观上多个程序在同时运行，微观上分时交替执行
+</li>
+<li><strong>共享 Sharing</strong>：系统资源（内存、CPU、设备等）供内存中多个并发执行的程序共同使用
+</li>
+<li><strong>虚拟 Virtual</strong>：通过技术将物理实体变为逻辑上的对应物（如虚拟内存），方便用户使用
+</li>
+<li><strong>异步性 Asynchronism</strong>：进程以不可预知的速度向前推进，<strong>允许程序在运行中被中断</strong>
+</li>
+</ol>
+    </main>
+  </div>
+  
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const progress = document.querySelector(".read-progress span");
+  const main = document.querySelector("main");
+  const updateProgress = () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const percent = maxScroll > 0 ? Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100)) : 0;
+    progress.style.width = `${percent}%`;
+  };
+  updateProgress();
+  document.addEventListener("scroll", updateProgress, { passive: true });
+
+  const foldItems = [];
+  const setFold = (item, collapsed) => {
+    item.extra.hidden = collapsed;
+    item.li.classList.toggle("is-folded", collapsed);
+    item.button.textContent = collapsed ? "+" : "−";
+    item.button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    item.button.setAttribute("aria-label", collapsed ? "展开此条目的补充内容" : "折叠此条目的补充内容");
+  };
+
+  document.querySelectorAll("main li").forEach((li) => {
+    const blockChildren = Array.from(li.children).filter((el) =>
+      el.matches("p.li-extra, figure, pre, ul, ol, .table-wrap, blockquote")
+    );
+    if (blockChildren.length === 0) return;
+
+    const extra = document.createElement("div");
+    extra.className = "list-extra";
+    blockChildren[0].before(extra);
+    blockChildren.forEach((el) => extra.appendChild(el));
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "fold-toggle";
+    button.textContent = "−";
+    button.setAttribute("aria-label", "折叠此条目的补充内容");
+    button.setAttribute("aria-expanded", "true");
+    const item = { li, extra, button };
+    button.addEventListener("click", () => {
+      setFold(item, !extra.hidden);
+    });
+
+    li.insertBefore(button, li.firstChild);
+    foldItems.push(item);
+  });
+
+  const searchInput = document.getElementById("note-search");
+  const searchStatus = document.getElementById("search-status");
+  const prevButton = document.getElementById("search-prev");
+  const nextButton = document.getElementById("search-next");
+  const clearButton = document.getElementById("search-clear");
+  const collapseAllButton = document.getElementById("collapse-all");
+  const expandAllButton = document.getElementById("expand-all");
+  let hits = [];
+  let currentHit = -1;
+
+  const clearHighlights = () => {
+    document.querySelectorAll(".search-hit").forEach((hit) => {
+      hit.replaceWith(document.createTextNode(hit.textContent));
+    });
+    main.normalize();
+    hits = [];
+    currentHit = -1;
+  };
+
+  const setSearchControls = () => {
+    const hasHits = hits.length > 0;
+    prevButton.disabled = !hasHits;
+    nextButton.disabled = !hasHits;
+    clearButton.disabled = !searchInput.value;
+    if (!searchInput.value) {
+      searchStatus.textContent = "输入关键词后会高亮正文中的匹配内容。";
+    } else if (!hasHits) {
+      searchStatus.textContent = "没有找到匹配内容。";
+    } else {
+      searchStatus.textContent = `找到 ${hits.length} 处匹配，当前第 ${currentHit + 1} 处。`;
+    }
+  };
+
+  const revealHit = (index) => {
+    if (!hits.length) return;
+    currentHit = (index + hits.length) % hits.length;
+    hits.forEach((hit) => hit.classList.remove("current-hit"));
+    const hit = hits[currentHit];
+    hit.classList.add("current-hit");
+    hit.closest(".list-extra")?.removeAttribute("hidden");
+    const foldedLi = hit.closest("li.is-folded");
+    if (foldedLi) {
+      const item = foldItems.find((entry) => entry.li === foldedLi);
+      if (item) setFold(item, false);
+    }
+    hit.scrollIntoView({ behavior: "smooth", block: "center" });
+    setSearchControls();
+  };
+
+  const highlightTextNode = (node, query) => {
+    const text = node.nodeValue;
+    const lower = text.toLowerCase();
+    const needle = query.toLowerCase();
+    let start = 0;
+    let index = lower.indexOf(needle, start);
+    if (index === -1) return;
+
+    const fragment = document.createDocumentFragment();
+    while (index !== -1) {
+      if (index > start) fragment.appendChild(document.createTextNode(text.slice(start, index)));
+      const span = document.createElement("span");
+      span.className = "search-hit";
+      span.textContent = text.slice(index, index + query.length);
+      fragment.appendChild(span);
+      start = index + query.length;
+      index = lower.indexOf(needle, start);
+    }
+    if (start < text.length) fragment.appendChild(document.createTextNode(text.slice(start)));
+    node.replaceWith(fragment);
+  };
+
+  const runSearch = () => {
+    const query = searchInput.value.trim();
+    clearHighlights();
+    if (query.length < 1) {
+      setSearchControls();
+      return;
+    }
+
+    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const parent = node.parentElement;
+        if (!parent || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        if (parent.closest(".study-tools, script, style, button")) return NodeFilter.FILTER_REJECT;
+        return node.nodeValue.toLowerCase().includes(query.toLowerCase())
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => highlightTextNode(node, query));
+    hits = Array.from(document.querySelectorAll("main .search-hit"));
+    if (hits.length) revealHit(0);
+    setSearchControls();
+  };
+
+  let searchTimer = 0;
+  searchInput.addEventListener("input", () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(runSearch, 120);
+  });
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      revealHit(currentHit + (event.shiftKey ? -1 : 1));
+    }
+  });
+  prevButton.addEventListener("click", () => revealHit(currentHit - 1));
+  nextButton.addEventListener("click", () => revealHit(currentHit + 1));
+  clearButton.addEventListener("click", () => {
+    searchInput.value = "";
+    clearHighlights();
+    setSearchControls();
+    searchInput.focus();
+  });
+  collapseAllButton.addEventListener("click", () => foldItems.forEach((item) => setFold(item, true)));
+  expandAllButton.addEventListener("click", () => foldItems.forEach((item) => setFold(item, false)));
+  setSearchControls();
+});
+</script>
+
+</body>
+</html>

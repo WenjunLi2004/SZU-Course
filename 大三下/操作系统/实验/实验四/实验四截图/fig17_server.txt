@@ -1,0 +1,27 @@
+wenjun@2023150001:~$ cd ~/exp4
+wenjun@2023150001:~/exp4$ rm -rf private
+wenjun@2023150001:~/exp4$ mkdir -p private/a/d private/b private/c/f private/c/g
+wenjun@2023150001:~/exp4$ touch private/a/e private/c/f/file.txt
+wenjun@2023150001:~/exp4$ ln -s ../c/f private/b/软链接
+wenjun@2023150001:~/exp4$ ln private/a/e private/c/g/硬链接
+
+wenjun@2023150001:~/exp4$ find private -maxdepth 3 -print | sort
+private
+private/a
+private/a/d
+private/a/e
+private/b
+private/b/软链接
+private/c
+private/c/f
+private/c/f/file.txt
+private/c/g
+private/c/g/硬链接
+
+wenjun@2023150001:~/exp4$ ls -l private/b/软链接
+lrwxrwxrwx 1 wenjun wenjun 6 Jun 10 10:27 private/b/软链接 -> ../c/f
+wenjun@2023150001:~/exp4$ readlink private/b/软链接
+../c/f
+wenjun@2023150001:~/exp4$ ls -li private/a/e private/c/g/硬链接
+797439 -rw-rw-r-- 2 wenjun wenjun 0 Jun 10 10:27 private/a/e
+797439 -rw-rw-r-- 2 wenjun wenjun 0 Jun 10 10:27 private/c/g/硬链接

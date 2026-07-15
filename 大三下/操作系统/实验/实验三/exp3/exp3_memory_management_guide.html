@@ -1,0 +1,1723 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>实验三内存管理：从零到验收</title>
+  <style>
+    :root {
+      --ink: #17212f;
+      --muted: #5c6a7a;
+      --line: #d9e1ea;
+      --paper: #ffffff;
+      --bg: #f5f7fb;
+      --blue: #2563eb;
+      --green: #12805c;
+      --amber: #a16207;
+      --red: #b42318;
+      --purple: #6d28d9;
+      --code: #0f172a;
+      --code-bg: #f7f9fc;
+      --shadow: 0 18px 60px rgba(23, 33, 47, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.72;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      padding: 22px 18px;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    main {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .brand {
+      margin-bottom: 18px;
+      padding: 14px 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .brand h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    nav a {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 6px;
+      color: #2d3b4f;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      background: #edf4ff;
+      text-decoration: none;
+    }
+
+    .nav-group {
+      margin: 12px 0 4px;
+      padding: 0 10px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto 20px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 900px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 1180px;
+      margin: 0 auto 22px;
+    }
+
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    section {
+      max-width: 1180px;
+      margin: 0 auto 18px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      scroll-margin-top: 18px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 22px 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    h4 {
+      margin: 16px 0 6px;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    p { margin: 8px 0; }
+
+    .lead {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .note, .warn, .ok {
+      margin: 14px 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid;
+      background: #fff;
+    }
+
+    .note { border-color: #b8cdfd; background: #f5f8ff; }
+    .warn { border-color: #f7d288; background: #fff9ea; }
+    .ok { border-color: #b9e7d2; background: #f3fbf7; }
+
+    .note b { color: var(--blue); }
+    .warn b { color: var(--amber); }
+    .ok b { color: var(--green); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .step {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .step .tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #0b4a3a;
+      background: #dcfce7;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f0f4f8;
+      text-align: left;
+    }
+
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #eef3f8;
+      color: #111827;
+      font-family: Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      position: relative;
+      margin: 12px 0;
+      padding: 14px;
+      overflow: auto;
+      border: 1px solid #d8e2ef;
+      border-radius: 8px;
+      background: var(--code-bg);
+      color: var(--code);
+      font-family: Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre;
+    }
+
+    .copy {
+      float: right;
+      margin: -4px -4px 8px 10px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .copy:hover { background: #edf4ff; }
+
+    .figure {
+      margin: 14px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .figure img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 4px;
+    }
+
+    .caption {
+      margin-top: 8px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    details {
+      margin: 10px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    summary {
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    details > div {
+      padding: 0 12px 12px;
+    }
+
+    .checklist label {
+      display: block;
+      margin: 8px 0;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .checklist input { margin-right: 8px; }
+
+    .kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      border: 1px solid #c7d1df;
+      border-radius: 4px;
+      background: #fff;
+      font-family: Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .flow div {
+      padding: 10px;
+      min-height: 72px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fbff;
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef3ff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .term {
+      padding: 1px 5px;
+      border-radius: 5px;
+      color: #174ea6;
+      background: #edf4ff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .term:hover {
+      background: #dbeafe;
+      text-decoration: none;
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .def-card {
+      min-height: 138px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      scroll-margin-top: 18px;
+    }
+
+    .def-card:target {
+      border-color: #60a5fa;
+      background: #eff6ff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .def-card h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .def-card p {
+      margin: 5px 0;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .code-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .code-notes {
+      padding: 12px;
+      border: 1px solid #cfe3ff;
+      border-radius: 8px;
+      background: #f7fbff;
+      font-size: 14px;
+    }
+
+    .code-notes ol {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    .code-notes li { margin: 6px 0; }
+
+    .mini-index {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .mini-index a {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+    }
+
+    .mini-index a:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; }
+      main { padding: 14px; }
+      .grid, .steps, .cols, .flow, .glossary-grid, .code-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <h1>实验三内存管理</h1>
+        <p>从零开始，到实验课能讲、能跑、能解释结果。</p>
+      </div>
+      <nav>
+        <div class="nav-group">总览</div>
+        <a href="#target">验收目标</a>
+        <a href="#glossary">概念定义索引</a>
+        <a href="#mental">零基础心智模型</a>
+        <a href="#ppt">PPT知识如何落地</a>
+        <a href="#setup">环境准备</a>
+        <a href="#files">文件地图</a>
+        <a href="#codebuild">代码能力总览</a>
+        <div class="nav-group">任务与代码</div>
+        <a href="#task1">任务1：/proc 三件套</a>
+        <a href="#task1-code">代码：读取 status/maps</a>
+        <a href="#task2">任务2：vm_layout.c</a>
+        <a href="#task2-code">代码：快照与空洞复用</a>
+        <a href="#task3">任务3：max_vmem.c</a>
+        <a href="#task3-code">代码：mmap + 二分</a>
+        <a href="#task4">任务4：touch_pages.c</a>
+        <a href="#task4-code">代码：读/写触页</a>
+        <a href="#task5">任务5：物理页竞争</a>
+        <a href="#task5-code">代码：write-hold</a>
+        <a href="#task6">任务6：locality_compare.c</a>
+        <a href="#task6-code">代码：global/group16</a>
+        <div class="nav-group">验收</div>
+        <a href="#accept">验收演示脚本</a>
+        <a href="#qa">老师追问速答</a>
+        <a href="#trouble">排错手册</a>
+        <a href="#check">最终清单</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="hero" id="target">
+        <h2>你要在实验课上证明什么</h2>
+        <p>这次实验不是背概念，而是现场证明：Linux给进程的是虚拟地址空间；虚拟空间可以先申请、后触页；读触页和写触页的物理内存效果不同；多个进程会竞争物理页；访问局部性会显著影响页面置换次数和运行时间。</p>
+      </div>
+
+      <div class="grid">
+        <div class="metric"><strong>170.67 TiB</strong><span>本机测得最大单次连续匿名虚拟映射</span></div>
+        <div class="metric"><strong>3GB读触页</strong><span>VmRSS几乎不涨，说明读匿名页多映射零页</span></div>
+        <div class="metric"><strong>3GB写触页</strong><span>RssAnon升到约2.62GB，并产生swap</span></div>
+        <div class="metric"><strong>51.264s → 3.652s</strong><span>同访问量下，16页分组显著优于全空间循环</span></div>
+      </div>
+
+      <section id="glossary">
+        <h2>概念定义索引</h2>
+        <p class="lead">下面这些卡片是全文的“回跳定义”。后面正文里蓝底加粗的概念都可以点击回来，例如 <a class="term" href="#def-vma">VMA</a>、<a class="term" href="#def-vmsize">VmSize</a>、<a class="term" href="#def-rssanon">RssAnon</a>。如果你验收前脑子乱了，就先回到这里把概念重新对齐。</p>
+        <div class="glossary-grid">
+          <div class="def-card" id="def-virtual-memory">
+            <h3>虚拟内存 / 虚拟地址空间</h3>
+            <p>进程看到的一套“自己的地址地图”。它不是物理内存条地址，而是 CPU 通过页表翻译后才能访问真实物理页。</p>
+            <p><b>实验抓手：</b><code>VmSize</code>、<code>maps</code> 地址范围。</p>
+          </div>
+          <div class="def-card" id="def-vma">
+            <h3>VMA</h3>
+            <p>Virtual Memory Area，进程虚拟地址空间中的一段连续区间。每段 VMA 有权限、来源和起止地址。</p>
+            <p><b>实验抓手：</b><code>/proc/&lt;pid&gt;/maps</code> 每一行就是一个 VMA。</p>
+          </div>
+          <div class="def-card" id="def-page">
+            <h3>页 / 4KB页</h3>
+            <p>Linux 内存管理的基本粒度。你的虚拟机页大小为 4096 字节，所以实验按 <code>off += page</code> 逐页访问。</p>
+            <p><b>实验抓手：</b><code>getconf PAGE_SIZE</code>、<code>sysconf(_SC_PAGESIZE)</code>。</p>
+          </div>
+          <div class="def-card" id="def-page-table">
+            <h3>页表</h3>
+            <p>把虚拟页映射到物理页框的数据结构。程序访问指针时，CPU 依赖页表完成地址翻译。</p>
+            <p><b>实验抓手：</b>读/写触页后缺页次数和 RSS 变化。</p>
+          </div>
+          <div class="def-card" id="def-page-fault">
+            <h3>缺页异常</h3>
+            <p>访问的虚拟页还没有可用页表项，或者权限不满足时，CPU 进入内核处理。</p>
+            <p><b>实验抓手：</b><code>minor faults</code> 与 <code>major faults</code>。</p>
+          </div>
+          <div class="def-card" id="def-zero-page">
+            <h3>共享零页</h3>
+            <p>匿名页首次读时，内核可以让很多虚拟页暂时指向同一个只读的全零物理页。</p>
+            <p><b>实验抓手：</b>3GB 读触页后 <code>RssAnon</code> 几乎不变。</p>
+          </div>
+          <div class="def-card" id="def-vmsize">
+            <h3>VmSize</h3>
+            <p>进程名义上拥有的全部虚拟地址空间，包括代码、库、堆、栈、匿名映射等。</p>
+            <p><b>一句话：</b>地图上登记了多少房间。</p>
+          </div>
+          <div class="def-card" id="def-vmrss">
+            <h3>VmRSS / RSS</h3>
+            <p>当前真实驻留在物理内存里的页面总量。它通常小于 VmSize。</p>
+            <p><b>一句话：</b>现在真的开灯、有人在用的房间。</p>
+          </div>
+          <div class="def-card" id="def-vmdata">
+            <h3>VmData</h3>
+            <p>数据段、堆、匿名映射等可读写数据区规模。大块 <code>malloc</code>/<code>mmap</code> 常常会反映在这里。</p>
+            <p><b>实验抓手：</b>128MB、1024MB 申请后明显增长。</p>
+          </div>
+          <div class="def-card" id="def-rssanon">
+            <h3>RssAnon</h3>
+            <p>匿名页中当前还驻留在物理内存里的部分，例如堆、匿名 mmap、栈。</p>
+            <p><b>一句话：</b>我的私人页面现在还在桌面上。</p>
+          </div>
+          <div class="def-card" id="def-vmswap">
+            <h3>VmSwap</h3>
+            <p>匿名页被换出到 swap 的大小。虚拟地址还在，但对应物理页暂时不在内存中。</p>
+            <p><b>一句话：</b>私人页面被收进硬盘抽屉。</p>
+          </div>
+          <div class="def-card" id="def-maps">
+            <h3>/proc/pid/maps</h3>
+            <p>显示进程每段 VMA 的地址范围、权限、文件偏移、设备号、inode 和路径来源。</p>
+            <p><b>实验抓手：</b>判断 64MB 是否复用释放空洞。</p>
+          </div>
+          <div class="def-card" id="def-status">
+            <h3>/proc/pid/status</h3>
+            <p>显示进程状态摘要。内存相关字段包括 VmSize、VmRSS、VmData、RssAnon、VmSwap 等。</p>
+            <p><b>实验抓手：</b>快速比较每一步总体内存变化。</p>
+          </div>
+          <div class="def-card" id="def-smaps">
+            <h3>/proc/pid/smaps</h3>
+            <p>比 maps 更细，会把 RSS、脏页、共享/私有页等信息拆到每段 VMA 下面。</p>
+            <p><b>实验抓手：</b>当老师追问“这一段到底占没占物理页”。</p>
+          </div>
+          <div class="def-card" id="def-mmap">
+            <h3>mmap / munmap</h3>
+            <p><code>mmap</code> 建立虚拟映射，<code>munmap</code> 释放映射。大块 malloc 背后常用匿名 mmap。</p>
+            <p><b>实验抓手：</b>大块地址区间、最大虚拟映射、3GB/4GB 测试。</p>
+          </div>
+          <div class="def-card" id="def-map-noreserve">
+            <h3>MAP_NORESERVE</h3>
+            <p>告诉内核不要提前为映射预留 swap 承诺。适合只测试虚拟地址空间上限。</p>
+            <p><b>实验抓手：</b><code>max_vmem.c</code> 测得 170.67 TiB。</p>
+          </div>
+          <div class="def-card" id="def-swap">
+            <h3>Swap</h3>
+            <p>磁盘上的交换区。物理内存压力大时，不活跃匿名页可以被写入 swap，腾出物理页框。</p>
+            <p><b>实验抓手：</b>双进程竞争后 A 的 VmSwap 上升。</p>
+          </div>
+          <div class="def-card" id="def-working-set">
+            <h3>工作集 / 局部性</h3>
+            <p>短时间内频繁访问的页面集合。工作集越小、越集中，页面越可能还留在物理内存中。</p>
+            <p><b>实验抓手：</b><code>global</code> 51.264s，<code>group16</code> 3.652s。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="mental">
+        <h2>零基础心智模型</h2>
+        <p class="lead">如果你只记一张图，就记下面这条链：C程序申请地址 → 内核建立 <a class="term" href="#def-vma">VMA</a> → <a class="term" href="#def-page-table">页表</a> 暂时不一定有物理页 → 第一次读/写触发 <a class="term" href="#def-page-fault">缺页异常</a> → 内核决定映射 <a class="term" href="#def-zero-page">共享零页</a>、分配物理页或换入换出。</p>
+
+        <div class="flow">
+          <div><b>malloc/mmap</b><br>程序拿到一个虚拟地址范围。</div>
+          <div><b>VMA</b><br>内核记录这段地址能否读写、从哪里来。</div>
+          <div><b>页表</b><br>虚拟页到物理页框的翻译表。</div>
+          <div><b>缺页异常</b><br>第一次访问时进入内核处理。</div>
+          <div><b>RSS</b><br>真正留在物理内存里的页。</div>
+          <div><b>Swap</b><br>物理内存不够时被换出的匿名页。</div>
+        </div>
+
+        <h3>1. 虚拟内存不是物理内存</h3>
+        <p>你在C语言里看到的指针，例如<code>0xffff834bf010</code>，不是内存条上的真实位置，而是进程自己的 <a class="term" href="#def-virtual-memory">虚拟地址空间</a> 中的地址。CPU访问这个地址时要查 <a class="term" href="#def-page-table">页表</a>，页表再告诉CPU对应哪个物理页框。</p>
+
+        <h3>2. VMA是Linux管理虚拟地址空间的基本形态</h3>
+        <p><a class="term" href="#def-maps"><code>/proc/&lt;pid&gt;/maps</code></a>里的每一行就是一段 <a class="term" href="#def-vma">VMA</a>。它会告诉你这段地址的范围、权限和来源。匿名大块内存通常长这样：</p>
+        <pre><button class="copy">复制</button><code>ffff5b4ba000-ffff8b4c0000 rw-p 00000000 00:00 0</code></pre>
+        <p>这行没有文件名，权限是<code>rw-p</code>，说明它是私有匿名可读写映射。我们的六个128MB块最初就合并成了这样一段768MB匿名 <a class="term" href="#def-vma">VMA</a>。</p>
+
+        <h3>3. status字段要这样看</h3>
+        <table>
+          <thead><tr><th>字段</th><th>你要怎么解释</th><th>本实验怎么看</th></tr></thead>
+          <tbody>
+            <tr><td><a class="term" href="#def-vmsize"><code>VmSize</code></a></td><td>进程拥有的虚拟地址空间总量。</td><td>malloc/mmap后立刻变大。</td></tr>
+            <tr><td><a class="term" href="#def-vmdata"><code>VmData</code></a></td><td>数据段、堆、匿名映射等数据区规模。</td><td>大块匿名映射主要反映在这里。</td></tr>
+            <tr><td><a class="term" href="#def-vmrss"><code>VmRSS</code></a></td><td>当前驻留在物理内存中的总页数。</td><td>读触页几乎不涨，写触页明显上涨。</td></tr>
+            <tr><td><a class="term" href="#def-rssanon"><code>RssAnon</code></a></td><td>匿名页实际驻留物理内存的部分。</td><td>判断写触页是否真的分配物理页。</td></tr>
+            <tr><td><a class="term" href="#def-vmswap"><code>VmSwap</code></a></td><td>匿名页被换出到swap的规模。</td><td>双进程竞争和3GB写触页时会升高。</td></tr>
+          </tbody>
+        </table>
+
+        <h3>4. 一句话区分读触页和写触页</h3>
+        <div class="cols">
+          <div class="note"><b>读触页</b><br>第一次读匿名页时，内核可以把很多 <a class="term" href="#def-page">页</a> 映射到同一个 <a class="term" href="#def-zero-page">共享零页</a>。所以会有 <a class="term" href="#def-page-fault">缺页</a>，但几乎不消耗真实物理页。</div>
+          <div class="warn"><b>写触页</b><br>第一次写匿名页时，内核必须给这个虚拟页分配私有物理页，所以 <a class="term" href="#def-rssanon">RssAnon</a> 会上升，内存压力大时会出现 <a class="term" href="#def-swap">swap</a>。</div>
+        </div>
+      </section>
+
+      <section id="ppt">
+        <h2>PPT知识如何落地到这次实验</h2>
+        <p class="lead">我没有在当前目录附近找到你的PPT文件夹，所以这里按操作系统内存管理课件通常会讲的主线来对齐。你上课听过的概念，在实验里对应到下面这些命令和指标。</p>
+        <table>
+          <thead><tr><th>PPT里的概念</th><th>实验里的证据</th><th>验收时说法</th></tr></thead>
+          <tbody>
+            <tr><td>连续/离散分配</td><td><a class="term" href="#def-maps"><code>maps</code></a>中多个 <a class="term" href="#def-vma">VMA</a> 分散在不同地址段。</td><td>用户虚拟空间以VMA为单位离散管理；单个VMA内部连续，整体不必连续。</td></tr>
+            <tr><td>分页存储管理</td><td>访问步长固定为<code>4096</code>字节。</td><td><a class="term" href="#def-page">4KB页</a>是本机基本页大小，逐页访问能触发页级行为。</td></tr>
+            <tr><td>虚拟存储器</td><td>最大映射约170.67TiB，远大于3.8GiB物理内存。</td><td><a class="term" href="#def-virtual-memory">虚拟地址空间</a>大小不等于物理内存大小。</td></tr>
+            <tr><td>缺页中断</td><td><code>minor faults</code>和<code>major faults</code>变化。</td><td>读写触页都会触发 <a class="term" href="#def-page-fault">缺页</a>，但处理路径不同。</td></tr>
+            <tr><td>页面置换</td><td>A进程 <a class="term" href="#def-vmrss">RSS</a> 下降、<a class="term" href="#def-swap">Swap</a> 上升。</td><td>物理页被B挤占后，A的匿名页被换出。</td></tr>
+            <tr><td>局部性原理</td><td>global 51.264s，group16 3.652s。</td><td>访问总量不变，<a class="term" href="#def-working-set">局部性</a>改变主缺页次数和运行时间。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="setup">
+        <h2>环境准备</h2>
+        <p class="lead">你验收时有两种做法：直接在虚拟机终端操作，或从宿主机SSH进虚拟机。你当前环境已经能用SSH进入Ubuntu。</p>
+
+        <h3>1. 进入Ubuntu虚拟机</h3>
+        <pre><button class="copy">复制</button><code>ssh 192.168.64.5</code></pre>
+        <p>如果老师要求在虚拟机界面里操作，就打开UTM里的Ubuntu终端，命令完全相同，只是不用ssh。</p>
+
+        <h3>2. 进入实验目录</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+pwd
+ls -lh</code></pre>
+
+        <h3>3. 编译四个程序</h3>
+        <pre><button class="copy">复制</button><code>gcc -Wall -Wextra -O0 -g -o vm_layout vm_layout.c
+gcc -Wall -Wextra -O2 -g -o max_vmem max_vmem.c
+gcc -Wall -Wextra -O2 -g -o touch_pages touch_pages.c
+gcc -Wall -Wextra -O2 -g -o locality_compare locality_compare.c</code></pre>
+
+        <div class="ok"><b>验收时要说：</b>这四个程序分别对应虚存布局、最大虚拟映射、读写触页、局部性对比。它们不是四个孤立小题，而是从“虚拟地址空间”一路走到“物理页竞争和页面置换”。</div>
+      </section>
+
+      <section id="files">
+        <h2>文件地图</h2>
+        <table>
+          <thead><tr><th>文件</th><th>作用</th><th>验收时展示</th></tr></thead>
+          <tbody>
+            <tr><td><code>vm_layout.c</code></td><td>连续分配六个128MB、释放2/3/5、再分配1024MB和64MB。</td><td><code>logs/vm_layout.log</code>和<code>snapshots/*.maps</code></td></tr>
+            <tr><td><code>max_vmem.c</code></td><td>用<code>mmap</code>测试单进程最大连续虚拟映射。</td><td><code>logs/max_vmem.log</code></td></tr>
+            <tr><td><code>touch_pages.c</code></td><td>3GB读触页、写触页、保持映射给另一个进程观察。</td><td><code>touch_read_3072.log</code>、<code>touch_write_3072.log</code></td></tr>
+            <tr><td><code>locality_compare.c</code></td><td>全空间循环与16页分组访问对比。</td><td><code>locality_global_4096x3.log</code>、<code>locality_group16_4096x3.log</code></td></tr>
+            <tr><td><code>snapshots/</code></td><td>每一步保存的<code>maps</code>和<code>status</code>。</td><td>用<code>less</code>或<code>grep</code>查看关键地址段。</td></tr>
+            <tr><td><code>figures/</code></td><td>报告和本页面用的结果图。</td><td>验收时可辅助展示结果。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="codebuild">
+        <h2>代码能力总览</h2>
+        <p class="lead">这部分先给你一张“代码能力地图”。真正的详细代码讲解已经合并到下面每个任务里；你可以先看这里建立整体感，再跳到具体任务逐行理解。</p>
+        <div class="mini-index">
+          <a href="#task1-code">任务1：读取/proc</a>
+          <a href="#task2-code">任务2：vm_layout.c</a>
+          <a href="#task3-code">任务3：max_vmem.c</a>
+          <a href="#task4-code">任务4：touch_pages.c</a>
+          <a href="#task5-code">任务5：write-hold</a>
+          <a href="#task6-code">任务6：locality_compare.c</a>
+        </div>
+
+        <h3>0. 先把整个实验拆成四类代码能力</h3>
+        <table>
+          <thead><tr><th>能力</th><th>用到的Linux接口</th><th>解决哪个实验问题</th></tr></thead>
+          <tbody>
+            <tr><td>读取进程内存状态</td><td><code>/proc/&lt;pid&gt;/status</code>、<code>/proc/&lt;pid&gt;/maps</code></td><td>证明VmSize、VmRSS、VMA布局怎么变。</td></tr>
+            <tr><td>申请和释放虚拟地址空间</td><td><code>malloc/free</code>、<code>mmap/munmap</code></td><td>制造128MB、1024MB、3GB、4GB这些实验对象。</td></tr>
+            <tr><td>按页访问内存</td><td><code>sysconf(_SC_PAGESIZE)</code>、按4096字节步进</td><td>触发缺页，区分“只申请”和“真正访问”。</td></tr>
+            <tr><td>统计时间和缺页次数</td><td><code>clock_gettime</code>、<code>getrusage</code></td><td>解释读写触页、页面置换和局部性的性能差异。</td></tr>
+          </tbody>
+        </table>
+
+        <h3>1. 第一个公共工具：从/proc读status</h3>
+        <p>写实验代码时，第一步不是分配内存，而是先让程序自己会“汇报状态”。<code>/proc/&lt;pid&gt;/status</code>本质上是一个文本文件，所以C代码就是打开文件、逐行读取、筛选你关心的字段。</p>
+        <pre><button class="copy">复制</button><code>static void print_status_summary(const char *label) {
+    printf("\n===== %s =====\n", label);
+
+    char path[128];
+    snprintf(path, sizeof(path), "/proc/%d/status", getpid());
+
+    FILE *fp = fopen(path, "r");
+    if (!fp) {
+        perror(path);
+        exit(1);
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), fp)) {
+        if (strncmp(line, "VmSize:", 7) == 0 ||
+            strncmp(line, "VmRSS:", 6) == 0 ||
+            strncmp(line, "RssAnon:", 8) == 0 ||
+            strncmp(line, "VmSwap:", 7) == 0) {
+            fputs(line, stdout);
+        }
+    }
+    fclose(fp);
+}</code></pre>
+        <div class="note"><b>你要懂的点：</b><code>getpid()</code>拿到当前进程PID，<code>snprintf</code>拼出<code>/proc/当前PID/status</code>路径，<code>strncmp</code>只筛出关键字段。这个函数是后面所有实验现象的观察窗口。</div>
+
+        <h3>2. 第二个公共工具：复制maps/status快照</h3>
+        <p>只在屏幕上打印不够，因为实验报告和验收都需要前后对比。所以<code>vm_layout.c</code>多写了一个复制文件的函数，把每一步的<code>maps</code>和<code>status</code>保存到<code>snapshots/</code>。</p>
+        <pre><button class="copy">复制</button><code>static void copy_proc_file(const char *proc_name, const char *label) {
+    char src[128];
+    char dst[256];
+    snprintf(src, sizeof(src), "/proc/%d/%s", getpid(), proc_name);
+    snprintf(dst, sizeof(dst), "snapshots/%02d_%s.%s", snapshot_id, label, proc_name);
+
+    FILE *in = fopen(src, "r");
+    FILE *out = fopen(dst, "w");
+    char buf[4096];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof(buf), in)) > 0) {
+        fwrite(buf, 1, n, out);
+    }
+    fclose(in);
+    fclose(out);
+}</code></pre>
+        <p>这样每次调用<code>snapshot("after_alloc_6")</code>，你就同时得到屏幕输出和可保存的<code>after_alloc_6.maps</code>证据。</p>
+
+        <h3>3. vm_layout.c：先写“能制造地址布局变化”的程序</h3>
+        <p>这个程序的核心思想是：每做一次内存操作，立刻拍一张/proc快照。也就是“操作之前拍一次、操作之后再拍一次”。</p>
+        <table>
+          <thead><tr><th>写代码顺序</th><th>为什么这样写</th></tr></thead>
+          <tbody>
+            <tr><td>定义<code>BLOCKS=6</code>和<code>MB</code></td><td>让128MB、1024MB、64MB这些规模写得清楚。</td></tr>
+            <tr><td>准备<code>void *p[6]</code></td><td>保存六次<code>malloc</code>返回的地址，后面才能精确释放2、3、5号块。</td></tr>
+            <tr><td>每次<code>malloc(128 * MB)</code></td><td>制造六个大块匿名映射。</td></tr>
+            <tr><td><code>memset(p[i], 0, 4096)</code></td><td>至少触碰第一页，确保这块内存真的被访问过；不写满128MB是为了避免实验变慢。</td></tr>
+            <tr><td><code>free(p[1])</code>、<code>free(p[2])</code>、<code>free(p[4])</code></td><td>对应释放第2、3、5块，制造地址空洞。</td></tr>
+            <tr><td>再<code>malloc(1024MB)</code>和<code>malloc(64MB)</code></td><td>观察大块和小块分别会被放到哪里。</td></tr>
+          </tbody>
+        </table>
+        <pre><button class="copy">复制</button><code>void *p[6] = {0};
+const size_t block_size = 128 * MB;
+
+for (int i = 0; i < 6; ++i) {
+    snapshot("before_alloc");
+    p[i] = malloc(block_size);
+    if (!p[i]) {
+        perror("malloc 128MB");
+        return 1;
+    }
+    memset(p[i], 0, 4096);
+    printf("block[%d] = %p\n", i + 1, p[i]);
+    snapshot("after_alloc");
+}</code></pre>
+        <div class="ok"><b>验收时讲实现：</b>我不是只看malloc返回值，而是在每次malloc/free前后抓取<code>status</code>和<code>maps</code>，用VmSize证明虚拟空间变化，用maps证明VMA合并、拆分和空洞复用。</div>
+
+        <h3>4. max_vmem.c：再写“只测试虚拟地址上限”的程序</h3>
+        <p>如果用<code>malloc</code>测试最大内存，很容易受到分配器元数据、系统overcommit、物理内存压力影响。这里要测的是“最大连续虚拟地址范围”，所以直接用<code>mmap</code>，并且故意不分配物理页。</p>
+        <pre><button class="copy">复制</button><code>static int try_map(unsigned long long bytes) {
+    void *p = mmap(NULL, (size_t)bytes, PROT_NONE,
+                   MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
+    if (p == MAP_FAILED) {
+        return 0;
+    }
+    munmap(p, (size_t)bytes);
+    return 1;
+}</code></pre>
+        <table>
+          <thead><tr><th>参数</th><th>含义</th><th>为什么需要</th></tr></thead>
+          <tbody>
+            <tr><td><code>PROT_NONE</code></td><td>这段地址暂时不可读不可写</td><td>只占地址范围，不触发真实读写。</td></tr>
+            <tr><td><code>MAP_ANONYMOUS</code></td><td>不对应文件</td><td>测试匿名虚拟映射。</td></tr>
+            <tr><td><code>MAP_NORESERVE</code></td><td>不预留swap承诺</td><td>避免因为物理内存或swap不足而过早失败。</td></tr>
+            <tr><td><code>munmap</code></td><td>立刻释放</td><td>每次只是试探，不让多次试探互相占地址。</td></tr>
+          </tbody>
+        </table>
+        <p>搜索方法分两步：先不断翻倍找“第一次失败的上界”，再在成功值和失败值之间二分查找最大成功值。</p>
+        <pre><button class="copy">复制</button><code>unsigned long long low = 0;
+unsigned long long high = 1ULL * GiB;
+
+while (try_map(high)) {
+    low = high;
+    high <<= 1;
+}
+
+while (high - low > page) {
+    unsigned long long mid = low + (high - low) / 2;
+    mid -= mid % page;
+    if (try_map(mid)) {
+        low = mid;
+    } else {
+        high = mid;
+    }
+}</code></pre>
+        <div class="note"><b>你要懂的点：</b>内存映射长度必须按页对齐，所以二分时用<code>mid -= mid % page</code>。最终测到的170.67TiB是“能保留的虚拟地址范围”，不是物理内存。</div>
+
+        <h3>5. touch_pages.c：写出“读触页”和“写触页”的差别</h3>
+        <p>这个程序要抓住一个关键：<code>mmap</code>之后只是有了虚拟地址，只有访问每个页，才会触发缺页处理。所以代码必须按页大小步进，而不是按字节连续访问。</p>
+        <pre><button class="copy">复制</button><code>size_t len = mb * MB;
+size_t page = (size_t)sysconf(_SC_PAGESIZE);
+
+unsigned char *buf = mmap(NULL, len, PROT_READ | PROT_WRITE,
+                          MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+if (strcmp(mode, "read") == 0) {
+    for (size_t off = 0; off < len; off += page) {
+        sink ^= buf[off];
+    }
+} else if (strcmp(mode, "write") == 0) {
+    for (size_t off = 0; off < len; off += page) {
+        buf[off] = (unsigned char)(buf[off] + 1);
+    }
+}</code></pre>
+        <div class="cols">
+          <div class="note"><b>为什么要有<code>volatile sink</code>：</b>读循环如果只是<code>buf[off];</code>，编译器可能认为结果没用，把读取优化掉。把值异或进<code>volatile</code>变量，可以强迫程序真的读内存。</div>
+          <div class="warn"><b>为什么写<code>buf[off] + 1</code>：</b>写匿名页会触发写时分配，内核必须给这个虚拟页一个私有物理页，所以RssAnon会上升。</div>
+        </div>
+        <p>为了让结果能量化，程序在触页前后调用<code>getrusage</code>统计缺页次数，并用<code>clock_gettime</code>计时。</p>
+        <pre><button class="copy">复制</button><code>struct rusage before;
+getrusage(RUSAGE_SELF, &before);
+double t0 = now_seconds();
+
+/* read loop or write loop */
+
+double t1 = now_seconds();
+print_usage_delta("touch", &before);
+printf("touch finished in %.3f seconds\n", t1 - t0);</code></pre>
+
+        <h3>6. write-hold模式：让另一个进程有时间挤掉它</h3>
+        <p>提高部分需要两个进程竞争物理页。如果A进程写完就退出，老师还没来得及观察它的<code>/proc/A/status</code>，所以加了<code>write-hold</code>模式：写完以后睡一段时间，保留映射。</p>
+        <pre><button class="copy">复制</button><code>if (strcmp(mode, "write-hold") == 0 && hold_seconds > 0) {
+    printf("holding mapping for %d seconds; inspect /proc/%d/status now.\n",
+           hold_seconds, getpid());
+    sleep((unsigned int)hold_seconds);
+    print_status_summary("after hold");
+}</code></pre>
+        <p>这个功能本身很简单，但实验意义很强：A睡着不访问，B大量写内存，内核就更倾向于把A的不活跃匿名页换出。</p>
+
+        <h3>7. locality_compare.c：只改变访问顺序，不改变访问总量</h3>
+        <p>局部性实验最容易写错。公平比较的关键是：两种模式访问同一块4GB空间、每个页都写、总重复次数一样，唯一差别是访问顺序。</p>
+        <div class="cols">
+          <div>
+            <h3>global模式</h3>
+            <pre><button class="copy">复制</button><code>for (int r = 0; r < repeat; ++r) {
+    for (size_t page = 0; page < pages; ++page) {
+        buf[page * page_size]++;
+    }
+}</code></pre>
+          </div>
+          <div>
+            <h3>group16模式</h3>
+            <pre><button class="copy">复制</button><code>for (size_t base = 0; base &lt; pages; base += 16) {
+    size_t end = base + 16;
+    if (end &gt; pages) {
+        end = pages;
+    }
+    for (int r = 0; r < repeat; ++r) {
+        for (size_t page = base; page < end; ++page) {
+            buf[page * page_size]++;
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+        <p><code>global</code>是一遍扫完整个4GB，再回头扫第二遍。页面再次被访问前隔了太久，很可能已经被换出。<code>group16</code>是在16页，也就是64KB的小工作集里连续重复访问，页面还热着，所以主缺页少很多。</p>
+
+        <h3>8. 你真正要能复述的写代码路线</h3>
+        <pre><button class="copy">复制</button><code>第一步：先写print_status_summary，保证程序能看见自己的VmSize、VmRSS、RssAnon、VmSwap。
+第二步：写vm_layout，用malloc/free制造VMA合并、拆分和空洞，并在每一步保存maps快照。
+第三步：写max_vmem，用mmap(PROT_NONE | MAP_NORESERVE)加翻倍和二分搜索，只测虚拟地址上限。
+第四步：写touch_pages，用mmap分配大空间，再按page_size逐页read或write，比较RSS和缺页次数。
+第五步：给touch_pages加write-hold，让A进程保持映射，方便B进程制造物理页竞争。
+第六步：写locality_compare，保证访问总量相同，只改变global和group16的访问顺序，观察局部性。</code></pre>
+        <div class="ok"><b>现场回答模板：</b>我的代码不是为了“申请越大越好”，而是围绕可观测指标写的。每个程序都先明确要观察的内存管理现象，再选择对应接口：看布局用/proc/maps，测虚拟上限用mmap，触发缺页用逐页访问，观察置换用RssAnon、VmSwap和major fault。</div>
+      </section>
+
+      <section id="task1">
+        <h2>任务1：先学会看maps和status</h2>
+        <p class="lead">不要一上来就跑大程序。先用当前shell自己的PID练手，看懂/proc目录，后面的所有结果就顺了。</p>
+
+        <h3>1. 查看当前shell的PID</h3>
+        <pre><button class="copy">复制</button><code>echo $$
+cat /proc/$$/status | egrep 'VmSize|VmRSS|VmData|VmStk|VmExe|VmLib'
+head -n 20 /proc/$$/maps</code></pre>
+
+        <h3>2. 你要能解释maps每一列</h3>
+        <pre><button class="copy">复制</button><code>address-range          perms offset   dev   inode     pathname
+ffff5b4ba000-...       rw-p  00000000 00:00 0         匿名映射</code></pre>
+        <p>重点看<code>address-range</code>和<code>perms</code>。<code>rw-p</code>代表可读、可写、不可执行、私有映射。没有pathname时，多半是匿名映射。</p>
+
+        <h3>3. smaps什么时候用</h3>
+        <p><a class="term" href="#def-status"><code>status</code></a>给总量，<a class="term" href="#def-maps"><code>maps</code></a>给地址布局，<a class="term" href="#def-smaps"><code>smaps</code></a>给每段 <a class="term" href="#def-vma">VMA</a> 的详细RSS和脏页。验收时如果老师追问“这一段到底有没有占物理页”，你可以说用<code>smaps</code>看对应VMA下面的<code>Rss</code>、<code>Private_Dirty</code>等字段。</p>
+        <pre><button class="copy">复制</button><code>grep -A20 'ffff5b4ba000' /proc/&lt;pid&gt;/smaps</code></pre>
+
+        <h3 id="task1-code">4. 代码怎么实现：读取status和maps</h3>
+        <p>任务1本身可以直接用命令完成，但后面程序要自动保存证据，所以代码里必须会读取 <a class="term" href="#def-status">status</a> 和复制 <a class="term" href="#def-maps">maps</a>。这部分是所有任务的公共地基。</p>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>static void print_status_summary(void) {
+    char path[128];
+    snprintf(path, sizeof(path), "/proc/%d/status", getpid());
+
+    FILE *fp = fopen(path, "r");
+    if (!fp) {
+        perror(path);
+        exit(1);
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), fp)) {
+        if (strncmp(line, "VmSize:", 7) == 0 ||
+            strncmp(line, "VmRSS:", 6) == 0 ||
+            strncmp(line, "VmData:", 7) == 0 ||
+            strncmp(line, "VmStk:", 6) == 0 ||
+            strncmp(line, "VmExe:", 6) == 0 ||
+            strncmp(line, "VmLib:", 6) == 0) {
+            fputs(line, stdout);
+        }
+    }
+    fclose(fp);
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>逐行理解</b>
+            <ol>
+              <li><code>getpid()</code>拿当前进程PID，所以程序永远读取自己的<code>/proc</code>目录。</li>
+              <li><code>snprintf</code>比<code>sprintf</code>稳，因为它限制写入缓冲区长度。</li>
+              <li><code>fgets</code>逐行读文本，<code>strncmp</code>只筛出本实验关心的字段。</li>
+              <li>这段代码不是“分析所有字段”，而是为实验建立可重复的观察窗口。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>static void copy_proc_file(const char *proc_name, const char *label) {
+    char src[128];
+    char dst[256];
+    snprintf(src, sizeof(src), "/proc/%d/%s", getpid(), proc_name);
+    snprintf(dst, sizeof(dst), "snapshots/%02d_%s.%s",
+             snapshot_id, label, proc_name);
+
+    FILE *in = fopen(src, "r");
+    FILE *out = fopen(dst, "w");
+
+    char buf[4096];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof(buf), in)) &gt; 0) {
+        fwrite(buf, 1, n, out);
+    }
+    fclose(in);
+    fclose(out);
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>为什么要复制文件</b>
+            <ol>
+              <li><code>/proc/&lt;pid&gt;/maps</code>只在进程活着时存在，程序退出后就看不到了。</li>
+              <li>把<code>maps</code>复制到<code>snapshots/</code>后，实验结束仍能复盘每一步。</li>
+              <li><code>4096</code>字节缓冲区刚好和常见页大小一致，也适合做普通文件复制。</li>
+              <li><code>label</code>决定文件名，例如<code>23_after_alloc_64.maps</code>。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="note"><b>这一任务的代码主线：</b>先让程序能看见自己的状态，再让程序能保存自己的证据。后面所有实验现象都依赖这个观察能力。</div>
+      </section>
+
+      <section id="task2">
+        <h2>任务2：六个128MB、释放2/3/5、再分配1024MB和64MB</h2>
+        <div class="mini-index">
+          <a href="#task2-code">看 vm_layout.c 核心代码</a>
+          <a href="#def-vma">回看 VMA 定义</a>
+          <a href="#def-vmsize">回看 VmSize 定义</a>
+          <a href="#def-maps">回看 maps 定义</a>
+        </div>
+        <h3>1. 运行命令</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+rm -f logs/vm_layout.log snapshots/[0-9][0-9]_*
+./vm_layout | tee logs/vm_layout.log</code></pre>
+
+        <h3 id="task2-code">2. 代码怎么实现：vm_layout.c</h3>
+        <p><code>vm_layout.c</code>的核心不是“申请大内存”本身，而是把每个动作前后的 <a class="term" href="#def-status">status</a> 和 <a class="term" href="#def-maps">maps</a> 保存下来。这样才能证明 <a class="term" href="#def-vma">VMA</a> 是怎样合并、拆分、复用空洞的。</p>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>#define BLOCKS 6
+#define MB (1024UL * 1024UL)
+
+void *p[BLOCKS] = {0};
+const size_t block_size = 128 * MB;
+const size_t big_size = 1024 * MB;
+const size_t small_size = 64 * MB;</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>先定义实验规模</b>
+            <ol>
+              <li><code>MB</code>写成<code>1024UL * 1024UL</code>，避免大数乘法按<code>int</code>溢出。</li>
+              <li><code>void *p[6]</code>只保存6个地址，不是6块内存本体。</li>
+              <li><code>size_t</code>是专门表达对象大小的类型，适合传给<code>malloc</code>。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>static void snapshot(const char *label) {
+    ++snapshot_id;
+    printf("\n===== snapshot %02d: %s =====\n", snapshot_id, label);
+    print_status_summary();
+    copy_proc_file("status", label);
+    copy_proc_file("maps", label);
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>快照函数为什么重要</b>
+            <ol>
+              <li><code>print_status_summary</code>让终端能直接看到<code>VmSize</code>等变化。</li>
+              <li><code>copy_proc_file("status")</code>保存总量证据。</li>
+              <li><code>copy_proc_file("maps")</code>保存地址布局证据。</li>
+              <li>每一步都调用它，实验结果就不依赖记忆或截图。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>for (int i = 0; i &lt; BLOCKS; ++i) {
+    snapshot("before_alloc");
+
+    p[i] = malloc(block_size);
+    if (!p[i]) {
+        perror("malloc 128MB");
+        return 1;
+    }
+
+    memset(p[i], 0, 4096);
+    printf("block[%d] = %p, size = 128MB\n", i + 1, p[i]);
+    snapshot("after_alloc");
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>六次分配怎么理解</b>
+            <ol>
+              <li>每次<code>malloc(128MB)</code>制造一个大块匿名映射。</li>
+              <li><code>memset(..., 4096)</code>只触碰第一页，给这块内存留下真实访问痕迹。</li>
+              <li>不写满128MB，是因为本任务关注虚拟布局，不是物理页压力。</li>
+              <li>打印<code>p[i]</code>方便判断6块在虚拟地址上如何排列。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>int free_list[] = {2, 3, 5};
+for (size_t i = 0; i &lt; sizeof(free_list) / sizeof(free_list[0]); ++i) {
+    int idx = free_list[i] - 1;
+    snapshot("before_free");
+    free(p[idx]);
+    p[idx] = NULL;
+    printf("freed block[%d]\n", idx + 1);
+    snapshot("after_free");
+}
+
+void *big = malloc(big_size);
+void *small = malloc(small_size);</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>释放与再次申请</b>
+            <ol>
+              <li>实验编号是第2、3、5块，数组下标要减1。</li>
+              <li><code>p[idx] = NULL</code>避免后面清理时误用旧指针。</li>
+              <li>释放后看<code>maps</code>，能看到原本连续VMA被拆开。</li>
+              <li>1024MB测试“大块放不进洞怎么办”；64MB测试“小块是否复用洞”。</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>3. 你要观察什么</h3>
+        <table>
+          <thead><tr><th>阶段</th><th>现象</th><th>解释</th></tr></thead>
+          <tbody>
+            <tr><td>六次128MB后</td><td><code>VmSize</code>升到约788380KB。</td><td>虚拟地址空间增加约768MB。</td></tr>
+            <tr><td>释放2/3/5后</td><td><code>VmSize</code>回落到约395152KB。</td><td>大块free触发munmap，VMA被拆分。</td></tr>
+            <tr><td>再申请1024MB</td><td>出现1152MB连续匿名段。</td><td>1024MB新块与原6号块合并。</td></tr>
+            <tr><td>再申请64MB</td><td>高地址段变成192MB。</td><td>64MB复用了2/3号释放形成的空洞。</td></tr>
+          </tbody>
+        </table>
+
+        <h3>4. 关键maps证据</h3>
+        <pre><button class="copy">复制</button><code># 六个128MB后：一个768MB匿名VMA
+ffff5b4ba000-ffff8b4c0000    768.0 MB
+
+# 释放2、3、5后：留下三个仍占用的128MB段，中间有洞
+ffff5b4ba000-ffff634bb000    128.0 MB
+ffff6b4bc000-ffff734bd000    128.0 MB
+ffff834bf000-ffff8b4c0000    128.0 MB
+
+# 分配1024MB后：新大块向低地址扩展，并与6号块合并
+ffff1b4b9000-ffff634bb000   1152.0 MB
+
+# 分配64MB后：64MB落入2/3号释放出的洞，高地址段合并成192MB
+ffff7f4be000-ffff8b4c0000    192.0 MB</code></pre>
+
+        <div class="figure">
+          <img src="figures/maps_summary.png" alt="maps关键匿名映射片段">
+          <div class="caption">maps关键匿名映射片段</div>
+        </div>
+
+        <h3>5. 验收时怎么回答分配算法问题</h3>
+        <div class="note"><b>标准回答：</b>用户进程空间从整体上看不是课本里那种“物理内存连续分配”，而是以 <a class="term" href="#def-vma">VMA</a> 和 <a class="term" href="#def-page">页</a> 为基础的离散管理。单个VMA在虚拟地址上可以连续，但多个VMA之间可以有空洞。这个实验里64MB块复用了已有空洞，表现出top-down mmap区域中的首次适应倾向，而不是为了最小剩余空间全局搜索的最佳适应。用户虚拟空间会出现外部空洞，但页式映射让物理内存不要求连续，所以它不像传统连续物理分配那样脆弱。</div>
+      </section>
+
+      <section id="task3">
+        <h2>任务3：测试单进程最大虚拟内存空间</h2>
+        <div class="mini-index">
+          <a href="#task3-code">看 max_vmem.c 核心代码</a>
+          <a href="#def-mmap">回看 mmap 定义</a>
+          <a href="#def-map-noreserve">回看 MAP_NORESERVE 定义</a>
+          <a href="#def-virtual-memory">回看虚拟地址空间定义</a>
+        </div>
+        <h3>1. 运行命令</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+./max_vmem | tee logs/max_vmem.log</code></pre>
+
+        <h3 id="task3-code">2. 代码怎么实现：max_vmem.c</h3>
+        <p>这个程序要非常小心：它不是测试“最多能写多少内存”，而是测试“单次能保留多大的连续 <a class="term" href="#def-virtual-memory">虚拟地址空间</a>”。所以它用 <a class="term" href="#def-mmap">mmap</a>，并且故意不访问页面。</p>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>static int try_map(unsigned long long bytes) {
+    void *p = mmap(NULL, (size_t)bytes, PROT_NONE,
+                   MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
+    if (p == MAP_FAILED) {
+        return 0;
+    }
+    munmap(p, (size_t)bytes);
+    return 1;
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>try_map 的设计意图</b>
+            <ol>
+              <li><code>PROT_NONE</code>表示暂时不可读写，只占地址，不触页。</li>
+              <li><code>MAP_ANONYMOUS</code>表示这段映射不来自文件。</li>
+              <li><a class="term" href="#def-map-noreserve"><code>MAP_NORESERVE</code></a>避免提前要求swap承诺。</li>
+              <li>成功后立刻<code>munmap</code>，防止前一次试探占住地址空间。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>unsigned long long low = 0;
+unsigned long long high = 1ULL * GiB;
+const unsigned long long cap = 512ULL * 1024ULL * GiB;
+
+while (high &lt; cap &amp;&amp; try_map(high)) {
+    low = high;
+    high &lt;&lt;= 1;
+    printf("single mmap %.2f GiB: success\n", (double)low / GiB);
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>为什么先翻倍</b>
+            <ol>
+              <li>如果一点点加，TiB级空间会试太久。</li>
+              <li>翻倍能快速找到“最后成功值 low”和“首次失败上界 high”。</li>
+              <li><code>cap</code>是安全上限，防止无限左移。</li>
+              <li><code>1ULL</code>保证从一开始就是64位无符号运算。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>const unsigned long long page =
+    (unsigned long long)sysconf(_SC_PAGESIZE);
+
+while (high - low &gt; page) {
+    unsigned long long mid = low + (high - low) / 2;
+    mid -= mid % page;
+
+    if (mid == low) {
+        break;
+    }
+    if (try_map(mid)) {
+        low = mid;
+    } else {
+        high = mid;
+    }
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>为什么再二分</b>
+            <ol>
+              <li>翻倍只给出范围，二分负责精确收敛。</li>
+              <li><code>mid -= mid % page</code>把长度对齐到 <a class="term" href="#def-page">页</a> 边界。</li>
+              <li>成功就提高<code>low</code>，失败就降低<code>high</code>。</li>
+              <li>最后的<code>low</code>就是页级粒度下能成功映射的最大值。</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>3. 结果</h3>
+        <pre><button class="copy">复制</button><code>RLIMIT_AS: unlimited
+first failed upper bound: 262144.00 GiB
+max contiguous anonymous virtual mapping: 174763.53 GiB (170.67 TiB)</code></pre>
+
+        <div class="figure">
+          <img src="figures/max_vmem_log.png" alt="最大虚拟映射测试结果">
+          <div class="caption">最大虚拟映射测试结果</div>
+        </div>
+
+        <h3>4. 这个结果为什么不是3.8GB</h3>
+        <p>因为程序用的是<code>PROT_NONE | MAP_NORESERVE</code>，只测试“能不能保留这段虚拟地址”，没有真正逐页写入。64位 <a class="term" href="#def-virtual-memory">虚拟地址空间</a> 远大于物理内存，所以能测出TiB级结果。</p>
+      </section>
+
+      <section id="task4">
+        <h2>任务4：分配3GB，读触页与写触页对比</h2>
+        <div class="mini-index">
+          <a href="#task4-code">看 touch_pages.c 核心代码</a>
+          <a href="#def-page-fault">回看缺页定义</a>
+          <a href="#def-zero-page">回看共享零页定义</a>
+          <a href="#def-rssanon">回看 RssAnon 定义</a>
+          <a href="#def-vmswap">回看 VmSwap 定义</a>
+        </div>
+        <h3>1. 读触页</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+./touch_pages 3072 read | tee logs/touch_read_3072.log</code></pre>
+        <p>关键结果：<code>VmSize</code>约3GB，但<code>VmRSS</code>仍只有约1212KB，<code>RssAnon</code>约80KB，<code>VmSwap</code>为0。</p>
+
+        <h3>2. 写触页</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+./touch_pages 3072 write | tee logs/touch_write_3072.log</code></pre>
+        <p>关键结果：<code>VmRSS</code>升到2750784KB，<code>RssAnon</code>升到2749572KB，<code>VmSwap</code>升到396160KB。</p>
+
+        <h3 id="task4-code">3. 代码怎么实现：touch_pages.c</h3>
+        <p><code>touch_pages.c</code>专门用来证明一件事：<a class="term" href="#def-mmap">mmap</a> 成功只说明 <a class="term" href="#def-virtual-memory">虚拟地址空间</a> 建好了，只有真正访问 <a class="term" href="#def-page">页</a>，才会触发 <a class="term" href="#def-page-fault">缺页异常</a> 并可能分配物理页。</p>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>size_t mb = strtoull(argv[1], NULL, 10);
+const char *mode = argv[2];
+size_t len = mb * MB;
+size_t page = (size_t)sysconf(_SC_PAGESIZE);
+volatile unsigned char sink = 0;</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>参数与页大小</b>
+            <ol>
+              <li><code>argv[1]</code>决定申请多少MB，比如<code>3072</code>。</li>
+              <li><code>mode</code>决定读触页还是写触页。</li>
+              <li><code>sysconf</code>读取真实页大小，避免硬编码。</li>
+              <li><code>volatile sink</code>防止读循环被编译器删掉。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>unsigned char *buf = mmap(NULL, len, PROT_READ | PROT_WRITE,
+                          MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+if (buf == MAP_FAILED) {
+    perror("mmap");
+    return 1;
+}
+
+print_status_summary("after mmap before touch");</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>mmap后先打印状态</b>
+            <ol>
+              <li>这一步之后 <a class="term" href="#def-vmsize">VmSize</a> 已经变大。</li>
+              <li>但还没触页，所以 <a class="term" href="#def-vmrss">VmRSS</a> 和 <a class="term" href="#def-rssanon">RssAnon</a> 通常不会大涨。</li>
+              <li>这正好证明“申请虚拟空间”不等于“占用物理内存”。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>if (strcmp(mode, "read") == 0) {
+    for (size_t off = 0; off &lt; len; off += page) {
+        sink ^= buf[off];
+    }
+} else if (strcmp(mode, "write") == 0 ||
+           strcmp(mode, "write-hold") == 0) {
+    for (size_t off = 0; off &lt; len; off += page) {
+        buf[off] = (unsigned char)(buf[off] + 1);
+    }
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>读与写的分叉</b>
+            <ol>
+              <li><code>off += page</code>保证每次访问新页，而不是同一页里的很多字节。</li>
+              <li><code>sink ^= buf[off]</code>只读，不修改匿名页，因此可映射 <a class="term" href="#def-zero-page">共享零页</a>。</li>
+              <li><code>buf[off] = buf[off] + 1</code>会写入，内核必须分配私有物理页。</li>
+              <li>所以读触页看缺页多但RSS小，写触页看RSS和Swap压力。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>struct rusage before;
+getrusage(RUSAGE_SELF, &before);
+double t0 = now_seconds();
+
+/* 执行 read 或 write 循环 */
+
+double t1 = now_seconds();
+printf("touch finished in %.3f seconds\n", t1 - t0);
+print_usage_delta("touch", &before);
+print_status_summary("after touch");</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>为什么要统计缺页</b>
+            <ol>
+              <li><code>getrusage</code>能拿到本进程的<code>minor</code>和<code>major</code>缺页数。</li>
+              <li><code>minor fault</code>多说明逐页访问确实发生了。</li>
+              <li><code>major fault</code>出现，通常说明有更重的I/O或swap参与。</li>
+              <li>状态字段负责解释“占了多少”，缺页次数负责解释“怎么发生的”。</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="figure">
+          <img src="figures/touch_compare.png" alt="读触页与写触页状态对比">
+          <div class="caption">3GB读触页与写触页状态对比</div>
+        </div>
+
+        <h3>4. 你要说清楚的底层逻辑</h3>
+        <div class="cols">
+          <div class="ok"><b>读触页：</b>大量虚拟页可以映射到 <a class="term" href="#def-zero-page">共享零页</a>，所以minor fault很多，但匿名RSS几乎不增加。</div>
+          <div class="warn"><b>写触页：</b>每个4KB页都要获得私有物理页，物理内存不足时还会把一部分页换出到 <a class="term" href="#def-swap">swap</a>。</div>
+        </div>
+      </section>
+
+      <section id="task5">
+        <h2>提高1：两个进程竞争物理内存</h2>
+        <p class="lead">这个实验最能打动老师，因为它直接显示“A的虚拟地址还在，但物理页被B挤出去了”。</p>
+        <div class="mini-index">
+          <a href="#task5-code">看 write-hold 代码与脚本</a>
+          <a href="#def-vmswap">回看 VmSwap 定义</a>
+          <a href="#def-swap">回看 Swap 定义</a>
+          <a href="#def-vmrss">回看 RSS 定义</a>
+        </div>
+
+        <h3>1. 一次性复现实验</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+./touch_pages 1792 write-hold 180 > logs/competition_A.log 2>&1 &
+A=$!
+sleep 8
+echo "===== before B: A status ====="
+grep -E '^(VmSize|VmRSS|RssAnon|RssFile|VmSwap):' /proc/$A/status
+
+./touch_pages 4096 write | tee logs/competition_B.log
+
+echo "===== after B: A status ====="
+grep -E '^(VmSize|VmRSS|RssAnon|RssFile|VmSwap):' /proc/$A/status
+kill $A 2>/dev/null</code></pre>
+
+        <h3 id="task5-code">2. 代码怎么实现：write-hold与外部观察</h3>
+        <p>双进程竞争不需要另写一个复杂程序，而是在 <code>touch_pages.c</code> 里加一个 <code>write-hold</code> 模式。A进程先写满一批匿名页，然后睡着不退出；B进程再制造更大内存压力。观察重点是 A 的 <a class="term" href="#def-vmrss">VmRSS</a> 和 <a class="term" href="#def-vmswap">VmSwap</a>。</p>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>if (strcmp(mode, "write-hold") == 0 && hold_seconds &gt; 0) {
+    printf("holding mapping for %d seconds; inspect /proc/%d/status now.\n",
+           hold_seconds, getpid());
+    sleep((unsigned int)hold_seconds);
+    print_status_summary("after hold");
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>为什么要 hold</b>
+            <ol>
+              <li>如果A写完就退出，<code>/proc/A/status</code>马上消失。</li>
+              <li><code>sleep</code>让A保持映射，方便另一个终端观察。</li>
+              <li>A睡着后短期不访问自己的页，内核更可能把它们判为不活跃。</li>
+              <li>B写入大内存后，A的匿名页可能被换出到 <a class="term" href="#def-swap">Swap</a>。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>./touch_pages 1792 write-hold 180 &gt; logs/competition_A.log 2&gt;&amp;1 &amp;
+A=$!
+sleep 8
+grep -E '^(VmSize|VmRSS|RssAnon|RssFile|VmSwap):' /proc/$A/status
+
+./touch_pages 4096 write | tee logs/competition_B.log
+
+grep -E '^(VmSize|VmRSS|RssAnon|RssFile|VmSwap):' /proc/$A/status
+kill $A 2&gt;/dev/null</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>为什么用外部 grep</b>
+            <ol>
+              <li><code>&amp;</code>让A在后台运行，<code>$!</code>保存A的PID。</li>
+              <li>先读一次<code>/proc/$A/status</code>，得到竞争前状态。</li>
+              <li>B写入4096MB，制造物理内存压力。</li>
+              <li>再读一次A的status，直接比较A是否被换出。</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>3. 已跑出的关键结果</h3>
+        <pre><button class="copy">复制</button><code>before B:
+VmRSS:   1836048 kB
+RssAnon: 1834976 kB
+VmSwap:        0 kB
+
+after B:
+VmRSS:      1064 kB
+RssAnon:       0 kB
+VmSwap:  1835092 kB</code></pre>
+
+        <div class="figure">
+          <img src="figures/competition.png" alt="两个进程竞争物理页运行结果">
+          <div class="caption">两个进程竞争物理页运行结果</div>
+        </div>
+
+        <div class="note"><b>验收说法：</b>A进程的 <a class="term" href="#def-vmsize">VmSize</a> 没变，说明虚拟地址空间仍然存在；A进程的 <a class="term" href="#def-vmrss">VmRSS</a> 几乎清零，说明物理页被回收；A进程的 <a class="term" href="#def-vmswap">VmSwap</a> 升到约1.75GB，说明A的匿名页被换出到交换区。B进程写入大量页面时，内核把A的不活跃页让位给B的活跃工作集。</div>
+      </section>
+
+      <section id="task6">
+        <h2>提高2：访问局部性对比</h2>
+        <div class="mini-index">
+          <a href="#task6-code">看 locality_compare.c 核心代码</a>
+          <a href="#def-working-set">回看工作集/局部性定义</a>
+          <a href="#def-page-fault">回看缺页定义</a>
+          <a href="#def-page">回看页定义</a>
+        </div>
+        <h3>1. 全空间循环</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+./locality_compare 4096 3 global | tee logs/locality_global_4096x3.log</code></pre>
+
+        <h3>2. 16页分组</h3>
+        <pre><button class="copy">复制</button><code>cd ~/exp3
+./locality_compare 4096 3 group16 | tee logs/locality_group16_4096x3.log</code></pre>
+
+        <h3 id="task6-code">3. 代码怎么实现：locality_compare.c</h3>
+        <p>这个任务最重要的公平性是：两种模式都申请4096MB、都按 <a class="term" href="#def-page">页</a> 写入、都重复3轮，总访问次数相同。唯一不同的是访问顺序，也就是 <a class="term" href="#def-working-set">工作集</a> 大小。</p>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>size_t len = mb * MB;
+size_t page_size = (size_t)sysconf(_SC_PAGESIZE);
+size_t pages = len / page_size;
+
+unsigned char *buf = mmap(NULL, len, PROT_READ | PROT_WRITE,
+                          MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>先建立同一块实验场地</b>
+            <ol>
+              <li><code>4096MB / 4096B = 1048576</code>页。</li>
+              <li><code>pages</code>决定循环会访问多少个页首字节。</li>
+              <li>两个模式使用同一个<code>buf</code>大小，保证比较公平。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>static void access_global(unsigned char *buf,
+                          size_t pages,
+                          size_t page_size,
+                          int repeat) {
+    for (int r = 0; r &lt; repeat; ++r) {
+        for (size_t page = 0; page &lt; pages; ++page) {
+            buf[page * page_size]++;
+        }
+    }
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>global为什么慢</b>
+            <ol>
+              <li>第1轮访问第0页后，要等整个4GB扫完才再次访问它。</li>
+              <li>物理内存不够时，它很可能已经被换出。</li>
+              <li>所以第二轮、第三轮会出现大量 <a class="term" href="#def-page-fault">major faults</a>。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>static void access_group16(unsigned char *buf,
+                           size_t pages,
+                           size_t page_size,
+                           int repeat) {
+    const size_t group = 16;
+    for (size_t base = 0; base &lt; pages; base += group) {
+        size_t end = base + group;
+        if (end &gt; pages) {
+            end = pages;
+        }
+        for (int r = 0; r &lt; repeat; ++r) {
+            for (size_t page = base; page &lt; end; ++page) {
+                buf[page * page_size]++;
+            }
+        }
+    }
+}</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>group16为什么快</b>
+            <ol>
+              <li>16页约等于64KB，短期工作集很小。</li>
+              <li>一个小组内重复3轮后才进入下一组。</li>
+              <li>页面还在内存里时就被再次访问，因此主缺页很少。</li>
+              <li><code>end &gt; pages</code>用于处理最后不足16页的尾巴，避免越界。</li>
+            </ol>
+          </div>
+        </div>
+        <div class="code-grid">
+          <div>
+            <pre><button class="copy">复制</button><code>struct rusage before;
+getrusage(RUSAGE_SELF, &before);
+double t0 = now_seconds();
+
+if (strcmp(mode, "global") == 0) {
+    access_global(buf, pages, page_size, repeat);
+} else if (strcmp(mode, "group16") == 0) {
+    access_group16(buf, pages, page_size, repeat);
+}
+
+double t1 = now_seconds();
+printf("elapsed seconds: %.3f\n", t1 - t0);
+print_usage_delta(&before);</code></pre>
+          </div>
+          <div class="code-notes">
+            <b>如何证明差异</b>
+            <ol>
+              <li>计时看总体性能。</li>
+              <li><code>minor faults</code>看页表建立等轻量缺页。</li>
+              <li><code>major faults</code>看是否频繁从swap/磁盘换回。</li>
+              <li>时间差异和major fault差异一起证明局部性影响页面置换。</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>4. 结果对比</h3>
+        <table>
+          <thead><tr><th>模式</th><th>耗时</th><th>minor faults</th><th>major faults</th><th>解释</th></tr></thead>
+          <tbody>
+            <tr><td>global</td><td>51.264s</td><td>6025631</td><td>265845</td><td><a class="term" href="#def-working-set">工作集</a>跨越4GB，反复把页面换入换出。</td></tr>
+            <tr><td>group16</td><td>3.652s</td><td>2097165</td><td>11</td><td>短时间只围绕16页工作，<a class="term" href="#def-working-set">局部性</a>好。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="figure">
+          <img src="figures/locality_compare.png" alt="访问局部性时间对比">
+          <div class="caption">全空间循环与16页分组访问时间对比</div>
+        </div>
+      </section>
+
+      <section id="accept">
+        <h2>实验课验收演示脚本</h2>
+        <p class="lead">照这个顺序讲，老师不会觉得你只是跑了程序，而是能看出你理解了现象。</p>
+
+        <div class="steps">
+          <div class="step"><span class="tag">第1步</span><b>先定位实验目录</b><br><code>cd ~/exp3 && ls</code>，展示四个源码文件和logs、snapshots目录。</div>
+          <div class="step"><span class="tag">第2步</span><b>讲/proc怎么看</b><br>打开一个status和maps，解释VmSize、VmRSS、匿名VMA。</div>
+          <div class="step"><span class="tag">第3步</span><b>跑vm_layout</b><br>讲六个128MB合并、释放后产生空洞、64MB复用空洞。</div>
+          <div class="step"><span class="tag">第4步</span><b>跑max_vmem</b><br>说明170.67TiB是虚拟地址空间上界，不是物理内存。</div>
+          <div class="step"><span class="tag">第5步</span><b>跑读写触页</b><br>对比读触页和写触页的RssAnon与VmSwap。</div>
+          <div class="step"><span class="tag">第6步</span><b>展示提高部分</b><br>讲A被B挤出物理内存，以及group16为什么快。</div>
+        </div>
+
+        <h3>90秒口头版</h3>
+        <pre><button class="copy">复制</button><code>这次实验我主要验证Linux虚拟内存的三个层次：虚拟地址空间、物理驻留页、swap。
+首先vm_layout连续申请六个128MB，maps显示它们合并成768MB匿名VMA；释放2、3、5号后VMA被拆分，1024MB放不进洞所以向低地址扩展，64MB则复用了释放形成的空洞。
+然后max_vmem用PROT_NONE和MAP_NORESERVE只测虚拟映射边界，得到170.67TiB，说明虚拟空间远大于物理内存。
+接着touch_pages对3GB空间逐4KB访问，读触页只产生大量minor fault，RssAnon几乎不变；写触页必须分配私有物理页，所以RssAnon上升并出现swap。
+提高部分里，B进程写入4GB后，A进程VmRSS从约1.79GB降到约1MB，VmSwap升到约1.75GB，说明两个进程竞争物理页。
+最后，global访问4GB重复3遍耗时51秒、主缺页26万次；16页分组只耗时3.6秒、主缺页11次，证明局部性会明显减少页面置换。</code></pre>
+      </section>
+
+      <section id="qa">
+        <h2>老师追问速答</h2>
+        <details open>
+          <summary>问：malloc成功是不是就占用了物理内存？</summary>
+          <div>不是。malloc成功主要表示虚拟地址空间可用。只有触页，尤其是写触页，才会逐步分配私有物理页。证据是3GB读触页后VmSize很大，但RssAnon几乎没变。</div>
+        </details>
+
+        <details>
+          <summary>问：为什么读触页不会明显增加RSS？</summary>
+          <div>匿名页第一次读时，内核可以把虚拟页映射到共享零页。这个页是只读的，多个虚拟页可以共享，所以不会给每个虚拟页分配私有物理页。</div>
+        </details>
+
+        <details>
+          <summary>问：为什么写触页会产生swap？</summary>
+          <div>写触页必须为每个4KB页分配私有物理页。3GB写入已经接近虚拟机可用物理内存，内核为了满足新页分配，会把一部分匿名页换出到swap。</div>
+        </details>
+
+        <details>
+          <summary>问：用户空间分配是连续分配还是离散分配？</summary>
+          <div>从整个进程虚拟地址空间看是离散管理。每个VMA内部可以连续，但多个VMA之间有动态库、栈、vdso、释放空洞等间隔；物理内存更是通过页表离散映射。</div>
+        </details>
+
+        <details>
+          <summary>问：这是首次适应还是最佳适应？</summary>
+          <div>本实验表现更接近mmap区域自高地址向低地址搜索的首次适应倾向。64MB复用了已有足够大的空洞，但不是为了找到全局最小剩余空间而做最佳适应。</div>
+        </details>
+
+        <details>
+          <summary>问：为什么最大虚拟映射能到170.67TiB？</summary>
+          <div>因为测试的是虚拟地址能否保留，不是实际写入物理内存。使用PROT_NONE和MAP_NORESERVE后，结果主要受64位用户地址空间、内核布局和RLIMIT_AS影响。</div>
+        </details>
+
+        <details>
+          <summary>问：global和group16访问总量一样，为什么时间差这么多？</summary>
+          <div>global的短期工作集是4GB，页面再次访问前很可能被换出；group16的短期工作集只有16页，也就是64KB，重复访问时页面仍驻留，因此主缺页少得多。</div>
+        </details>
+      </section>
+
+      <section id="trouble">
+        <h2>排错手册</h2>
+        <table>
+          <thead><tr><th>问题</th><th>原因</th><th>解决</th></tr></thead>
+          <tbody>
+            <tr><td><code>gcc: command not found</code></td><td>虚拟机没装编译器。</td><td><code>sudo apt update && sudo apt install build-essential</code></td></tr>
+            <tr><td><code>mmap: Cannot allocate memory</code></td><td>内存限制或地址空间不足。</td><td>先看<code>ulimit -a</code>和<code>/proc/sys/vm/overcommit_memory</code>。</td></tr>
+            <tr><td>虚拟机卡顿</td><td>4096MB写入会造成强烈swap。</td><td>验收前关闭多余程序；必要时先用2048MB演示，再展示完整日志。</td></tr>
+            <tr><td>读写结果差异不明显</td><td>没有按4KB步长触页，或编译器优化掉读循环。</td><td>使用现有<code>touch_pages.c</code>，保留<code>volatile sink</code>。</td></tr>
+            <tr><td>找不到A进程status</td><td>A进程已经结束。</td><td><code>write-hold</code>后面加更长秒数，例如<code>300</code>。</td></tr>
+            <tr><td>输出日志不完整</td><td>后台重定向有缓冲或进程被kill。</td><td>竞争实验关键数据用外部<code>grep /proc/$A/status</code>抓取。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="check">
+        <h2>最终验收清单</h2>
+        <div class="checklist">
+          <label><input type="checkbox" data-key="c1">我能解释VmSize、VmRSS、RssAnon、VmSwap分别代表什么。</label>
+          <label><input type="checkbox" data-key="c2">我能打开<code>snapshots/23_after_alloc_64.maps</code>指出64MB落在哪个空洞。</label>
+          <label><input type="checkbox" data-key="c3">我能说清楚为什么170.67TiB不是物理内存大小。</label>
+          <label><input type="checkbox" data-key="c4">我能说清楚读触页为什么不明显增加RssAnon。</label>
+          <label><input type="checkbox" data-key="c5">我能现场复现或展示A进程VmRSS下降、VmSwap上升。</label>
+          <label><input type="checkbox" data-key="c6">我能用工作集和页面置换解释global与group16的时间差。</label>
+          <label><input type="checkbox" data-key="c7">我知道如果虚拟机卡顿，要先降规模演示，再展示完整日志。</label>
+        </div>
+        <div class="ok"><b>最后一句话：</b>这次实验的主线就是“虚拟地址先存在，物理页按访问逐步兑现；内存压力出现后，页面会被换出；局部性决定换页成本”。你把这句话讲顺，验收基本就稳了。</div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll(".copy").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const code = button.parentElement.querySelector("code").innerText;
+        try {
+          await navigator.clipboard.writeText(code);
+          const old = button.textContent;
+          button.textContent = "已复制";
+          setTimeout(() => button.textContent = old, 900);
+        } catch (e) {
+          button.textContent = "复制失败";
+        }
+      });
+    });
+
+    document.querySelectorAll(".checklist input").forEach((box) => {
+      const key = "exp3-guide-" + box.dataset.key;
+      box.checked = localStorage.getItem(key) === "1";
+      box.addEventListener("change", () => {
+        localStorage.setItem(key, box.checked ? "1" : "0");
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+wenjun@2023150001:~$ cd ~/exp4
+wenjun@2023150001:~/exp4$ rm -rf soft_result && mkdir soft_result
+wenjun@2023150001:~/exp4$ cd soft_result
+wenjun@2023150001:~/exp4/soft_result$ printf 'hello soft link\n' > target.txt
+wenjun@2023150001:~/exp4/soft_result$ ln target.txt hardlink
+wenjun@2023150001:~/exp4/soft_result$ ln -s target.txt softlink
+
+wenjun@2023150001:~/exp4/soft_result$ ls --color=always -li target.txt hardlink softlink
+797442 -rw-rw-r-- 2 wenjun wenjun 16 Jun 10 10:27 hardlink
+797443 lrwxrwxrwx 1 wenjun wenjun 10 Jun 10 10:27 softlink -> target.txt
+797442 -rw-rw-r-- 2 wenjun wenjun 16 Jun 10 10:27 target.txt
+wenjun@2023150001:~/exp4/soft_result$ readlink softlink
+target.txt
+
+wenjun@2023150001:~/exp4/soft_result$ rm target.txt
+wenjun@2023150001:~/exp4/soft_result$ cat hardlink
+hello soft link
+wenjun@2023150001:~/exp4/soft_result$ cat softlink
+cat: softlink: No such file or directory

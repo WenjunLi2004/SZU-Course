@@ -1,0 +1,20 @@
+[1;32mwenjun@2023150001[0m:[1;34m~[0m$ cd ~/exp4
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4[0m$ rm -rf soft_result && mkdir soft_result
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4[0m$ cd soft_result
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ printf 'hello soft link\n' > target.txt
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ ln target.txt hardlink
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ ln -s target.txt softlink
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ ls --color=always -li target.txt hardlink softlink
+797442 -rw-rw-r-- 2 wenjun wenjun 16 Jun 10 10:27 hardlink
+797443 lrwxrwxrwx 1 wenjun wenjun 10 Jun 10 10:27 [0m[01;36msoftlink[0m -> target.txt
+797442 -rw-rw-r-- 2 wenjun wenjun 16 Jun 10 10:27 target.txt
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ readlink softlink
+target.txt
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ rm target.txt
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ cat hardlink
+hello soft link
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ cat softlink
+cat: softlink: No such file or directory
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/soft_result[0m$ exit
+exit
+Connection to 192.168.64.5 closed.

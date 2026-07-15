@@ -1,0 +1,30 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, Microsoft YaHei, sans-serif", "primaryColor": "#f8fafc", "primaryTextColor": "#0f172a", "primaryBorderColor": "#334155", "lineColor": "#475569", "secondaryColor": "#eef6ff", "tertiaryColor": "#f7fee7", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart TB
+    A["程序启动"]
+    B["malloc 20M<br/>得到空白模拟磁盘"]
+    C["sfs_format<br/>写入超级块<br/>清空位图与 inode 表"]
+    D["基础接口验证"]
+    E["open manual.txt<br/>分配 inode"]
+    F["write manual.txt<br/>分配数据块并覆盖写入"]
+    G["read manual.txt<br/>按块索引读回"]
+    H["rm manual.txt<br/>释放 inode 与数据块"]
+    I["创建两个 pthread 子线程"]
+    J["线程 1<br/>创建 t1_alpha / t1_beta<br/>写入并读回"]
+    K["线程 2<br/>创建 t2_alpha / t2_beta<br/>写入并读回"]
+    L["互斥锁保护<br/>open/write/read/rm/list 临界区"]
+    M["最终 ls<br/>验证 4 个线程文件<br/>与空闲计数"]
+
+    A --> B --> C --> D
+    D --> E --> F --> G --> H --> I
+    I --> J --> L
+    I --> K --> L
+    L --> M
+
+    classDef setup fill:#f8fafc,stroke:#334155,stroke-width:1.2px,color:#0f172a;
+    classDef fileop fill:#eff6ff,stroke:#2563eb,stroke-width:1.2px,color:#1e3a8a;
+    classDef thread fill:#ecfdf5,stroke:#047857,stroke-width:1.2px,color:#064e3b;
+    classDef verify fill:#fff7ed,stroke:#c2410c,stroke-width:1.2px,color:#7c2d12;
+    class A,B,C,D setup;
+    class E,F,G,H fileop;
+    class I,J,K,L thread;
+    class M verify;

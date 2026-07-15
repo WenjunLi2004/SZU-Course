@@ -1,0 +1,17 @@
+[1;32mwenjun@2023150001[0m:[1;34m~[0m$ cd ~/exp4
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4[0m$ rm -rf linkdemo && mkdir -p linkdemo/testdir
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4[0m$ cd linkdemo
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ printf 'hello inode\n' > target.txt
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ ln target.txt hardlink
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ ls --color=always -li target.txt hardlink
+797431 -rw-rw-r-- 2 wenjun wenjun 12 Jun 10 10:27 hardlink
+797431 -rw-rw-r-- 2 wenjun wenjun 12 Jun 10 10:27 target.txt
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ echo 'append through hardlink' >> hardlink
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ cat target.txt
+hello inode
+append through hardlink
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ ln testdir harddir
+ln: testdir: hard link not allowed for directory
+[1;32mwenjun@2023150001[0m:[1;34m~/exp4/linkdemo[0m$ exit
+exit
+Connection to 192.168.64.5 closed.

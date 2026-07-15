@@ -1,0 +1,41 @@
+Simple File System experiment 2
+Target: 20M malloc disk, 1KB blocks, no directory, text files only
+
+[format] disk=20971520 bytes (20 MB), block=1024 bytes, total_blocks=20480
+[format] metadata: super=0, inode_bitmap=1, block_bitmap=2..4, inode_table=5..30
+[format] data_block_start=31, free_inodes=128, free_data_blocks=20449
+
+== Basic file interface demo ==
+[open] created manual.txt at inode 0
+[write] manual.txt size=34 bytes blocks=1
+[read] manual.txt size=34 bytes blocks=1 preview="first version: open + write + read"
+[write] manual.txt size=61 bytes blocks=1
+[read] manual.txt size=61 bytes blocks=1 preview="second version: overwrite keeps file name but replaces blocks"
+[rm] removed manual.txt from inode 0
+[read] manual.txt not found
+
+== Two pthread writers/readers demo ==
+[thread-1] start
+[open] created t1_alpha.txt at inode 0
+[write] t1_alpha.txt size=1393 bytes blocks=2
+[read] t1_alpha.txt size=1393 bytes blocks=2 preview="thread-1 writes t1_alpha.txt. This text is stored in the simulated disk...."
+[open] created t1_beta.txt at inode 1
+[write] t1_beta.txt size=986 bytes blocks=1
+[read] t1_beta.txt size=986 bytes blocks=1 preview="thread-1 writes t1_beta.txt. This text is stored in the simulated disk. ..."
+[thread-1] finish
+[thread-2] start
+[open] created t2_alpha.txt at inode 2
+[write] t2_alpha.txt size=1393 bytes blocks=2
+[read] t2_alpha.txt size=1393 bytes blocks=2 preview="thread-2 writes t2_alpha.txt. This text is stored in the simulated disk...."
+[open] created t2_beta.txt at inode 3
+[write] t2_beta.txt size=986 bytes blocks=1
+[read] t2_beta.txt size=986 bytes blocks=1 preview="thread-2 writes t2_beta.txt. This text is stored in the simulated disk. ..."
+[thread-2] finish
+
+== Final file table ==
+[ls] files in simple file system:
+  inode=000 name=t1_alpha.txt     size= 1393 bytes blocks= 2
+  inode=001 name=t1_beta.txt      size=  986 bytes blocks= 1
+  inode=002 name=t2_alpha.txt     size= 1393 bytes blocks= 2
+  inode=003 name=t2_beta.txt      size=  986 bytes blocks= 1
+[ls] total_files=4 free_inodes=124 free_data_blocks=20443

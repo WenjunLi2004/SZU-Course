@@ -1,0 +1,22 @@
+RLIMIT_AS: unlimited
+single mmap 1.00 GiB: success
+single mmap 2.00 GiB: success
+single mmap 4.00 GiB: success
+single mmap 8.00 GiB: success
+single mmap 16.00 GiB: success
+single mmap 32.00 GiB: success
+single mmap 64.00 GiB: success
+single mmap 128.00 GiB: success
+single mmap 256.00 GiB: success
+single mmap 512.00 GiB: success
+single mmap 1024.00 GiB: success
+single mmap 2048.00 GiB: success
+single mmap 4096.00 GiB: success
+single mmap 8192.00 GiB: success
+single mmap 16384.00 GiB: success
+single mmap 32768.00 GiB: success
+single mmap 65536.00 GiB: success
+single mmap 131072.00 GiB: success
+first failed upper bound: 262144.00 GiB
+max contiguous anonymous virtual mapping: 174762.91 GiB (170.67 TiB)
+errno after final search step may be stale; result is based on mmap success/failure.

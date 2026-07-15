@@ -1,0 +1,206 @@
+pid=8455
+
+===== snapshot 01: start =====
+VmSize:	    1924 kB
+VmRSS:	     464 kB
+VmData:	     172 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 02: before_alloc_1 =====
+VmSize:	    1924 kB
+VmRSS:	     464 kB
+VmData:	     172 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+block[1] = 0xffff834bf010, size = 128MB
+
+===== snapshot 03: after_alloc_1 =====
+VmSize:	  133000 kB
+VmRSS:	     464 kB
+VmData:	  131248 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 04: before_alloc_2 =====
+VmSize:	  133000 kB
+VmRSS:	     464 kB
+VmData:	  131248 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+block[2] = 0xffff7b4be010, size = 128MB
+
+===== snapshot 05: after_alloc_2 =====
+VmSize:	  264076 kB
+VmRSS:	     464 kB
+VmData:	  262324 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 06: before_alloc_3 =====
+VmSize:	  264076 kB
+VmRSS:	     464 kB
+VmData:	  262324 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+block[3] = 0xffff734bd010, size = 128MB
+
+===== snapshot 07: after_alloc_3 =====
+VmSize:	  395152 kB
+VmRSS:	     464 kB
+VmData:	  393400 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 08: before_alloc_4 =====
+VmSize:	  395152 kB
+VmRSS:	     464 kB
+VmData:	  393400 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+block[4] = 0xffff6b4bc010, size = 128MB
+
+===== snapshot 09: after_alloc_4 =====
+VmSize:	  526228 kB
+VmRSS:	     464 kB
+VmData:	  524476 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 10: before_alloc_5 =====
+VmSize:	  526228 kB
+VmRSS:	     464 kB
+VmData:	  524476 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+block[5] = 0xffff634bb010, size = 128MB
+
+===== snapshot 11: after_alloc_5 =====
+VmSize:	  657304 kB
+VmRSS:	     464 kB
+VmData:	  655552 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 12: before_alloc_6 =====
+VmSize:	  657304 kB
+VmRSS:	     464 kB
+VmData:	  655552 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+block[6] = 0xffff5b4ba010, size = 128MB
+
+===== snapshot 13: after_alloc_6 =====
+VmSize:	  788380 kB
+VmRSS:	     464 kB
+VmData:	  786628 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 14: before_free_2 =====
+VmSize:	  788380 kB
+VmRSS:	     464 kB
+VmData:	  786628 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+freed block[2]
+
+===== snapshot 15: after_free_2 =====
+VmSize:	  657304 kB
+VmRSS:	    1168 kB
+VmData:	  655552 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 16: before_free_3 =====
+VmSize:	  657304 kB
+VmRSS:	    1168 kB
+VmData:	  655552 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+freed block[3]
+
+===== snapshot 17: after_free_3 =====
+VmSize:	  526228 kB
+VmRSS:	    1160 kB
+VmData:	  524476 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 18: before_free_5 =====
+VmSize:	  526228 kB
+VmRSS:	    1160 kB
+VmData:	  524476 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+freed block[5]
+
+===== snapshot 19: after_free_5 =====
+VmSize:	  395152 kB
+VmRSS:	    1152 kB
+VmData:	  393400 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 20: before_alloc_1024 =====
+VmSize:	  395152 kB
+VmRSS:	    1152 kB
+VmData:	  393400 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+big_block = 0xffff1b4b9010, size = 1024MB
+
+===== snapshot 21: after_alloc_1024 =====
+VmSize:	 1443732 kB
+VmRSS:	    1152 kB
+VmData:	 1441980 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+Prediction: a new 64MB allocation should reuse one of the holes left by freed 128MB blocks.
+
+===== snapshot 22: before_alloc_64 =====
+VmSize:	 1443732 kB
+VmRSS:	    1152 kB
+VmData:	 1441980 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+small_block = 0xffff7f4be010, size = 64MB
+
+===== snapshot 23: after_alloc_64 =====
+VmSize:	 1509272 kB
+VmRSS:	    1152 kB
+VmData:	 1507520 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB
+
+===== snapshot 24: after_cleanup =====
+VmSize:	    1800 kB
+VmRSS:	    1124 kB
+VmData:	      48 kB
+VmStk:	     132 kB
+VmExe:	       8 kB
+VmLib:	    1524 kB

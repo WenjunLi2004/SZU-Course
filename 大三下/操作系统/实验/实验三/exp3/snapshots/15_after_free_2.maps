@@ -1,0 +1,18 @@
+aaaae0b04000-aaaae0b06000 r-xp 00000000 fd:00 550471                     /home/wenjun/exp3/vm_layout
+aaaae0b15000-aaaae0b16000 r--p 00001000 fd:00 550471                     /home/wenjun/exp3/vm_layout
+aaaae0b16000-aaaae0b17000 rw-p 00002000 fd:00 550471                     /home/wenjun/exp3/vm_layout
+aaab09e10000-aaab09e31000 rw-p 00000000 00:00 0                          [heap]
+ffff5b4ba000-ffff7b4be000 rw-p 00000000 00:00 0 
+ffff834bf000-ffff8b4c0000 rw-p 00000000 00:00 0 
+ffff8b4c0000-ffff8b61b000 r-xp 00000000 fd:00 133973                     /usr/lib/aarch64-linux-gnu/libc-2.31.so
+ffff8b61b000-ffff8b62a000 ---p 0015b000 fd:00 133973                     /usr/lib/aarch64-linux-gnu/libc-2.31.so
+ffff8b62a000-ffff8b62e000 r--p 0015a000 fd:00 133973                     /usr/lib/aarch64-linux-gnu/libc-2.31.so
+ffff8b62e000-ffff8b630000 rw-p 0015e000 fd:00 133973                     /usr/lib/aarch64-linux-gnu/libc-2.31.so
+ffff8b630000-ffff8b633000 rw-p 00000000 00:00 0 
+ffff8b633000-ffff8b654000 r-xp 00000000 fd:00 132369                     /usr/lib/aarch64-linux-gnu/ld-2.31.so
+ffff8b659000-ffff8b65b000 rw-p 00000000 00:00 0 
+ffff8b662000-ffff8b663000 r--p 00000000 00:00 0                          [vvar]
+ffff8b663000-ffff8b664000 r-xp 00000000 00:00 0                          [vdso]
+ffff8b664000-ffff8b665000 r--p 00021000 fd:00 132369                     /usr/lib/aarch64-linux-gnu/ld-2.31.so
+ffff8b665000-ffff8b667000 rw-p 00022000 fd:00 132369                     /usr/lib/aarch64-linux-gnu/ld-2.31.so
+ffffcbd5b000-ffffcbd7c000 rw-p 00000000 00:00 0                          [stack]

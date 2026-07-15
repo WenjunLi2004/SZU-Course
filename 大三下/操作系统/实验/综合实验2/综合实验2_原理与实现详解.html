@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>综合实验二：简易文件系统原理与实现详解</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --ink: #18212f;
+      --muted: #596579;
+      --line: #d7dee9;
+      --accent: #2563eb;
+      --accent-2: #047857;
+      --warn: #b45309;
+      --code-bg: #0f172a;
+      --code-ink: #e5edf7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: #ffffff;
+      padding: 26px 20px 30px;
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand .course {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0;
+    }
+
+    .brand h1 {
+      margin: 8px 0 8px;
+      font-size: 21px;
+      line-height: 1.3;
+    }
+
+    .brand .meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    nav a {
+      display: block;
+      color: #334155;
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    nav a:hover {
+      background: #eef6ff;
+      color: var(--accent);
+    }
+
+    main {
+      max-width: 1040px;
+      padding: 38px 48px 80px;
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px 32px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 25px;
+      line-height: 1.35;
+      border-bottom: 2px solid #e8edf5;
+      padding-bottom: 10px;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    .lead {
+      color: #263548;
+      font-size: 17px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .fact {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+      background: #fbfdff;
+    }
+
+    .fact strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #0f172a;
+    }
+
+    .note {
+      border-left: 4px solid var(--accent);
+      background: #eef6ff;
+      padding: 12px 16px;
+      margin: 14px 0;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .warn {
+      border-left-color: var(--warn);
+      background: #fff7ed;
+    }
+
+    figure {
+      margin: 18px 0 22px;
+      text-align: center;
+    }
+
+    figure img {
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    figcaption {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    pre {
+      overflow: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: 8px;
+      padding: 16px 18px;
+      font-size: 13px;
+      line-height: 1.58;
+      tab-size: 4;
+    }
+
+    code {
+      font-family: Menlo, Consolas, "SFMono-Regular", monospace;
+    }
+
+    .inline-code {
+      background: #eef2f7;
+      border: 1px solid #dce3ee;
+      border-radius: 5px;
+      padding: 1px 5px;
+      font-family: Menlo, Consolas, "SFMono-Regular", monospace;
+      font-size: 0.95em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 18px;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+    }
+
+    .cmd {
+      background: #111827;
+      color: #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      font-family: Menlo, Consolas, "SFMono-Regular", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .ok {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      main {
+        padding: 24px 16px 50px;
+      }
+
+      section {
+        padding: 22px 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      pre,
+      .cmd {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">
+        <div class="course">操作系统 · 综合实验二</div>
+        <h1>简易文件系统原理与实现详解</h1>
+        <div class="meta">李文俊 · 2023150001 · 高性能</div>
+      </div>
+      <nav aria-label="页面目录">
+        <a href="#overview">1. 实验目标与边界</a>
+        <a href="#layout">2. 模拟磁盘布局</a>
+        <a href="#metadata">3. 元数据结构</a>
+        <a href="#bitmap">4. 位图分配机制</a>
+        <a href="#interfaces">5. 文件接口实现</a>
+        <a href="#write">6. 覆盖写与跨块存储</a>
+        <a href="#thread">7. pthread 并发验证</a>
+        <a href="#run">8. 编译运行与结果分析</a>
+        <a href="#files">9. 工程文件说明</a>
+        <a href="#extend">10. 可改进方向</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="overview">
+        <h2>1. 实验目标与边界</h2>
+        <p class="lead">综合实验二要求在用户态实现一个简易文件系统。程序不直接使用真实磁盘，而是由主线程通过 <span class="inline-code">malloc(20M)</span> 申请一段连续内存，把它抽象成一块空白磁盘，再在这块“磁盘”上组织超级块、位图、inode 表和文件数据。</p>
+        <div class="grid">
+          <div class="fact"><strong>模拟磁盘</strong>20M 连续内存，块大小固定为 1KB，总块数为 20480。</div>
+          <div class="fact"><strong>文件类型</strong>无目录、无链接，仅支持普通文本文件。</div>
+          <div class="fact"><strong>核心接口</strong><span class="inline-code">open</span>、<span class="inline-code">write</span>、<span class="inline-code">read</span>、<span class="inline-code">rm</span>。</div>
+          <div class="fact"><strong>并发要求</strong>主线程初始化文件系统，两个 pthread 子线程分别创建两个文件并完成写读验证。</div>
+        </div>
+        <p>本实现严格按照当前实验任务书完成，不加入往届参考报告中的 100M、目录树、跨终端信号量等扩展项。这样做的好处是目标清晰：把重点放在“文件名如何对应 inode、inode 如何对应数据块、位图如何管理空闲资源、并发时如何保护共享元数据”这条主线上。</p>
+      </section>
+
+      <section id="layout">
+        <h2>2. 模拟磁盘布局</h2>
+        <p>文件系统格式化后，20M 内存被按 1KB 切成 20480 个逻辑盘块。程序把前 31 个块作为元数据区，后续块作为数据区。布局如下：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>区域</th>
+              <th>块号</th>
+              <th>作用</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SuperBlock</td>
+              <td>Block 0</td>
+              <td>记录 magic、磁盘大小、块大小、总块数、各区域起点、空闲 inode 和空闲数据块数量。</td>
+            </tr>
+            <tr>
+              <td>Inode Bitmap</td>
+              <td>Block 1</td>
+              <td>管理 128 个 inode 是否已经被文件占用。</td>
+            </tr>
+            <tr>
+              <td>Block Bitmap</td>
+              <td>Block 2-4</td>
+              <td>覆盖 20480 个盘块的占用状态，元数据块初始化时被标记为已占用。</td>
+            </tr>
+            <tr>
+              <td>Inode Table</td>
+              <td>Block 5-30</td>
+              <td>保存固定数量的 <span class="inline-code">SfsInode</span>，最多支持 128 个文件。</td>
+            </tr>
+            <tr>
+              <td>Data Blocks</td>
+              <td>Block 31 起</td>
+              <td>保存普通文本文件内容，由 block bitmap 分配和回收。</td>
+            </tr>
+          </tbody>
+        </table>
+        <figure>
+          <img src="figures/fig01_fs_layout.png" alt="简易文件系统磁盘布局结构图">
+          <figcaption>竖版 Mermaid 渲染图：20M 模拟磁盘的元数据区与数据区关系。</figcaption>
+        </figure>
+        <p>这个设计保留了 EXT2 一类传统文件系统最关键的组织思想：元数据和文件数据分开存放。文件内容不直接由文件名定位，而是通过 inode 中的块索引数组找到真正的数据块。</p>
+      </section>
+
+      <section id="metadata">
+        <h2>3. 元数据结构</h2>
+        <p><span class="inline-code">SuperBlock</span> 是整个文件系统的总目录，负责保存布局参数和资源计数；<span class="inline-code">SfsInode</span> 是单个文件的控制块，负责保存文件名、大小和直接块索引。</p>
+        <pre><code>typedef struct {
+    uint32_t magic;
+    uint32_t disk_size;
+    uint32_t block_size;
+    uint32_t total_blocks;
+    uint32_t max_files;
+    uint32_t inode_bitmap_start;
+    uint32_t block_bitmap_start;
+    uint32_t inode_table_start;
+    uint32_t inode_table_blocks;
+    uint32_t data_block_start;
+    uint32_t free_inodes;
+    uint32_t free_blocks;
+} SuperBlock;
+
+typedef struct {
+    uint8_t used;
+    char name[NAME_LEN];
+    uint32_t size;
+    uint32_t block_count;
+    uint32_t blocks[DIRECT_BLOCKS];
+} SfsInode;</code></pre>
+        <p><span class="inline-code">blocks[32]</span> 是单级直接索引。每个元素保存一个 1KB 数据块号，因此单文件最大容量为 32KB。实验要求写入字符串不超过 2KB，本实现额外使用超过 1KB 的样例来证明跨块写入，32 个直接块已经远超实验需要。</p>
+        <figure>
+          <img src="figures/fig03_structs.png" alt="SuperBlock 与 SfsInode 数据结构代码图">
+          <figcaption>关键结构体代码图：超级块描述全局布局，inode 描述单个文件。</figcaption>
+        </figure>
+      </section>
+
+      <section id="bitmap">
+        <h2>4. 位图分配机制</h2>
+        <p>位图是一种紧凑的资源管理方式。一个 bit 表示一个资源对象是否占用：0 表示空闲，1 表示已分配。inode bitmap 管理文件控制块，block bitmap 管理盘块。</p>
+        <pre><code>static int bitmap_test(uint8_t *bitmap, uint32_t index) {
+    return (bitmap[index / 8u] >> (index % 8u)) &amp; 1u;
+}
+
+static void bitmap_set(uint8_t *bitmap, uint32_t index) {
+    bitmap[index / 8u] |= (uint8_t)(1u &lt;&lt; (index % 8u));
+}
+
+static void bitmap_clear(uint8_t *bitmap, uint32_t index) {
+    bitmap[index / 8u] &amp;= (uint8_t)~(1u &lt;&lt; (index % 8u));
+}</code></pre>
+        <p>格式化时，Block 0 到 Block 30 属于元数据块，程序会先把这些块在 block bitmap 中置位。之后分配数据块时从 <span class="inline-code">data_block_start</span> 开始扫描，避免把文件内容写到超级块、位图或 inode 表上。</p>
+        <div class="note warn">本实验的资源一致性依赖三个动作同步完成：位图置位或清位、超级块空闲计数更新、inode 中块索引更新。任何一步遗漏，最终的文件表和空闲资源统计都会出现矛盾。</div>
+        <figure>
+          <img src="figures/fig05_bitmap_alloc.png" alt="inode 与数据块分配代码图">
+          <figcaption>位图分配与释放代码：扫描空闲位、更新空闲计数、清空释放后的数据块。</figcaption>
+        </figure>
+      </section>
+
+      <section id="interfaces">
+        <h2>5. 文件接口实现</h2>
+        <h3>open：创建或确认文件</h3>
+        <p><span class="inline-code">sfs_open(name)</span> 先检查文件名合法性：不能为空、不能包含目录分隔符 <span class="inline-code">/</span>、长度必须小于 64。若文件已存在，直接提示并返回成功；若不存在，则从 inode bitmap 中分配一个空闲 inode，清空结构体并写入文件名。</p>
+        <h3>read：按 inode 块索引拼接内容</h3>
+        <p><span class="inline-code">sfs_read(name, out, out_size)</span> 根据文件名找到 inode，再按照 <span class="inline-code">inode.blocks[i]</span> 顺序复制各个数据块的有效片段。最后手动写入字符串结尾 <span class="inline-code">'\0'</span>，保证读回内容可以作为 C 字符串打印。</p>
+        <h3>rm：释放数据块和 inode</h3>
+        <p><span class="inline-code">sfs_rm(name)</span> 先释放该 inode 中记录的所有数据块，然后清空 inode 结构体，最后清除 inode bitmap 中对应 bit。运行验证中 <span class="inline-code">manual.txt</span> 被删除后再次读取得到 <span class="inline-code">not found</span>，说明 inode 已经不再被文件表引用。</p>
+        <figure>
+          <img src="figures/fig07_read_rm.png" alt="read 和 rm 接口代码图">
+          <figcaption>read 和 rm 的实现重点：块索引顺序读回、删除时回收所有资源。</figcaption>
+        </figure>
+      </section>
+
+      <section id="write">
+        <h2>6. 覆盖写与跨块存储</h2>
+        <p><span class="inline-code">sfs_write</span> 是最容易出错的接口，因为它既要改变文件内容，又要改变文件占用的数据块。程序采用“覆盖写”策略：新的字符串会替换旧内容，而不是追加到末尾。</p>
+        <pre><code>uint32_t len = (uint32_t)strlen(text);
+uint32_t need_blocks = len == 0 ? 0 : ceil_div_u32(len, BLOCK_SIZE);
+
+if (need_blocks &gt; DIRECT_BLOCKS) {
+    return -1;
+}
+if (super_block()-&gt;free_blocks + inode-&gt;block_count &lt; need_blocks) {
+    return -1;
+}
+
+release_inode_blocks_unlocked(inode);
+inode-&gt;size = len;
+inode-&gt;block_count = need_blocks;</code></pre>
+        <p>这里有一个关键细节：空间检查使用的是 <span class="inline-code">free_blocks + inode-&gt;block_count</span>。原因是覆盖写会先释放旧内容占用的块，所以旧块也可以重新参与新内容的分配。如果不把旧块算入可用空间，一个原本可以覆盖成功的写入可能会被误判为空间不足。</p>
+        <p>真正写入时，程序按 1KB 为单位分段复制：第 0 段写到第一个数据块，第 1 段写到第二个数据块，以此类推。因此当字符串长度超过 1024 字节时，文件自然跨多个盘块保存，读回时再按 blocks 数组顺序拼接。</p>
+        <figure>
+          <img src="figures/fig06_write.png" alt="write 覆盖写入与跨块存储代码图">
+          <figcaption>write 接口代码图：先检查空间，再释放旧块、分配新块、分段写入。</figcaption>
+        </figure>
+      </section>
+
+      <section id="thread">
+        <h2>7. pthread 并发验证</h2>
+        <p>主线程只负责申请模拟磁盘、格式化文件系统和启动测试流程。两个子线程共享同一块模拟磁盘，因此它们也共享同一个超级块、inode 表和位图。</p>
+        <pre><code>static uint8_t *g_disk = NULL;
+static pthread_mutex_t g_fs_lock = PTHREAD_MUTEX_INITIALIZER;</code></pre>
+        <p>每个文件系统接口都会在进入临界区时加锁，离开时解锁。这样可以保证两个线程不会同时修改 inode bitmap、block bitmap 或超级块中的空闲计数。</p>
+        <table>
+          <thead>
+            <tr>
+              <th>线程</th>
+              <th>文件</th>
+              <th>写入内容特征</th>
+              <th>验证点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>thread-1</td>
+              <td>t1_alpha.txt、t1_beta.txt</td>
+              <td>分别填充 A、B 字符，字符串不同。</td>
+              <td>alpha 超过 1KB，占 2 块；beta 不超过 1KB，占 1 块。</td>
+            </tr>
+            <tr>
+              <td>thread-2</td>
+              <td>t2_alpha.txt、t2_beta.txt</td>
+              <td>分别填充 X、Y 字符，和线程 1 明显区分。</td>
+              <td>两个线程最终共保留 4 个文件，资源计数与块占用一致。</td>
+            </tr>
+          </tbody>
+        </table>
+        <figure>
+          <img src="figures/fig02_run_flow.png" alt="程序执行流程图">
+          <figcaption>竖版执行流程图：格式化、基础接口验证、双线程验证、最终 ls。</figcaption>
+        </figure>
+        <figure>
+          <img src="figures/fig08_threads.png" alt="pthread 双线程代码图">
+          <figcaption>线程验证代码：每个线程创建两个文件并完成写读。</figcaption>
+        </figure>
+      </section>
+
+      <section id="run">
+        <h2>8. 编译运行与结果分析</h2>
+        <p>在 UTM 服务器上部署到 <span class="inline-code">~/exp2_sfs</span> 后，使用 Makefile 编译并运行：</p>
+        <div class="cmd">wenjun@2023150001:~/exp2_sfs$ make clean &amp;&amp; make<br>wenjun@2023150001:~/exp2_sfs$ ./sfs<br>wenjun@2023150001:~/exp2_sfs$ ./run_demo.sh</div>
+        <figure>
+          <img src="figures/fig09_compile_server.png" alt="服务器编译结果">
+          <figcaption>服务器编译结果：GCC 编译通过。</figcaption>
+        </figure>
+        <p>初始化输出中的关键数字可以直接验证布局计算是否正确：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>输出项</th>
+              <th>实际值</th>
+              <th>含义</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>disk</td>
+              <td>20971520 bytes</td>
+              <td>20M 模拟磁盘。</td>
+            </tr>
+            <tr>
+              <td>block</td>
+              <td>1024 bytes</td>
+              <td>每个逻辑盘块 1KB。</td>
+            </tr>
+            <tr>
+              <td>total_blocks</td>
+              <td>20480</td>
+              <td>20971520 / 1024。</td>
+            </tr>
+            <tr>
+              <td>data_block_start</td>
+              <td>31</td>
+              <td>Block 0-30 被元数据占用，Block 31 起保存文件数据。</td>
+            </tr>
+            <tr>
+              <td>free_data_blocks</td>
+              <td>20449</td>
+              <td>20480 - 31。</td>
+            </tr>
+          </tbody>
+        </table>
+        <figure>
+          <img src="figures/fig10_basic_server.png" alt="基础接口运行结果">
+          <figcaption>基础接口运行结果：open、write、read、覆盖写、rm 和删除后读失败。</figcaption>
+        </figure>
+        <p>双线程运行结束后，最终文件表中保留 4 个文件。两个 alpha 文件大小为 1393 bytes，均占 2 个数据块；两个 beta 文件大小为 986 bytes，均占 1 个数据块。因此共占用 6 个数据块，最终 <span class="inline-code">free_data_blocks=20443</span>，与 <span class="inline-code">20449 - 6</span> 完全一致。<span class="ok">这说明块分配、跨块写入和资源统计是自洽的。</span></p>
+        <figure>
+          <img src="figures/fig11_threads_server.png" alt="双线程写读与最终文件表">
+          <figcaption>双线程结果：4 个文件均成功创建、写入、读回，最终资源计数正确。</figcaption>
+        </figure>
+        <figure>
+          <img src="figures/fig12_rundemo_server.png" alt="run_demo.sh 复现结果">
+          <figcaption>run_demo.sh 复现结果：清理、编译、运行过程可重复。</figcaption>
+        </figure>
+      </section>
+
+      <section id="files">
+        <h2>9. 工程文件说明</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>文件</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="inline-code">sfs.c</span></td>
+              <td>简易文件系统完整源码，包含元数据结构、位图函数、文件接口、线程验证和 main 函数。</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">Makefile</span></td>
+              <td>统一编译命令：<span class="inline-code">gcc -std=c11 -Wall -Wextra -O2 -pthread sfs.c -o sfs</span>。</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">run_demo.sh</span></td>
+              <td>复现脚本，一条命令完成 <span class="inline-code">make clean</span>、<span class="inline-code">make</span> 和 <span class="inline-code">./sfs</span>。</td>
+            </tr>
+            <tr>
+              <td><span class="inline-code">figures/</span></td>
+              <td>保存 Mermaid 流程图、Ray.so 风格代码图和服务器运行结果图。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="extend">
+        <h2>10. 可改进方向</h2>
+        <p>当前实现面向实验任务，故意保持结构简单。如果继续扩展，可以从以下几个方向逐步增强：</p>
+        <table>
+          <thead>
+            <tr>
+              <th>方向</th>
+              <th>可以如何扩展</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>目录结构</td>
+              <td>新增目录项结构，把文件名从 inode 中拆出，支持路径解析和多级目录。</td>
+            </tr>
+            <tr>
+              <td>更大的文件</td>
+              <td>在直接块之外增加一级间接块或二级间接块，让单文件容量突破 32KB。</td>
+            </tr>
+            <tr>
+              <td>更细粒度并发</td>
+              <td>当前使用全局互斥锁，正确但粒度较粗；后续可以拆分为超级块锁、位图锁和 inode 锁。</td>
+            </tr>
+            <tr>
+              <td>持久化</td>
+              <td>把 20M 内存镜像保存到宿主机文件中，下次启动时从镜像恢复文件系统状态。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>这些扩展都可以建立在本实验已经实现的超级块、位图和 inode 映射机制之上。换句话说，本实验虽然是简化版，但已经包含了文件系统最核心的骨架。</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

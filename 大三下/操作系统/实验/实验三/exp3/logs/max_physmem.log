@@ -1,0 +1,62 @@
+pid=54578, page_size=4096 bytes
+chunk=64 MB, reserve=512 MB, max=unlimited, hold=0 seconds
+stop rule: stop before MemAvailable is below reserve, or when this process gets VmSwap.
+
+[00] touched=    0 MB | VmRSS=     0.4 MB | RssAnon=     0.1 MB | VmSwap=     0.0 MB | MemAvailable=  3531.8 MB | SwapFree=  3234.4 MB
+[01] touched=   64 MB | VmRSS=    65.1 MB | RssAnon=    63.9 MB | VmSwap=     0.0 MB | MemAvailable=  3468.6 MB | SwapFree=  3234.4 MB
+[02] touched=  128 MB | VmRSS=   129.0 MB | RssAnon=   127.9 MB | VmSwap=     0.0 MB | MemAvailable=  3404.6 MB | SwapFree=  3234.4 MB
+[03] touched=  192 MB | VmRSS=   193.2 MB | RssAnon=   192.1 MB | VmSwap=     0.0 MB | MemAvailable=  3340.6 MB | SwapFree=  3234.4 MB
+[04] touched=  256 MB | VmRSS=   257.1 MB | RssAnon=   256.0 MB | VmSwap=     0.0 MB | MemAvailable=  3276.7 MB | SwapFree=  3234.4 MB
+[05] touched=  320 MB | VmRSS=   321.1 MB | RssAnon=   319.9 MB | VmSwap=     0.0 MB | MemAvailable=  3212.4 MB | SwapFree=  3234.4 MB
+[06] touched=  384 MB | VmRSS=   385.0 MB | RssAnon=   383.9 MB | VmSwap=     0.0 MB | MemAvailable=  3148.5 MB | SwapFree=  3234.4 MB
+[07] touched=  448 MB | VmRSS=   448.9 MB | RssAnon=   447.8 MB | VmSwap=     0.0 MB | MemAvailable=  3084.3 MB | SwapFree=  3234.4 MB
+[08] touched=  512 MB | VmRSS=   513.1 MB | RssAnon=   512.0 MB | VmSwap=     0.0 MB | MemAvailable=  3020.0 MB | SwapFree=  3234.4 MB
+[09] touched=  576 MB | VmRSS=   577.1 MB | RssAnon=   576.0 MB | VmSwap=     0.0 MB | MemAvailable=  2956.1 MB | SwapFree=  3234.4 MB
+[10] touched=  640 MB | VmRSS=   641.0 MB | RssAnon=   639.9 MB | VmSwap=     0.0 MB | MemAvailable=  2892.1 MB | SwapFree=  3234.4 MB
+[11] touched=  704 MB | VmRSS=   704.9 MB | RssAnon=   703.8 MB | VmSwap=     0.0 MB | MemAvailable=  2827.6 MB | SwapFree=  3234.4 MB
+[12] touched=  768 MB | VmRSS=   769.1 MB | RssAnon=   768.0 MB | VmSwap=     0.0 MB | MemAvailable=  2763.4 MB | SwapFree=  3234.4 MB
+[13] touched=  832 MB | VmRSS=   833.1 MB | RssAnon=   832.0 MB | VmSwap=     0.0 MB | MemAvailable=  2699.8 MB | SwapFree=  3234.4 MB
+[14] touched=  896 MB | VmRSS=   897.0 MB | RssAnon=   895.9 MB | VmSwap=     0.0 MB | MemAvailable=  2635.5 MB | SwapFree=  3234.4 MB
+[15] touched=  960 MB | VmRSS=   960.9 MB | RssAnon=   959.8 MB | VmSwap=     0.0 MB | MemAvailable=  2571.5 MB | SwapFree=  3234.4 MB
+[16] touched= 1024 MB | VmRSS=  1025.1 MB | RssAnon=  1024.0 MB | VmSwap=     0.0 MB | MemAvailable=  2507.1 MB | SwapFree=  3234.4 MB
+[17] touched= 1088 MB | VmRSS=  1089.1 MB | RssAnon=  1088.0 MB | VmSwap=     0.0 MB | MemAvailable=  2443.1 MB | SwapFree=  3234.4 MB
+[18] touched= 1152 MB | VmRSS=  1153.0 MB | RssAnon=  1151.9 MB | VmSwap=     0.0 MB | MemAvailable=  2378.8 MB | SwapFree=  3234.4 MB
+[19] touched= 1216 MB | VmRSS=  1217.0 MB | RssAnon=  1215.8 MB | VmSwap=     0.0 MB | MemAvailable=  2314.9 MB | SwapFree=  3234.4 MB
+[20] touched= 1280 MB | VmRSS=  1281.2 MB | RssAnon=  1280.0 MB | VmSwap=     0.0 MB | MemAvailable=  2250.6 MB | SwapFree=  3234.4 MB
+[21] touched= 1344 MB | VmRSS=  1345.1 MB | RssAnon=  1344.0 MB | VmSwap=     0.0 MB | MemAvailable=  2186.6 MB | SwapFree=  3234.4 MB
+[22] touched= 1408 MB | VmRSS=  1409.0 MB | RssAnon=  1407.9 MB | VmSwap=     0.0 MB | MemAvailable=  2122.4 MB | SwapFree=  3234.4 MB
+[23] touched= 1472 MB | VmRSS=  1473.0 MB | RssAnon=  1471.9 MB | VmSwap=     0.0 MB | MemAvailable=  2058.4 MB | SwapFree=  3234.4 MB
+[24] touched= 1536 MB | VmRSS=  1537.2 MB | RssAnon=  1536.1 MB | VmSwap=     0.0 MB | MemAvailable=  1994.2 MB | SwapFree=  3234.4 MB
+[25] touched= 1600 MB | VmRSS=  1601.1 MB | RssAnon=  1600.0 MB | VmSwap=     0.0 MB | MemAvailable=  1930.2 MB | SwapFree=  3234.4 MB
+[26] touched= 1664 MB | VmRSS=  1665.0 MB | RssAnon=  1663.9 MB | VmSwap=     0.0 MB | MemAvailable=  1866.0 MB | SwapFree=  3234.4 MB
+[27] touched= 1728 MB | VmRSS=  1729.0 MB | RssAnon=  1727.9 MB | VmSwap=     0.0 MB | MemAvailable=  1802.0 MB | SwapFree=  3234.4 MB
+[28] touched= 1792 MB | VmRSS=  1793.2 MB | RssAnon=  1792.1 MB | VmSwap=     0.0 MB | MemAvailable=  1737.8 MB | SwapFree=  3234.4 MB
+[29] touched= 1856 MB | VmRSS=  1857.1 MB | RssAnon=  1856.0 MB | VmSwap=     0.0 MB | MemAvailable=  1673.8 MB | SwapFree=  3234.4 MB
+[30] touched= 1920 MB | VmRSS=  1921.0 MB | RssAnon=  1919.9 MB | VmSwap=     0.0 MB | MemAvailable=  1609.3 MB | SwapFree=  3234.4 MB
+[31] touched= 1984 MB | VmRSS=  1985.0 MB | RssAnon=  1983.9 MB | VmSwap=     0.0 MB | MemAvailable=  1545.3 MB | SwapFree=  3234.4 MB
+[32] touched= 2048 MB | VmRSS=  2049.2 MB | RssAnon=  2048.1 MB | VmSwap=     0.0 MB | MemAvailable=  1480.9 MB | SwapFree=  3234.4 MB
+[33] touched= 2112 MB | VmRSS=  2113.1 MB | RssAnon=  2112.0 MB | VmSwap=     0.0 MB | MemAvailable=  1416.9 MB | SwapFree=  3234.4 MB
+[34] touched= 2176 MB | VmRSS=  2177.1 MB | RssAnon=  2175.9 MB | VmSwap=     0.0 MB | MemAvailable=  1352.6 MB | SwapFree=  3234.4 MB
+[35] touched= 2240 MB | VmRSS=  2241.0 MB | RssAnon=  2239.9 MB | VmSwap=     0.0 MB | MemAvailable=  1288.7 MB | SwapFree=  3234.4 MB
+[36] touched= 2304 MB | VmRSS=  2305.2 MB | RssAnon=  2304.1 MB | VmSwap=     0.0 MB | MemAvailable=  1224.4 MB | SwapFree=  3234.4 MB
+[37] touched= 2368 MB | VmRSS=  2369.1 MB | RssAnon=  2368.0 MB | VmSwap=     0.0 MB | MemAvailable=  1160.4 MB | SwapFree=  3234.4 MB
+[38] touched= 2432 MB | VmRSS=  2433.1 MB | RssAnon=  2431.9 MB | VmSwap=     0.0 MB | MemAvailable=  1096.2 MB | SwapFree=  3234.4 MB
+[39] touched= 2496 MB | VmRSS=  2497.0 MB | RssAnon=  2495.9 MB | VmSwap=     0.0 MB | MemAvailable=  1032.2 MB | SwapFree=  3234.4 MB
+[40] touched= 2560 MB | VmRSS=  2560.9 MB | RssAnon=  2559.8 MB | VmSwap=     0.0 MB | MemAvailable=   968.0 MB | SwapFree=  3234.4 MB
+[41] touched= 2624 MB | VmRSS=  2625.1 MB | RssAnon=  2624.0 MB | VmSwap=     0.0 MB | MemAvailable=   904.0 MB | SwapFree=  3234.4 MB
+[42] touched= 2688 MB | VmRSS=  2689.1 MB | RssAnon=  2688.0 MB | VmSwap=     0.0 MB | MemAvailable=   839.8 MB | SwapFree=  3234.4 MB
+[43] touched= 2752 MB | VmRSS=  2753.0 MB | RssAnon=  2751.9 MB | VmSwap=     0.0 MB | MemAvailable=   775.8 MB | SwapFree=  3234.4 MB
+[44] touched= 2816 MB | VmRSS=  2816.9 MB | RssAnon=  2815.8 MB | VmSwap=     0.0 MB | MemAvailable=   711.6 MB | SwapFree=  3234.4 MB
+[45] touched= 2880 MB | VmRSS=  2881.1 MB | RssAnon=  2880.0 MB | VmSwap=     0.0 MB | MemAvailable=   647.6 MB | SwapFree=  3234.4 MB
+[46] touched= 2944 MB | VmRSS=  2945.1 MB | RssAnon=  2944.0 MB | VmSwap=     0.0 MB | MemAvailable=   583.4 MB | SwapFree=  3234.4 MB
+[47] touched= 3008 MB | VmRSS=  3009.0 MB | RssAnon=  3007.9 MB | VmSwap=     0.0 MB | MemAvailable=   519.1 MB | SwapFree=  3234.4 MB
+
+stop: MemAvailable 519.1 MB is not enough for another 64 MB chunk while keeping 512 MB reserved.
+
+result:
+  total touched virtual range: 3008 MB
+  peak RssAnon observed: 3007.9 MB, when touched=3008 MB
+  elapsed: 2.112 seconds
+
+after cleanup:
+[00] touched=    0 MB | VmRSS=     1.2 MB | RssAnon=     0.1 MB | VmSwap=     0.0 MB | MemAvailable=  3524.8 MB | SwapFree=  3234.4 MB

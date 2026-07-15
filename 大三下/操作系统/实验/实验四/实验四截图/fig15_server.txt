@@ -1,0 +1,17 @@
+wenjun@2023150001:~$ cd ~/exp4
+wenjun@2023150001:~/exp4$ rm -rf linkdemo && mkdir -p linkdemo/testdir
+wenjun@2023150001:~/exp4$ cd linkdemo
+wenjun@2023150001:~/exp4/linkdemo$ printf 'hello inode\n' > target.txt
+wenjun@2023150001:~/exp4/linkdemo$ ln target.txt hardlink
+
+wenjun@2023150001:~/exp4/linkdemo$ ls --color=always -li target.txt hardlink
+797431 -rw-rw-r-- 2 wenjun wenjun 12 Jun 10 10:27 hardlink
+797431 -rw-rw-r-- 2 wenjun wenjun 12 Jun 10 10:27 target.txt
+
+wenjun@2023150001:~/exp4/linkdemo$ echo 'append through hardlink' >> hardlink
+wenjun@2023150001:~/exp4/linkdemo$ cat target.txt
+hello inode
+append through hardlink
+
+wenjun@2023150001:~/exp4/linkdemo$ ln testdir harddir
+ln: testdir: hard link not allowed for directory

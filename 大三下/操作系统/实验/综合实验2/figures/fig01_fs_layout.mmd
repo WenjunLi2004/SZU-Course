@@ -1,0 +1,30 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, Microsoft YaHei, sans-serif", "primaryColor": "#f8fafc", "primaryTextColor": "#0f172a", "primaryBorderColor": "#334155", "lineColor": "#475569", "secondaryColor": "#eef6ff", "tertiaryColor": "#f7fee7", "edgeLabelBackground": "#ffffff"}}}%%
+flowchart TB
+    A["主线程 malloc<br/>20M 模拟磁盘"]
+    B["格式化 SuperBlock<br/>记录块大小、总块数、布局偏移"]
+    C["Block 0<br/>SuperBlock"]
+    D["Block 1<br/>Inode Bitmap"]
+    E["Block 2-4<br/>Block Bitmap"]
+    F["Block 5-30<br/>Inode Table<br/>128 个文件控制块"]
+    G["Block 31 起<br/>Data Blocks<br/>保存文本内容"]
+    H["SfsInode<br/>name / size / block_count<br/>blocks[32] 单级索引"]
+    I["文件内容<br/>按 1KB 盘块分配<br/>可跨块读写"]
+
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+    B --> F
+    B --> G
+    F --> H
+    H --> I
+    G --> I
+
+    classDef meta fill:#eff6ff,stroke:#2563eb,stroke-width:1.2px,color:#1e3a8a;
+    classDef inode fill:#ecfdf5,stroke:#047857,stroke-width:1.2px,color:#064e3b;
+    classDef data fill:#fff7ed,stroke:#c2410c,stroke-width:1.2px,color:#7c2d12;
+    classDef root fill:#f8fafc,stroke:#334155,stroke-width:1.2px,color:#0f172a;
+    class A,B root;
+    class C,D,E meta;
+    class F,H inode;
+    class G,I data;

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作系统笔记：引论与进程管理</title>
+    <style>
+        :root {
+            --bg-color: #1e1e2e;
+            --text-color: #cdd6f4;
+            --heading-color: #cba6f7;
+            --accent-color: #89b4fa;
+            --border-color: #45475a;
+            --code-bg: #181825;
+            --mark-bg: rgba(243, 139, 168, 0.3);
+            --mark-text: #f38ba8;
+            --blockquote-bg: #11111b;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--heading-color);
+            font-weight: 600;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.3em;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.3em;
+            color: var(--accent-color);
+        }
+
+        h3 { font-size: 1.3rem; }
+
+        p, li {
+            margin-bottom: 0.8em;
+            font-size: 1.05rem;
+        }
+
+        ul, ol { padding-left: 1.5rem; }
+
+        li::marker { color: var(--accent-color); }
+
+        mark {
+            background-color: var(--mark-bg);
+            color: var(--mark-text);
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        strong { color: #f5c2e7; }
+
+        blockquote {
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5em 0;
+            padding: 1em;
+            background-color: var(--blockquote-bg);
+            border-radius: 0 8px 8px 0;
+            color: #a6adc8;
+            font-style: italic;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        code {
+            font-family: "Fira Code", Consolas, Monaco, monospace;
+            background-color: var(--code-bg);
+            color: #a6e3a1;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        pre code {
+            padding: 0;
+            background-color: transparent;
+            color: #cdd6f4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2em 0;
+            background-color: var(--blockquote-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th { background-color: var(--code-bg); color: var(--accent-color); }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1.5rem auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--border-color), transparent);
+            margin: 4rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>1. 操作系统引论</h1>
+
+    <h2>预习</h2>
+    <h3>操作系统的目标</h3>
+    <p><strong>疑问：难道计算机可以没有操作系统吗？</strong></p>
+    <ul>
+        <li>其实是可以的，人工操作硬件：用户独占全机，CPU等待人工操作。</li>
+        <li><strong>方便性</strong>：没有OS，你想打开一个文档文件，需要<strong>自己写驱动</strong>去读硬盘、解析文件格式、驱动显卡显示像素。OS提供了图形界面、文件管理、命令解释器等，让普通人也能轻松使用计算机。</li>
+        <li><strong>有效性</strong>：没有OS，内存如何分配给多个程序？CPU如何在多个任务间切换？外设谁先用谁后用？OS作为“大管家”，统一管理和调度所有硬件资源（CPU、内存、硬盘、网络等），让它们高效、合理地协同工作，避免冲突和浪费。</li>
+        <li><strong>可扩充性</strong>：没有OS，每增加一个新硬件（比如新型号的显卡），所有软件都可能需要重写来适配它。OS提供了标准的驱动接口，硬件厂商只需提供针对OS的驱动，所有应用软件就都能使用它。</li>
+        <li><strong>开放性</strong>：没有OS，每个软件开发商都要为一台计算机单独开发，没有通用标准。OS定义了应用程序和计算机交互的标准接口（API），使得软件可以在遵循同一标准的任何计算机上运行，实现了软硬件的解耦和生态繁荣。</li>
+    </ul>
+
+    <h3>OS 发展</h3>
+    <ol>
+        <li>从人工操作硬件发展到<strong>脱机输入/输出</strong>(Off-Line I/O)方式。增加一个额外的硬件脱离主机来处理输入和输出，从而减少了CPU的空闲时间和提高I/O效率。</li>
+        <li>进一步发展到早期的批处理操作系统：单通道 -> 多通道，分为 Input - Execute - Output。<br>
+            资源利用率高，吞吐量大。<br>
+            <strong>面临的问题：并发和资源共享引发的管理难题</strong>
+            <ul>
+                <li><strong>处理机管理问题</strong>（谁该用CPU？用多久？）</li>
+                <li><strong>内存管理问题</strong>（程序放哪？互不干扰？）</li>
+                <li><strong>I/O设备管理问题</strong>（谁先用打印机？）</li>
+                <li><strong>文件管理问题</strong>（数据如何组织、保护？）</li>
+                <li><strong>作业管理问题</strong>（如何组织作业流？）</li>
+            </ul>
+        </li>
+    </ol>
+
+    <p>所以<strong>操作系统的定义</strong>： 一组 <strong>控制和管理</strong>计算机硬件和软件资源，合理对各类作业进行调度，方便用户使用的 <strong>程序的集合</strong>。</p>
+    <p>它不是一个单一的程序，而是由许多模块化、各司其职的程序共同构成的，例如：</p>
+    <ul>
+        <li><strong>内核</strong>：最核心的部分，负责管理CPU、内存、进程等关键资源。它通常不是一个可以直接运行的“应用”，而是为其他程序提供服务的底层基础。</li>
+        <li><strong>系统程序</strong>：例如用于文件操作的命令（<code>cp</code>, <code>mv</code>）、用于进程查看的命令（<code>ps</code>）、Shell（命令解释器）等。</li>
+        <li><strong>驱动程序</strong>：用于和特定硬件（如显卡、声卡）通信的特殊程序。</li>
+        <li><strong>用户接口程序</strong>：如图形界面（GUI）的窗口管理器、桌面环境等。</li>
+    </ul>
+
+    <h4>两条发展路径</h4>
+    <ol>
+        <li><strong>解决效率问题</strong>
+            <ul>
+                <li><strong>多道批处理系统</strong>：实现了自动调度和资源管理，但缺乏交互性(用户提交作业后只能等待)。</li>
+                <li><strong>分时系统</strong>：引入了 <mark>“时间片”</mark> 概念。CPU时间切成极小的片段，轮流分配给多个联机用户。由于切换速度极快，每个用户都感觉自己在独占主机。</li>
+                <li><strong>实时系统</strong>：在分时系统“及时”的基础上，对“时间”的要求达到了<strong>严格、可预测的级别</strong>。</li>
+            </ul>
+        </li>
+        <li><strong>普及到个人</strong>
+            <ul>
+                <li><strong>单用户单任务（如MS-DOS）</strong>：这是操作系统理念的“简化版”或“回溯”。由于早期微机性能极弱，它只实现了最基础的<strong>文件管理</strong>和<strong>设备驱动</strong>，没有分时多任务能力。<strong>用户一次只能运行一个程序，命令行操作</strong>。</li>
+                <li><strong>单用户多任务（如Windows系列、经典Mac OS）</strong>：<strong>分时系统思想</strong>在个人电脑上的实现。</li>
+                <li><strong>多用户多任务（如Unix、Linux及衍生的macOS）</strong>：<strong>完整的分时系统</strong>在服务器和高端工作站上的体现。<strong>多个用户能够同时、独立地使用同一台计算机</strong>：每个用户拥有自己的账户、文件、设置和运行环境，操作系统负责安全地隔离和管理这些资源，确保彼此互不干扰—— <mark>并发</mark>。</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>操作系统四大基本特性</h3>
+    <ol>
+        <li><strong>并发 Concurrence</strong>：多核并行，单核并发——宏观上多个程序在同时运行，微观上分时交替执行。</li>
+        <li><strong>共享 Sharing</strong>：系统资源（内存、CPU、设备等）供内存中多个并发执行的程序共同使用。</li>
+        <li><strong>虚拟 Virtual</strong>：通过技术将物理实体变为逻辑上的对应物（如虚拟内存），方便用户使用。</li>
+        <li><strong>异步性 Asynchronism</strong>：进程以不可预知的速度向前推进，<strong>允许程序在运行中被中断</strong>。</li>
+    </ol>
+
+    <div class="section-divider"></div>
+
+    <h1>2. 进程管理</h1>
+    <p><strong>进程</strong>是操作系统最核心的概念。</p>
+
+    <h2>0. 为什么要引入进程</h2>
+    <p>要理解进程，首先要理解<strong>程序是如何运行的</strong>。</p>
+
+    <h3>（1）顺序执行</h3>
+    <p>早期，程序是严格<strong>按顺序一步步执行</strong>的，<strong>前一操作完成才能执行后继操作</strong>。</p>
+    <p><strong>三个特征：</strong></p>
+    <ol>
+        <li><strong>顺序性</strong>：下一操作要等待前一操作结束</li>
+        <li><strong>封闭性</strong>：执行时独占资源，不受外界影响</li>
+        <li><strong>可再现性</strong>：只要重复执行，就会获得相同结果</li>
+    </ol>
+    <p>程序：Input -- Compute -- Print<br>每条语句也可以看做一个程序。</p>
+    <img src="Pasted image 20260318224607.png" alt="顺序执行图示">
+
+    <h3>（2）前趋图：描述执行的先后关系</h3>
+    <p>有向无环图：箭头“→”表示偏序或前趋关系。</p>
+    <ul>
+        <li>P<sub>i</sub> → P<sub>j</sub>，称P<sub>i</sub>是P<sub>j</sub>的直接前趋，而称P<sub>j</sub>是P<sub>i</sub>的直接后继。</li>
+    </ul>
+    <img src="Pasted image 20260318223402.png" alt="前趋图图示">
+
+    <h3>（3）并发执行</h3>
+    <p>现代操作系统为了提高效率，会让多个程序同时运行，导致程序：</p>
+    <ol>
+        <li><strong>间断性</strong>：在并发环境下，多个程序共享系统的资源，所以当另一个程序占用需要的资源时，必须暂停等待，等待空闲再执行。</li>
+        <li>失去封闭性。</li>
+        <li><mark>不可再现性</mark>：即使是<strong>同样的程序、同样的输入，每次运行的结果都可能不一样</strong>。</li>
+    </ol>
+    <p>——使得纯粹的 <strong>“程序”在并发环境下无法正确运行</strong>。</p>
+    <p>为了保证程序能在<strong>多程序环境</strong>下<strong>安全、正确地并发执行</strong>，操作系统必须引入 <strong>进程</strong> 这个概念，给每个运行的实例分配一个独立的进程控制块（PCB）来记录它的现场和状态。</p>
+
+    <h2>1. 进程的基本概念</h2>
+    <h3>1. 什么是进程？(核心定义与结构)</h3>
+    <ul>
+        <li><strong>官方定义</strong>：<strong>进程是<mark>程序的一次执行</mark></strong>，<strong>是系统进行<mark>资源分配和调度的一个独立单位</mark></strong>。</li>
+        <li><strong>进程的结构由三部分组成：</strong>
+            <ol>
+                <li><strong>程序</strong>：代码段，描述进程要完成的功能。</li>
+                <li><strong>数据</strong>：数据段，进程执行时所需要的数据区。</li>
+                <li><strong>进程控制块 PCB</strong>：<strong>最重要的部分</strong>！PCB 是一种<strong>数据结构</strong>，用于<strong>标识进程的存在</strong>，并记录进程执行过程<strong>各个时刻的状态特征</strong>。哪怕两个进程共享同一段代码程序，它们也必须拥有各自独立的 PCB 和数据集合。</li>
+            </ol>
+        </li>
+    </ul>
+    <img src="Pasted image 20260318225318.png" alt="进程结构图示">
+    
+    <p><strong>所以进程有四个特性</strong>：</p>
+    <ol>
+        <li><strong>动态性</strong>：创建——执行——消亡</li>
+        <li><strong>并发性</strong>：多个进程共存于内存中，并同时执行</li>
+        <li><strong>独立性</strong>：资源独立，互不干扰</li>
+        <li><strong>异步性</strong>：速度不可预测</li>
+    </ol>
+
+    <h4>简单理解 进程 & 并发</h4>
+    <p>核心在于 <mark>PCB + 独立数据区 → 完美重启</mark></p>
+    <ul>
+        <li>PCB存储能够重启的状态特征：PC，寄存器状态...</li>
+        <li>数据独立：不被污染</li>
+    </ul>
+    <p>所以说 <strong>并发是宏观上同时，微观上交替</strong>。</p>
+
+    <h4>进程 vs. 程序 (经典对比)</h4>
+    <ul>
+        <li><strong>进程是动态</strong>的执行实体，而<strong>程序是静态</strong>的数据与指令的集合。</li>
+        <li><strong>进程有生命周期</strong>（会创建、消亡），而<strong>程序是永存的</strong>（只要不删就一直存在硬盘里）。</li>
+        <li><strong>进程执行</strong>需要竞争 CPU 等资源，<strong>程序存储</strong>只需要存储器。</li>
+        <li><mark>一个程序运行时可以衍生出多个进程</mark>。</li>
+    </ul>
+
+    <h3>2. 进程分类</h3>
+    <ol>
+        <li><strong>系统进程 （VIP 玩家）</strong>：运行在管态（核心态、系统态）。它们被分配了初始资源，可以直接独占使用，并且拥有最高优先权，可以为所欲为，比如执行一切指令、直接做 I/O 操作、访问受保护的寄存器。</li>
+        <li><strong>用户进程（普通玩家）</strong>：运行在目态（用户态）。它们没有特权，必须通过“<strong>服务请求</strong>”的方式来竞争资源。不能直接操作 I/O 设备，只能执行指定的指令和访问指定的内存。</li>
+    </ol>
+
+    <h3>3. 进程的“生命周期”：三大基本状态</h3>
+    <ul>
+        <li><strong>创建状态 Created</strong>：进程刚刚开始初始化，<strong>已经分配了 PCB，但还没有获得所需的物理资源</strong>（比如程序数据还没读入内存），也没有进入调度队列。</li>
+        <li><strong>就绪状态 Ready</strong>：万事俱备，只欠东风。进程已经获得了除 CPU 以外的所有资源，正<strong>乖乖待在就绪队列里排队等候分配 CPU</strong>。</li>
+        <li><strong>执行状态 Running</strong>：成功获得 CPU，正在执行指令。</li>
+        <li><strong>阻塞状态 Blocked</strong>：进程在运行中<strong>遇到了需要等待的事件</strong>（比如请求 I/O 读取文件、请求缓冲空间等），导致暂时无法继续，于是 <strong><mark>主动放弃</mark> CPU</strong> 处于暂停状态，进入阻塞队列。</li>
+        <li><strong>终止状态 Terminated</strong>：进程执行完毕或被外力异常终止。此时系统正在回收它的全部资源，它永远不能再获得 CPU 执行。</li>
+    </ul>
+    <img src="Pasted image 20260318232331.png" alt="进程状态转换">
+<pre><code>New → Ready → Running → Terminated
+                ↓
+             Blocked
+                ↓
+              Ready</code></pre>
+
+    <h3>4. 进阶大 Boss：挂起状态 (Suspend) 与 七状态转换</h3>
+    <p><strong>挂起状态</strong> 是一种 <strong>更深度的静止状态</strong>，被挂起的进程不能马上投入运行。</p>
+    <ul>
+        <li><strong>为什么挂起？</strong> 常见原因：终端用户想要暂停程序进行调试、父进程请求同步、操作系统的负荷太重需要减轻内存压力，或者是操作系统需要检查资源使用情况。</li>
+        <li><strong>四个派生状态与转换原语</strong>：因为有了<strong>挂起 (suspend)</strong> 和<strong>激活 (active)</strong> 这两个操作，原本的<strong>就绪和阻塞</strong>裂变成了四个状态：
+            <ul>
+                <li><strong>活动就绪 (Readya)</strong> 被挂起 → <strong><mark>静止就绪</mark> (Readys)</strong></li>
+                <li><strong>活动阻塞 (Blockeda)</strong> 被挂起 → <strong><mark>静止阻塞</mark> (Blockeds)</strong></li>
+                <li>反之，使用“激活”原语可以从静止状态恢复到活动状态。</li>
+            </ul>
+        </li>
+    </ul>
+    <img src="Pasted image 20260318233702.png" alt="七状态转换">
+
+    <h3>5. PCB(Process Control Block) 进程控制块</h3>
+    <p>PCB是<mark>进程存在的唯一标志</mark>，OS是根据PCB来对并发执行的进程进行控制和管理的。</p>
+
+    <h4>1. PCB 里到底装了什么？</h4>
+    <p>可以把 PCB 想象成进程的 <strong>“个人档案”和“工作日志”</strong>，里面记载了<strong>四个核心信息</strong>：</p>
+    <ul>
+        <li><strong>进程标识符 PID</strong>：进程的身份证号，用来<strong>唯一标示这个进程</strong>。</li>
+        <li><strong>处理机状态</strong>：<mark>核心！</mark> 里面保存了 CPU 内部<strong>各种寄存器的内容</strong>。当进程被暂停时，当前的计算进度就会“截图”保存在这里，等下次恢复运行拿出来接着算。</li>
+        <li><strong>进程调度信息</strong>：记录了<strong>进程的优先级、等待了多久</strong>等，帮助操作系统决定下一个让谁上 CPU 运行。</li>
+        <li><strong>进程控制信息</strong>：记录了这个进程<strong>拥有哪些资源</strong>（比如分配了哪些内存、打开了哪些文件）。</li>
+    </ul>
+
+    <h4>2. 操作系统怎么收纳这堆 PCB？</h4>
+    <p>两种主流的组织方式：</p>
+    <ol>
+        <li><strong>链接方式</strong>：操作系统把具有相同状态的 PCB 用<strong>指针链接成一个队列</strong>。比如所有的就绪状态 PCB 串成一个“就绪队列”，阻塞状态的串成“阻塞队列”。</li>
+        <li><strong>索引方式</strong>：像查字典的目录，系统建立几张“<mark>索引表</mark>”（比如就绪索引表、阻塞索引表），表里记录着指向各个 PCB 的地址。要找哪个状态的进程，直接查表就行。</li>
+    </ol>
+
+    <h2>2. 进程控制</h2>
+    <p>进程控制，就是操作系统对“进程一生”的管理：<strong>创建</strong>、运行、等人、被叫醒、暂停、恢复、死亡。</p>
+    <p>本质：<strong>操作系统不断<mark>移动</mark>进程的 PCB，让它在不同<mark>队列和状态</mark>之间变化</strong>。</p>
+
+    <h3>2.1 重点：父进程和子进程的关系</h3>
+    <ul>
+        <li>父进程：<strong>系统</strong>或<strong>用户</strong>首先创建的进程。</li>
+        <li><strong>子进程：父进程创建的进程</strong>。</li>
+    </ul>
+    <ol>
+        <li><strong>子进程由父进程创建或撤销</strong>：父进程有权管理子进程，但子进程不能反过来控制父进程。</li>
+        <li><strong>子进程可以继承父进程资源</strong>：比如父进程打开了某些文件，子进程可能继承文件句柄；父进程有某些权限，子进程可能部分继承。</li>
+        <li><strong>父子进程可以同时运行，也可以有先后关系</strong>：比如父进程创建子进程后，可以继续干自己的；也可以等子进程结束后再继续。</li>
+        <li><mark>这种关系记录在 PCB 里</mark>：PCB 不只是记录“我是谁”，还记录“父进程是谁，孙子进程是谁”。</li>
+    </ol>
+
+    <h3>2.2 原语</h3>
+    <p><strong>原语 = 操作系统中<mark>不可分割</mark>的基本操作</strong>（要么成功，要么完全不发生）。</p>
+    <p>比如“把进程从执行态改成阻塞态”时，至少要做几件事：</p>
+    <ol>
+        <li>保存 CPU 状态</li>
+        <li>修改 PCB 状态</li>
+        <li>插入阻塞队列</li>
+        <li>重新调度 CPU</li>
+    </ol>
+    <p><strong>这些事情必须作为一个整体完成</strong>。不能只改了状态，还没插入队列；也不能插入队列了，但 CPU 状态没保存。</p>
+    <pre><code>原语 = 操作系统内核中不可中断的动作  
+特点 = 要么全做，要么全不做  
+作用 = 保证进程状态转换不会乱</code></pre>
+
+    <h3>2.3 进程创建 create</h3>
+    <p>什么时候会创建进程？用户登录、系统调度作业、程序请求服务、主动创建。<strong>Linux 里常见的是 <code>fork()</code></strong>。</p>
+    <p>底层做了些什么？</p>
+    <ol>
+        <li><strong>申请空白PCB</strong>：PCB 是进程存在的标志</li>
+        <li><strong>分配资源</strong>：分配内存、文件、I/O 资源等</li>
+        <li><strong>初始化PCB</strong>：进程标识符 PID、父进程是谁、当前状态、程序入口地址、CPU 寄存器初始状态、资源信息、优先级</li>
+        <li><strong>插入就绪队列</strong>：排队等 CPU 调度</li>
+    </ol>
+
+    <h3>2.4 进程终止 exit / terminate</h3>
+    <p>主要三类：正常结束（如 <code>return 0;</code>）、异常结束（如数组越界、除零错误）、外界干预（如任务管理器结束任务）。</p>
+    <p><strong><mark>终止过程</mark>像“退学手续”：</strong></p>
+    <ol>
+        <li>找到它的 PCB</li>
+        <li>查看它当前状态</li>
+        <li>如果正在执行，立刻停掉</li>
+        <li>终止它的子孙进程</li>
+        <li>回收资源</li>
+        <li>把 PCB 从队列中移出</li>
+    </ol>
+    <blockquote>进程死了，不只是“程序不跑了”，还要释放它占用的一切资源（否则会出现资源泄漏）。</blockquote>
+
+    <h3>2.5 进程阻塞 block ：进程主动说“我先等一下”</h3>
+    <p><strong>阻塞不是进程坏了，而是它暂时等条件</strong>（如等待慢速 I/O 操作完成）。</p>
+    <p><strong>引起阻塞的事件：</strong>请求系统服务、启动某种 I/O 操作、等待新数据到达、暂时无工作可做。</p>
+    <blockquote>阻塞是进程自身的<mark>主动行为</mark>。</blockquote>
+    <p><strong><mark>阻塞底层在做什么？</mark></strong></p>
+    <ol>
+        <li>保存现场信息：能继续在停下的位置往下执行</li>
+        <li>状态从执行态改为阻塞态</li>
+        <li>把 PCB 插入阻塞队列</li>
+        <li>重新调度CPU</li>
+        <li>CPU切换给另一个就绪进程</li>
+    </ol>
+
+    <h3>2.7 进程唤醒 wakeup：条件到了，把它从等待区叫回来</h3>
+    <p>阻塞之后，进程不是自己回来，而是要被唤醒。此时相关进程或OS调用 <code>wakeup</code> 原语。</p>
+    <p><strong><mark>唤醒过程</mark>：</strong></p>
+    <ol>
+        <li>从阻塞队列中移出 PCB</li>
+        <li>把状态从阻塞改为就绪</li>
+        <li>插入就绪队列</li>
+        <li>等待 CPU 调度</li>
+    </ol>
+    <p>注意：<strong><mark>唤醒之后不是马上执行，而是进入就绪队列</mark></strong>。</p>
+
+    <h3>2.8 挂起 suspend：把进程从内存“搬到外存”</h3>
+    <p><strong>阻塞：进程在等事件；挂起：进程被暂时移出内存。</strong></p>
+    <ul>
+        <li><mark>活动 = 在内存中</mark></li>
+        <li><mark>静止 = 被换出到外存</mark></li>
+    </ul>
+    <p><strong>本质</strong>：<mark>挂起 = 为了节省内存，把进程暂时换出</mark>。</p>
+
+    <h3>2.9 激活 active：把挂起的进程重新搬回内存</h3>
+    <p>激活就是挂起的反向过程。<strong>激活不是一定立刻运行</strong>，而是回到<mark>“活动状态”</mark>。</p>
+
+    <h3>总结</h3>
+    <table>
+        <thead>
+            <tr><th>操作</th><th>原语</th><th>状态变化</th><th>核心动作</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>创建</td><td>create</td><td>无 → 就绪</td><td>申请 PCB、分配资源、初始化、入就绪队列</td></tr>
+            <tr><td>终止</td><td>terminate / exit</td><td>任意 → 终止</td><td>停止执行、终止子孙、回收资源、移出 PCB</td></tr>
+            <tr><td>阻塞</td><td>block</td><td>执行 → 阻塞</td><td>保存现场、入阻塞队列、重新调度</td></tr>
+            <tr><td>唤醒</td><td>wakeup</td><td>阻塞 → 就绪</td><td>出阻塞队列、改为就绪、入就绪队列</td></tr>
+            <tr><td>挂起</td><td>suspend</td><td>活动 → 静止</td><td>换出到外存、释放内存</td></tr>
+            <tr><td>激活</td><td>active</td><td>静止 → 活动</td><td>调入内存、恢复为活动状态</td></tr>
+        </tbody>
+    </table>
+
+    <h2>3. 进程同步</h2>
+    <p><strong>进程同步，就是让多个并发进程在<mark>共享资源、互相合作</mark>时，不乱、不抢、不出错，并且<mark>结果可重复</mark></strong>。</p>
+
+    <h3>3.1 为什么需要进程同步？</h3>
+    <p>多个进程并发执行，面临<strong>资源共享</strong>的麻烦。如果都在操作同一个东西，就可能出错。<strong>不是算法错了，而是执行顺序乱了</strong>。</p>
+
+    <h3>3.2 进程同步到底在同步什么？</h3>
+    <p>✅ 同步 = 让多个进程按照<strong>某种正确的配合关系</strong>运行。包含两类关系：</p>
+    <ol>
+        <li><strong>间接相互制约关系</strong>（申请同一资源）</li>
+        <li><strong>直接相互制约关系</strong>（有明确的合作顺序，如输入与运算）</li>
+    </ol>
+
+    <h3>3.3 临界资源</h3>
+    <p><strong>临界资源</strong>：一次仅允许一个进程访问的共享资源（如打印机、共享变量）。<strong>共享 + 修改 + 同时访问会出错 ≈ 临界资源</strong>。</p>
+
+    <h3>3.4 生产者-消费者问题</h3>
+    <p>两个问题：<strong>1. 顺序同步</strong>（缓冲池空/满时要等），<strong>2. 互斥访问</strong>（不能同时修改缓冲池）。</p>
+
+    <h3>3.6 为什么乱序交叉共享变量 counter 会出错？</h3>
+    <p><code>counter = counter + 1</code> 在机器内部通常会拆成多条指令（读寄存器 -> 加 1 -> 写回）。乱序交叉执行会导致结果错误。这种问题叫做：<mark>竞争条件</mark>。</p>
+
+    <h3>3.7 临界区 critical section</h3>
+    <p><strong>临界区</strong>：进程中访问临界资源的那段代码。<strong>（只读不写不算临界区）</strong></p>
+<pre><code>repeat
+    entry section;     // 进入区
+    critical section;  // 临界区
+    exit section;      // 退出区
+    remainder section; // 剩余区
+until false;</code></pre>
+
+    <h3>3.8 同步机制必须遵循的四条规则</h3>
+    <ol>
+        <li><strong>空闲让进</strong></li>
+        <li><strong>忙则等待</strong>（互斥）</li>
+        <li><strong>有限等待</strong></li>
+        <li><strong>让权等待</strong>（阻塞释放 CPU，避免忙等）</li>
+    </ol>
+
+    <h3>3.9 信号量机制：（重点）</h3>
+    <p><strong>信号量本质</strong>：一个带规则的资源<mark>计数器</mark>。只能通过两个原子操作访问：<code>wait(S)</code> (P 操作) 和 <code>signal(S)</code> (V 操作)。</p>
+
+    <h4>记录型信号量：真正体现 block / wakeup</h4>
+    <p>记录型信号量包含了 <mark>可用资源数量(S.value) + 等待队列(S.L)</mark>。</p>
+<pre><code>wait(S):
+    S.value = S.value - 1;
+    if S.value < 0 then block(S.L);</code></pre>
+    <blockquote>先申请资源，S.value &lt; 0 表示阻塞进程的个数。</blockquote>
+
+<pre><code>signal(S):
+    S.value = S.value + 1;
+    if S.value <= 0 then wakeup(S.L);</code></pre>
+
+    <h3>3.11 AND型信号量</h3>
+    <p>为了避免死锁，将进程整个运行过程中需要的<mark>所有资源，一次性全部分配给进程</mark>。</p>
+
+    <h2>4. 经典线程同步</h2>
+    <h3>4.1 进程同步问题的三类矛盾</h3>
+    <ol>
+        <li><strong>互斥</strong>：同一个资源，同一时刻只能一个进程访问。</li>
+        <li><strong>同步</strong>：动作有先后顺序。</li>
+        <li><strong>死锁避免</strong>。</li>
+    </ol>
+
+    <h3>4.2 信号量应用</h3>
+    <p><strong>关键口诀：先私后公</strong>。先执行对资源信号量的 wait，再执行对互斥信号量的 wait。</p>
+
+    <h3>4.6 哲学家进餐问题</h3>
+    <p>如何避免死锁：</p>
+    <ol>
+        <li>最多允许 4 个哲学家同时拿筷子</li>
+        <li>左右筷子都可用时才允许拿（AND信号量）</li>
+        <li>奇偶哲学家拿筷子顺序不同（<mark>打破循环等待条件</mark>）</li>
+    </ol>
+
+    <h3>4.7 读写锁</h3>
+    <p>引入 <code>readcount</code> 记录读者数量，通过 <code>rmutex</code> 保护该变量：<strong>第一个读者负责关门，最后一个读者负责开门</strong>。</p>
+
+    <h2>5. 进程通信</h2>
+    <p>高级通信方式：</p>
+    <ol>
+        <li><strong>共享存储器 (Share Memory)</strong>：速度快，需自己处理互斥/同步。</li>
+        <li><strong>消息传递 (Message Passing)</strong>：应用最广泛，通过 send / receive 格式化消息。</li>
+        <li><strong>管道通信 (Pipe)</strong>：连接读写进程的<mark>共享文件</mark>。</li>
+    </ol>
+    <p><strong>间接通信</strong>：通过信箱（mailbox）转发（发送者 → 信箱 → 接收者）。</p>
+
+</body>
+</html>

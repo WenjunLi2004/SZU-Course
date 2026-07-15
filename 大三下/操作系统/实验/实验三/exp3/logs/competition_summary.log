@@ -1,0 +1,21 @@
+A pid=8839
+===== before B: A status =====
+VmSize:	 1836932 kB
+VmRSS:	 1836048 kB
+RssAnon:	 1834976 kB
+RssFile:	    1072 kB
+VmSwap:	       0 kB
+===== before B: free =====
+              total        used        free      shared  buff/cache   available
+Mem:          3.8Gi       2.8Gi       880Mi       0.0Ki       120Mi       868Mi
+Swap:         3.8Gi       226Mi       3.6Gi
+===== after B: A status =====
+VmSize:	 1836932 kB
+VmRSS:	    1064 kB
+RssAnon:	       0 kB
+RssFile:	    1064 kB
+VmSwap:	 1835092 kB
+===== after B: free =====
+              total        used        free      shared  buff/cache   available
+Mem:          3.8Gi       166Mi       3.6Gi       0.0Ki        62Mi       3.6Gi
+Swap:         3.8Gi       2.9Gi       963Mi

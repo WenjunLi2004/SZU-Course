@@ -1,0 +1,32 @@
+pid=8638, allocation=3072 MB, page_size=4096, mode=read
+
+===== before mmap =====
+VmSize:	    1924 kB
+VmRSS:	     420 kB
+RssAnon:	      60 kB
+RssFile:	     360 kB
+VmSwap:	       0 kB
+mapped address range: 0xfffed4a3a000 - 0xffff94a3a000
+
+===== after mmap before touch =====
+VmSize:	 3147652 kB
+VmRSS:	     420 kB
+RssAnon:	      60 kB
+RssFile:	     360 kB
+VmSwap:	       0 kB
+touch finished in 0.331 seconds, sink=0
+touch page faults: minor +786434, major +0
+
+===== after touch =====
+VmSize:	 3147652 kB
+VmRSS:	    1212 kB
+RssAnon:	      80 kB
+RssFile:	    1132 kB
+VmSwap:	       0 kB
+
+===== after munmap =====
+VmSize:	    1924 kB
+VmRSS:	    1276 kB
+RssAnon:	      80 kB
+RssFile:	    1196 kB
+VmSwap:	       0 kB

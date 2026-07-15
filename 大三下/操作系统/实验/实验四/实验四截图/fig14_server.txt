@@ -1,0 +1,22 @@
+wenjun@2023150001:~$ cd ~/exp4
+wenjun@2023150001:~/exp4$ rm -rf result_basic && mkdir -p result_basic/testdir
+wenjun@2023150001:~/exp4$ printf 'OS exp4\n' > result_basic/demo.txt
+wenjun@2023150001:~/exp4$ touch result_basic/testdir/file.txt
+wenjun@2023150001:~/exp4$ cd result_basic
+
+wenjun@2023150001:~/exp4/result_basic$ cp demo.txt copy.txt && mv copy.txt moved.txt
+wenjun@2023150001:~/exp4/result_basic$ ls --color=always -li demo.txt moved.txt testdir
+797453 -rw-rw-r-- 1 wenjun wenjun    8 Jun 10 10:30 demo.txt
+797455 -rw-rw-r-- 1 wenjun wenjun    8 Jun 10 10:30 moved.txt
+testdir:
+total 0
+797454 -rw-rw-r-- 1 wenjun wenjun 0 Jun 10 10:30 file.txt
+
+wenjun@2023150001:~/exp4/result_basic$ stat -c 'name=%n inode=%i links=%h size=%s blocks=%b type=%F' demo.txt
+name=demo.txt inode=797453 links=1 size=8 blocks=8 type=regular file
+
+wenjun@2023150001:~/exp4/result_basic$ df -h . && df -ih .
+Filesystem                         Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv   30G  9.7G   19G  35% /
+Filesystem                        Inodes IUsed IFree IUse% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv   2.0M  121K  1.8M    7% /

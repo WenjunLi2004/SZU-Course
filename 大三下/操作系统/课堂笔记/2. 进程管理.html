@@ -1,0 +1,2003 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2. 进程管理</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #fff8f0;
+  --paper: #ffffff;
+  --paper-soft: #fff3e3;
+  --ink: #2d2a26;
+  --muted: #7c6f64;
+  --line: #ead8c5;
+  --line-strong: #dfbc98;
+  --accent: #d97706;
+  --accent-deep: #9a3412;
+  --accent-soft: #fff2df;
+  --sky: #fff7ed;
+  --warm: #ea580c;
+  --warm-soft: #fff7ed;
+  --gold: #f2b84b;
+  --mark: #fff1a8;
+  --code-bg: #fff1df;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(90deg, rgba(217, 119, 6, 0.07) 0 1px, transparent 1px 100%),
+    linear-gradient(0deg, rgba(242, 184, 75, 0.07) 0 1px, transparent 1px 100%),
+    linear-gradient(135deg, #fffdf9 0%, #fff7ed 48%, #fff3e3 100%);
+  background-size: 34px 34px, 34px 34px, auto;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.78;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 900px);
+  gap: 34px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 34px 28px 76px;
+}
+
+.toc {
+  align-self: start;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 18px 14px 20px;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 242, 223, 0.96), rgba(255, 255, 255, 0.94));
+  box-shadow: 0 16px 34px rgba(34, 49, 63, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.toc-title {
+  margin: 0 0 12px;
+  padding: 0 4px 10px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.18);
+  font-size: 14px;
+  color: var(--accent-deep);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.toc a {
+  display: block;
+  margin: 2px 0;
+  padding: 6px 8px;
+  border-radius: 7px;
+  color: #50606a;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.45;
+  border-left: 3px solid transparent;
+}
+
+.toc a:hover {
+  color: var(--accent-deep);
+  background: rgba(255, 255, 255, 0.86);
+  border-left-color: var(--warm);
+}
+.toc .lv3 { padding-left: 12px; }
+.toc .lv4, .toc .lv5, .toc .lv6 { padding-left: 24px; font-size: 13px; }
+
+main {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 50px 60px 68px;
+  border: 1px solid rgba(223, 188, 152, 0.95);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 242, 223, 0.82), rgba(255, 255, 255, 0) 220px),
+    var(--paper);
+  box-shadow: 0 24px 60px rgba(34, 49, 63, 0.10);
+}
+
+main::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 8px;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent), var(--gold));
+}
+
+.doc-title {
+  position: relative;
+  margin: 0;
+  padding: 0 0 20px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.18);
+  font-size: 38px;
+  line-height: 1.22;
+  color: #3b2618;
+  letter-spacing: 0;
+}
+
+.meta {
+  display: inline-block;
+  margin: 14px 0 34px;
+  padding: 8px 12px;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 242, 223, 0.78);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+h2, h3, h4, h5, h6 {
+  color: #33251b;
+  line-height: 1.35;
+  scroll-margin-top: 18px;
+}
+
+h2 {
+  margin: 44px 0 16px;
+  padding: 13px 18px;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-left: 6px solid var(--accent);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255, 242, 223, 0.96), rgba(255, 250, 240, 0.78));
+  font-size: 26px;
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.08);
+}
+
+h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 30px 0 11px;
+  font-size: 21px;
+}
+
+h3::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--warm);
+  box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.13);
+}
+
+h4 {
+  margin: 24px 0 8px;
+  padding-left: 10px;
+  border-left: 3px solid var(--gold);
+  font-size: 17px;
+}
+h5, h6 { margin: 18px 0 6px; font-size: 15px; }
+p { margin: 12px 0; }
+strong { color: #111827; }
+mark {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, transparent 12%, var(--mark) 12%, var(--mark) 88%, transparent 88%);
+  box-decoration-break: clone;
+}
+
+ul, ol { padding-left: 1.55em; margin: 10px 0 16px; }
+li { margin: 6px 0; padding-left: 2px; }
+li::marker { color: var(--accent); font-weight: 700; }
+ol ol > li::marker { content: "(" counter(list-item) ") "; }
+ol ol ol > li::marker { content: counter(list-item) ") "; }
+
+blockquote {
+  margin: 20px 0;
+  padding: 14px 18px;
+  border: 1px solid rgba(217, 119, 6, 0.16);
+  border-left: 5px solid var(--accent);
+  background: linear-gradient(90deg, var(--accent-soft), rgba(255, 255, 255, 0.88));
+  color: #6b3414;
+  border-radius: 8px;
+}
+
+.callout {
+  margin: 20px 0;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  border-left: 5px solid var(--accent);
+  border-radius: 8px;
+  background: linear-gradient(90deg, #fff7ed, #ffffff);
+  overflow: hidden;
+}
+
+.callout-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.14);
+  color: var(--accent-deep);
+  font-weight: 800;
+}
+
+.callout-title span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.callout-body {
+  padding: 10px 16px 14px;
+}
+
+.callout-body p {
+  margin: 8px 0;
+}
+
+.callout-check {
+  border-color: rgba(234, 88, 12, 0.28);
+  border-left-color: #ea580c;
+}
+
+.callout-help {
+  border-color: rgba(180, 83, 9, 0.24);
+  border-left-color: #b45309;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--code-bg);
+  color: #9a3412;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
+}
+
+pre {
+  overflow: auto;
+  margin: 18px 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(20, 35, 44, 0.18);
+  border-radius: 8px;
+  background: #2f241d;
+  color: #ecfdf5;
+  line-height: 1.58;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 12px 26px rgba(34, 49, 63, 0.12);
+}
+
+pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(31, 41, 51, 0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+  background: #ffffff;
+}
+
+th, td {
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #fff2df;
+  color: #7c2d12;
+  font-weight: 700;
+}
+
+tbody tr:nth-child(even) td { background: rgba(255, 247, 237, 0.72); }
+tr:last-child td { border-bottom: 0; }
+
+hr {
+  height: 1px;
+  border: 0;
+  margin: 30px 0;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+
+.note-image {
+  margin: 22px auto;
+  text-align: center;
+}
+
+.note-image img {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  padding: 8px;
+  border: 1px solid rgba(223, 188, 152, 0.95);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(34, 49, 63, 0.10);
+}
+
+.math {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.li-extra {
+  margin: 6px 0 4px;
+  color: #31424d;
+}
+
+.fold-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin: 0 8px 0 0;
+  border: 1px solid rgba(217, 119, 6, 0.30);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--accent-deep);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: 2px;
+  box-shadow: 0 2px 8px rgba(34, 49, 63, 0.06);
+}
+
+.fold-toggle:hover {
+  background: var(--accent-soft);
+  border-color: rgba(217, 119, 6, 0.46);
+}
+
+.list-extra {
+  margin-top: 6px;
+}
+
+li.is-folded {
+  color: #43515b;
+}
+
+.study-tools {
+  margin: -14px 0 34px;
+  padding: 14px;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 24px rgba(34, 49, 63, 0.06);
+}
+
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  flex: 1 1 280px;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.search-box span {
+  flex: 0 0 auto;
+  padding: 0 12px;
+  color: var(--accent-deep);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 11px 12px;
+  border-left: 1px solid rgba(217, 119, 6, 0.16);
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tool-actions button {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+  border-radius: 8px;
+  background: #fff2df;
+  color: var(--accent-deep);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tool-actions button:hover {
+  background: var(--warm-soft);
+  color: #8a3f20;
+}
+
+.tool-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.search-status {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.search-hit {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: #ffd166;
+  color: #1d2935;
+  box-shadow: 0 0 0 1px rgba(214, 158, 46, 0.25);
+}
+
+.search-hit.current-hit {
+  background: #f97316;
+  color: #fff;
+}
+
+.read-progress {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(217, 119, 6, 0.12);
+}
+
+.read-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent), var(--gold));
+}
+
+@media (max-width: 900px) {
+  .page {
+    display: block;
+    padding: 20px 14px 40px;
+  }
+
+  .toc {
+    position: static;
+    max-height: 240px;
+    margin-bottom: 16px;
+  }
+
+  .toc a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  main {
+    padding: 32px 20px 42px;
+  }
+
+  .doc-title {
+    font-size: 29px;
+  }
+
+  h2 {
+    padding: 11px 13px;
+    font-size: 23px;
+  }
+
+  .study-tools {
+    margin-top: -16px;
+  }
+
+  .tool-actions {
+    width: 100%;
+  }
+
+  .tool-actions button {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+</style>
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+  <div class="page">
+    <nav class="toc" aria-label="目录">
+      <p class="toc-title">目录</p>
+      <a class="lv2" href="#0-为什么要引入进程">0. 为什么要引入进程</a>
+<a class="lv3" href="#1顺序执行">（1）顺序执行</a>
+<a class="lv3" href="#2前趋图描述执行的先后关系">（2）前趋图：描述执行的先后关系</a>
+<a class="lv3" href="#3并发执行">（3）并发执行</a>
+<a class="lv2" href="#1-进程的基本概念">1. 进程的基本概念</a>
+<a class="lv3" href="#1-什么是进程核心定义与结构">1. 什么是进程？(核心定义与结构)</a>
+<a class="lv4" href="#简单理解-进程--并发">简单理解 进程 &amp; 并发</a>
+<a class="lv4" href="#进程-vs-程序-经典对比">进程 vs. 程序 (经典对比)</a>
+<a class="lv3" href="#2-进程分类">2. 进程分类</a>
+<a class="lv3" href="#3-进程的生命周期三大基本状态">3. 进程的“生命周期”：三大基本状态</a>
+<a class="lv3" href="#4-进阶大-Boss挂起状态-Suspend-与-七状态转换">4. 进阶大 Boss：挂起状态 (Suspend) 与 七状态转换</a>
+<a class="lv3" href="#5-PCBProcess-Contrl-Block-进程控制块">5. PCB(Process Contrl Block) 进程控制块</a>
+<a class="lv4" href="#1-PCB-里到底装了什么">1. PCB 里到底装了什么？</a>
+<a class="lv4" href="#2-操作系统怎么收纳这堆-PCB">2. 操作系统怎么收纳这堆 PCB？</a>
+<a class="lv2" href="#2-进程控制">2. 进程控制</a>
+<a class="lv3" href="#21-重点父进程和子进程的关系">2.1 重点：父进程和子进程的关系</a>
+<a class="lv3" href="#22-原语">2.2 原语</a>
+<a class="lv3" href="#23-进程创建-create">2.3 进程创建 create</a>
+<a class="lv3" href="#24-进程终止-exit--terminate">2.4 进程终止 exit / terminate</a>
+<a class="lv4" href="#第一类正常结束">第一类：正常结束</a>
+<a class="lv4" href="#第二类异常结束">第二类：异常结束</a>
+<a class="lv4" href="#第三类外界干预">第三类：外界干预</a>
+<a class="lv3" href="#24-进程阻塞-block-进程主动说我先等一下">2.4 进程阻塞 block ：进程主动说“我先等一下”</a>
+<a class="lv3" href="#27-进程唤醒-wakeup条件到了把它从等待区叫回来">2.7 进程唤醒 wakeup：条件到了，把它从等待区叫回来</a>
+<a class="lv3" href="#28-挂起-suspend把进程从内存搬到外存">2.8 挂起 suspend：把进程从内存“搬到外存”</a>
+<a class="lv4" href="#区分阻塞和挂起">区分阻塞和挂起</a>
+<a class="lv4" href="#为什么要挂起">为什么要挂起？</a>
+<a class="lv3" href="#29-激活-active把挂起的进程重新搬回内存">2.9 激活 active：把挂起的进程重新搬回内存</a>
+<a class="lv4" href="#什么时候激活">什么时候激活？</a>
+<a class="lv4" href="#激活过程">激活过程</a>
+<a class="lv4" href="#重点">重点</a>
+<a class="lv3" href="#阻塞-vs-挂起">阻塞 vs 挂起</a>
+<a class="lv3" href="#唤醒-vs-激活">唤醒 vs 激活</a>
+<a class="lv3" href="#总结">总结</a>
+<a class="lv2" href="#3-进程同步">3. 进程同步</a>
+<a class="lv3" href="#31-为什么需要进程同步">3.1 为什么需要进程同步？</a>
+<a class="lv3" href="#32-进程同步到底在同步什么">3.2 进程同步到底在同步什么？</a>
+<a class="lv4" href="#1-间接相互制约关系">1. 间接相互制约关系</a>
+<a class="lv4" href="#2-直接相互制约关系">2. 直接相互制约关系</a>
+<a class="lv3" href="#33-临界资源大家都想用但一次只能一个人用">3.3 临界资源：大家都想用，但一次只能一个人用</a>
+<a class="lv3" href="#34-生产者消费者问题进程同步的经典例子">3.4 生产者=消费者问题：进程同步的经典例子</a>
+<a class="lv4" href="#1-顺序同步">1. 顺序同步</a>
+<a class="lv4" href="#2-互斥访问">2. 互斥访问</a>
+<a class="lv3" href="#35-经典变量定义缓冲池inoutcounter">3.5 经典变量定义：缓冲池、in、out、counter</a>
+<a class="lv4" href="#1-Buffer-缓冲区">1. Buffer 缓冲区</a>
+<a class="lv4" href="#2-in指针">2. in指针</a>
+<a class="lv4" href="#3-out指针">3. out指针</a>
+<a class="lv4" href="#4-counter变量">4. counter变量</a>
+<a class="lv3" href="#36-为什么乱序交叉共享变量-counter-会出错">3.6 为什么乱序交叉共享变量 counter 会出错？</a>
+<a class="lv4" href="#1-counter--1-的底层过程">1. counter + 1 的底层过程</a>
+<a class="lv4" href="#2-乱序交叉执行">2. 乱序交叉执行</a>
+<a class="lv3" href="#37-临界区-critical-section">3.7 临界区 critical section</a>
+<a class="lv4" href="#1-临界区程序结构">1. 临界区程序结构</a>
+<a class="lv3" href="#38-同步机制必须遵循的四条规则">3.8 同步机制必须遵循的四条规则</a>
+<a class="lv3" href="#39-信号量机制解决同步和互斥的核心工具-重点">3.9 信号量机制：解决同步和互斥的核心工具 （重点）</a>
+<a class="lv4" href="#1-整型信号量简单但会忙等">1. 整型信号量：简单但会忙等</a>
+<a class="lv4" href="#2-记录型信号量真正体现-block--wakeup">2. 记录型信号量：真正体现 block / wakeup</a>
+<a class="lv4" href="#3-重点记录型信号量的PV操作">3. 重点：记录型信号量的PV操作</a>
+<a class="lv4" href="#4-互斥信号量S-初值为-1">4. 互斥信号量：S 初值为 1</a>
+<a class="lv3" href="#310-经典互斥例子银行存取款">3.10 经典互斥例子：银行存取款</a>
+<a class="lv3" href="#311-AND型信号量">3.11 AND型信号量</a>
+<a class="lv4" href="#为什么需要">为什么需要？</a>
+<a class="lv4" href="#基本思想">基本思想</a>
+<a class="lv4" href="#Swait-和-Ssignal">Swait 和 Ssignal</a>
+<a class="lv3" href="#312-信号量集一次申请多种资源每种还可以要多个">3.12 信号量集：一次申请多种资源，每种还可以要多个</a>
+<a class="lv3" href="#313-逻辑梳理">3.13 逻辑梳理</a>
+<a class="lv2" href="#4-经典线程同步">4. 经典线程同步</a>
+<a class="lv3" href="#41-进程同步问题的三类矛盾">4.1 进程同步问题的三类矛盾</a>
+<a class="lv3" href="#42-信号量应用">4.2 信号量应用</a>
+<a class="lv4" href="#经典例子信号量实现互斥锁">经典例子：信号量实现互斥锁</a>
+<a class="lv4" href="#例子生产者消费者模型">例子：生产者消费者模型</a>
+<a class="lv4" href="#被唤醒进程应该插队头还是排队尾">被唤醒进程应该插队头还是排队尾？</a>
+<a class="lv4" href="#AND信号量实现-生产者消费者">AND信号量实现 生产者消费者</a>
+<a class="lv3" href="#43-管程把信号量封装起来">4.3 管程：把信号量封装起来</a>
+<a class="lv3" href="#44-练习1-公交车问题典型前后顺序同步">4.4 练习1 公交车问题：典型“前后顺序同步”</a>
+<a class="lv3" href="#45-练习2-仓库管理入货和出货">4.5 练习2 仓库管理：入货和出货</a>
+<a class="lv3" href="#46-哲学家进餐问题">4.6 哲学家进餐问题</a>
+<a class="lv4" href="#方法一最多允许-4-个哲学家同时拿筷子">方法一：最多允许 4 个哲学家同时拿筷子</a>
+<a class="lv4" href="#方法二左右筷子都可用时才允许拿">方法二：左右筷子都可用时才允许拿</a>
+<a class="lv4" href="#方法三奇偶哲学家拿筷子顺序不同">方法三：奇偶哲学家拿筷子顺序不同</a>
+<a class="lv3" href="#47-读写锁">4.7 读写锁</a>
+<a class="lv4" href="#怎么用信号量解决">怎么用信号量解决？</a>
+<a class="lv4" href="#代码逻辑">代码逻辑</a>
+<a class="lv2" href="#5-进程通信">5. 进程通信</a>
+<a class="lv3" href="#51-三种高级进程通信方式">5.1 三种高级进程通信方式</a>
+<a class="lv4" href="#3-管道通信-Linux的">3. 管道通信： Linux的 ｜</a>
+<a class="lv3" href="#52-直接通信-vs-间接通信">5.2 直接通信 vs 间接通信</a>
+<a class="lv4" href="#1-直接通信点名发送">1. 直接通信：点名发送</a>
+<a class="lv4" href="#2-间接通信通过信箱转发">2. 间接通信：通过信箱转发</a>
+    </nav>
+    <main>
+      <h1 class="doc-title">2. 进程管理</h1>
+      <p class="meta">由原始 Markdown 笔记转换生成，保留高亮、表格、代码块与 Obsidian 图片。</p>
+      <section class="study-tools" aria-label="复习工具">
+        <div class="tool-row">
+          <label class="search-box" for="note-search">
+            <span>全文搜索</span>
+            <input id="note-search" type="search" placeholder="输入关键词，例如 PCB、信号量、阻塞">
+          </label>
+          <div class="tool-actions">
+            <button id="search-prev" type="button">上一处</button>
+            <button id="search-next" type="button">下一处</button>
+            <button id="search-clear" type="button">清除</button>
+            <button id="collapse-all" type="button">全部折叠</button>
+            <button id="expand-all" type="button">全部展开</button>
+          </div>
+        </div>
+        <p id="search-status" class="search-status">输入关键词后会高亮正文中的匹配内容。</p>
+      </section>
+      <p><strong>进程</strong>是操作系统最核心的概念</p>
+<h2 id="0-为什么要引入进程">0. 为什么要引入进程</h2>
+<p>要理解进程，首先要理解<strong>程序是如何运行的</strong></p>
+<h3 id="1顺序执行">（1）顺序执行</h3>
+<p>早期，程序是严格<strong>按顺序一步步执行</strong>的，<strong>前一操作完成才能执行后继操作</strong> <strong>三个特征：</strong></p>
+<ol>
+<li><strong>顺序性</strong>：下一操作要等待前一操作结束
+</li>
+<li><strong>封闭性</strong>：执行时独占资源，不受外界影响
+</li>
+<li><strong>可再现性</strong>：只要重复执行，就会获得相同结果
+</li>
+</ol>
+<p>程序：Input -- Compute -- Print 每条语句也可以看做一个程序</p>
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260318224607.png" alt="Pasted image 20260318224607" style="max-width:575px"></figure>
+<h3 id="2前趋图描述执行的先后关系">（2）前趋图：描述执行的先后关系</h3>
+<p>有向无环图：箭头“→”表示偏序或前趋关系</p>
+<ul>
+<li>Pi→Pj，称Pi是Pj的直接前趋，而称Pj是Pi的直接后继
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260318223402.png" alt="Pasted image 20260318223402" style="max-width:600px"></figure>
+</li>
+</ul>
+<h3 id="3并发执行">（3）并发执行</h3>
+<p>现代操作系统为了提高效率，会让多个程序同时运行，导致程序</p>
+<ol>
+<li><strong>间断性</strong>：在并发环境下，多个程序共享系统的资源，所以当另一个程序占用需要的资源时，必须暂停等待，等待空闲再执行
+</li>
+<li>失去封闭性
+</li>
+<li><mark><strong>不可再现性</strong></mark>：即使是<strong>同样的程序、同样的输入，每次运行的结果都可能不一样</strong>
+</li>
+</ol>
+<p>——使得纯粹的 <strong>“程序”在并发环境下无法正确运行</strong></p>
+<p>为了保证程序能在<strong>多程序环境</strong>下<strong>安全、正确地并发执行</strong>，操作系统必须引入 <strong>进程</strong> 这个概念，给每个运行的实例分配一个独立的进程控制块（PCB）来记录它的现场和状态</p>
+<h2 id="1-进程的基本概念">1. 进程的基本概念</h2>
+<h3 id="1-什么是进程核心定义与结构">1. 什么是进程？(核心定义与结构)</h3>
+<ul>
+<li><strong>官方定义</strong>：<strong>进程是<mark>程序的一次执行</mark></strong>，<strong>是系统进行<mark>资源分配和调度的一个独立单位</mark></strong>
+</li>
+<li><strong>进程的结构由三部分组成：</strong>
+<ol>
+<li><strong>程序</strong>：代码段，描述进程要完成的功能
+</li>
+<li><strong>数据</strong>：数据段，进程执行时所需要的数据区
+</li>
+<li><strong>进程控制块 PCB</strong>：<strong>最重要的部分</strong>！
+<ul>
+<li>PCB 是一种<strong>数据结构</strong>，用于<strong>标识进程的存在</strong>，并记录进程执行过程<strong>各个时刻的状态特征</strong> 
+<p class="li-extra">哪怕两个进程共享同一段代码程序，它们也必须拥有各自独立的 PCB 和数据集合</p>
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260318225318.png" alt="Pasted image 20260318225318"></figure>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p><strong>所以进程有四个特性</strong>：</p>
+<ol>
+<li><strong>动态性</strong>：创建——执行——消亡
+</li>
+<li><strong>并发性</strong>：多个进程共存于内存中，并同时执行
+</li>
+<li><strong>独立性</strong>：资源独立，互不干扰
+</li>
+<li><strong>异步性</strong>：速度不可预测
+</li>
+</ol>
+<h4 id="简单理解-进程--并发"><strong>简单理解 进程 &amp; 并发</strong></h4>
+<p>核心在于 <mark><strong>PCB + 独立数据区 → 完美重启</strong></mark></p>
+<ul>
+<li>PCB存储能够重启的状态特征：PC，寄存器状态...
+</li>
+<li>数据独立：不被污染
+</li>
+</ul>
+<p>所以说 <strong>并发是宏观上同时，微观上交替</strong></p>
+<h4 id="进程-vs-程序-经典对比"><strong>进程 vs. 程序 (经典对比)</strong></h4>
+<ul>
+<li><strong>进程是动态</strong>的执行实体，而<strong>程序是静态</strong>的数据与指令的集合 
+</li>
+<li><strong>进程有生命周期</strong>（会创建、消亡），而<strong>程序是永存的</strong>（只要不删就一直存在硬盘里）
+</li>
+<li><strong>进程执行</strong>需要竞争 CPU 等资源，<strong>程序存储</strong>只需要存储器
+</li>
+<li><mark><strong>一个程序运行时可以衍生出多个进程</strong></mark>
+</li>
+</ul>
+<h3 id="2-进程分类">2. 进程分类</h3>
+<ol>
+<li><strong>系统进程 （VIP 玩家）</strong>：运行在管态（核心态、系统态）
+<p class="li-extra">它们被分配了初始资源，可以直接独占使用，并且拥有最高优先权，可以为所欲为，比如执行一切指令、直接做 I/O 操作、访问受保护的寄存器</p>
+</li>
+<li><strong>用户进程（普通玩家）</strong>：运行在目态（用户态）
+<p class="li-extra">它们没有特权，必须通过“<strong>服务请求</strong>”的方式来竞争资源</p>
+<p class="li-extra">不能直接操作 I/O 设备，只能执行指定的指令和访问指定的内存</p>
+</li>
+</ol>
+<h3 id="3-进程的生命周期三大基本状态"><strong>3. 进程的“生命周期”：三大基本状态</strong></h3>
+<ol>
+<li><strong>创建状态  Created</strong>：进程刚刚开始初始化，<strong>已经分配了 PCB，但还没有获得所需的物理资源</strong>（比如程序数据还没读入内存），也没有进入调度队列
+</li>
+<li><strong>就绪状态 Ready</strong>：万事俱备，只欠东风
+<p class="li-extra">进程已经获得了除 CPU 以外的所有资源，正<strong>乖乖待在就绪队列里排队等候分配 CPU</strong></p>
+</li>
+<li><strong>执行状态 Running</strong>：成功获得 CPU，正在执行指令 
+</li>
+<li><strong>阻塞状态 Blocked</strong>：进程在运行中<strong>遇到了需要等待的事件</strong>（比如请求 I/O 读取文件、请求缓冲空间等），导致暂时无法继续，于是 <strong><mark>主动放弃</mark> CPU</strong> 处于暂停状态，进入阻塞队列
+</li>
+<li><strong>终止状态 Terminated</strong>：进程执行完毕或被外力异常终止
+<p class="li-extra">此时系统正在回收它的全部资源，它永远不能再获得 CPU 执行</p>
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260318232331.png" alt="Pasted image 20260318232331" style="max-width:425px"></figure>
+<pre><code>New → Ready → Running → Terminated
+                ↓
+             Blocked
+                ↓
+              Ready</code></pre>
+</li>
+</ol>
+<h3 id="4-进阶大-Boss挂起状态-Suspend-与-七状态转换"><strong>4. 进阶大 Boss：挂起状态 (Suspend) 与 七状态转换</strong></h3>
+<p><strong>挂起状态</strong> 是一种 <strong>更深度的静止状态</strong>，被挂起的进程不能马上投入运行</p>
+<ul>
+<li><strong>为什么挂起？</strong> 常见原因：终端用户想要暂停程序进行调试 、父进程请求同步 、操作系统的负荷太重需要减轻内存压力 ，或者是操作系统需要检查资源使用情况
+</li>
+<li><strong>四个派生状态与转换原语</strong>：因为有了<strong>挂起 (suspend)</strong> 和<strong>激活 (active)</strong> 这两个操作 ，原本的<strong>就绪和阻塞</strong>裂变成了四个状态：
+<ul>
+<li><strong>活动就绪 (Readya)</strong> 被挂起 <span class="math">→</span> <strong><mark>静止就绪</mark> (Readys)</strong>
+</li>
+<li><strong>活动阻塞 (Blockeda)</strong> 被挂起 <span class="math">→</span> <strong><mark>静止阻塞</mark> (Blockeds)</strong>
+</li>
+<li>反之，使用“激活”原语可以从静止状态恢复到活动状态
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260318233702.png" alt="Pasted image 20260318233702" style="max-width:550px"></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-PCBProcess-Contrl-Block-进程控制块"><strong>5. PCB(Process Contrl Block) 进程控制块</strong></h3>
+<p>PCB是<mark><strong>进程存在的唯一标志</strong></mark>，OS是根据PCB来对并发执行的进程进行控制和管理的</p>
+<h4 id="1-PCB-里到底装了什么"><strong>1. PCB 里到底装了什么？</strong></h4>
+<p>可以把 PCB 想象成进程的 <strong>“个人档案”和“工作日志”</strong>，里面记载了<strong>四个核心信息</strong> ：</p>
+<ul>
+<li><strong>进程标识符 PID</strong>：进程的身份证号，用来<strong>唯一标示这个进程</strong>
+</li>
+<li><strong>处理机状态</strong>：<mark><strong>核心！</strong></mark> 里面保存了 CPU 内部<strong>各种寄存器的内容</strong>
+<p class="li-extra">当进程被暂停时，当前的计算进度就会“截图”保存在这里，等下次恢复运行拿出来接着算</p>
+</li>
+<li><strong>进程调度信息</strong>：记录了<strong>进程的优先级、等待了多久</strong>等，帮助操作系统决定下一个让谁上 CPU 运行
+</li>
+<li><strong>进程控制信息</strong>：记录了这个进程<strong>拥有哪些资源</strong>（比如分配了哪些内存、打开了哪些文件）
+</li>
+</ul>
+<h4 id="2-操作系统怎么收纳这堆-PCB">2. 操作系统怎么收纳这堆 PCB？</h4>
+<p>两种主流的组织方式 ：</p>
+<ol>
+<li><strong>链接方式</strong>：操作系统把具有相同状态的 PCB 用<strong>指针链接成一个队列</strong>
+<p class="li-extra">比如所有的就绪状态 PCB 串成一个“就绪队列”，阻塞状态的串成“阻塞队列”</p>
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260319000046.png" alt="Pasted image 20260319000046" style="max-width:525px"></figure>
+</li>
+<li><strong>索引方式</strong>：像查字典的目录，系统建立几张“<mark><strong>索引表</strong></mark>”（比如就绪索引表、阻塞索引表），表里记录着指向各个 PCB 的地址
+<p class="li-extra">要找哪个状态的进程，直接查表就行</p>
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260319000140.png" alt="Pasted image 20260319000140" style="max-width:650px"></figure>
+</li>
+</ol>
+<h2 id="2-进程控制">2. 进程控制</h2>
+<p>进程控制，就是操作系统对“进程一生”的管理：<strong>创建</strong>、运行、等人、被叫醒、暂停、恢复、死亡</p>
+<p>本质：<strong>操作系统不断<mark>移动</mark>进程的 PCB，让它在不同<mark>队列和状态</mark>之间变化</strong></p>
+<h3 id="21-重点父进程和子进程的关系">2.1 重点：父进程和子进程的关系</h3>
+<ul>
+<li>父进程：<strong>系统</strong>或<strong>用户</strong>首先创建的进程
+</li>
+<li><strong>子进程：父进程创建的进程</strong>
+</li>
+</ul>
+<ol>
+<li><strong>子进程由父进程创建或撤销</strong>：父进程有权管理子进程，但子进程不能反过来控制父进程
+</li>
+<li><strong>子进程可以继承父进程资源</strong>：比如父进程打开了某些文件，子进程可能继承文件句柄；父进程有某些权限，子进程可能部分继承
+</li>
+<li><strong>父子进程可以同时运行，也可以有先后关系</strong>：比如父进程创建子进程后，可以继续干自己的；也可以等子进程结束后再继续
+</li>
+<li><mark><strong>这种关系记录在 PCB 里</strong></mark>：PCB 不只是记录“我是谁”，还记录“父进程是谁，孙子进程是谁”
+</li>
+</ol>
+<hr>
+<h3 id="22-原语">2.2 原语</h3>
+<p><strong>原语 = 操作系统中<mark>不可分割</mark>的基本操作</strong></p>
+<ul>
+<li>要么成功，要么完全不发生
+</li>
+</ul>
+<p>比如“把进程从执行态改成阻塞态”时，至少要做几件事：</p>
+<ol>
+<li>保存 CPU 状态  
+</li>
+<li>修改 PCB 状态  
+</li>
+<li>插入阻塞队列  
+</li>
+<li>重新调度 CPU
+</li>
+</ol>
+<p><strong>这些事情必须作为一个整体完成</strong> 不能只改了状态，还没插入队列；也不能插入队列了，但 CPU 状态没保存</p>
+<p>所以：</p>
+<pre><code>原语 = 操作系统内核中不可中断的动作  
+特点 = 要么全做，要么全不做  
+作用 = 保证进程状态转换不会乱</code></pre>
+<p>后面的<strong>创建、终止、阻塞、唤醒、挂起、激活</strong>，本质上都靠原语完成</p>
+<ul>
+<li>create
+</li>
+<li>exit/terminate
+</li>
+<li>block
+</li>
+<li>wakeup
+</li>
+<li>suspend
+</li>
+<li>active
+</li>
+</ul>
+<hr>
+<h3 id="23-进程创建-create">2.3 进程创建 create</h3>
+<p>什么时候会创建进程？</p>
+<ul>
+<li>用户登录
+</li>
+<li>系统调度作业
+</li>
+<li>程序请求服务
+</li>
+<li>主动创建
+</li>
+</ul>
+<p><strong>Linux 里常见的是 <code>fork()</code></strong></p>
+<p>底层做了些什么？</p>
+<ol>
+<li><strong>申请空白PCB</strong>：PCB 是进程存在的标志
+</li>
+<li><strong>分配资源</strong>：分配内存、文件、I/O 资源等
+</li>
+<li><strong>初始化PCB</strong>：
+<ul>
+<li>进程标识符 PID
+</li>
+<li>父进程是谁
+</li>
+<li>当前状态
+</li>
+<li>程序入口地址
+</li>
+<li>CPU 寄存器初始状态
+</li>
+<li>资源信息
+</li>
+<li>优先级
+</li>
+</ul>
+</li>
+<li><strong>插入就绪队列</strong>：排队等 CPU 调度
+</li>
+</ol>
+<hr>
+<h3 id="24-进程终止-exit--terminate">2.4 进程终止 exit / terminate</h3>
+<p><strong>进程为什么会终止？</strong></p>
+<p>主要三类：</p>
+<h4 id="第一类正常结束">第一类：正常结束</h4>
+<p>程序自己跑完了，例如：return 0;</p>
+<p>或者用户正常注销、程序正常退出。</p>
+<h4 id="第二类异常结束">第二类：异常结束</h4>
+<p>程序出错了，被系统终止</p>
+<p>比如：</p>
+<ul>
+<li>数组越界  
+</li>
+<li>非法指令  
+</li>
+<li>权限错误  
+</li>
+<li>除零错误  
+</li>
+<li>运行超时  
+</li>
+<li>I/O 故障
+</li>
+</ul>
+<p>你写 C 程序段错误 <code>Segmentation fault</code>，就是典型异常终止</p>
+<h4 id="第三类外界干预">第三类：外界干预</h4>
+<p>别人把它杀了</p>
+<p>比如：</p>
+<ul>
+<li>用户在任务管理器结束任务  
+</li>
+<li>父进程要求子进程结束  
+</li>
+<li>操作系统强制终止  
+</li>
+<li>父进程终止导致子进程也被处理
+</li>
+</ul>
+<p><strong><mark>终止过程</mark>像“退学手续”：</strong></p>
+<ol>
+<li>找到它的 PCB  
+</li>
+<li>查看它当前状态  
+</li>
+<li>如果正在执行，立刻停掉  
+</li>
+<li>终止它的子孙进程  
+</li>
+<li>回收资源  
+</li>
+<li>把 PCB 从队列中移出
+</li>
+</ol>
+<p><strong>这里有一个重点：</strong></p>
+<blockquote>进程死了，不只是“程序不跑了”，还要释放它占用的一切资源</blockquote>
+<p>比如内存、打开的文件、I/O 设备、PCB 等等</p>
+<p>否则会出现资源泄漏</p>
+<hr>
+<h3 id="24-进程阻塞-block-进程主动说我先等一下">2.4 进程阻塞 block ：进程主动说“我先等一下”</h3>
+<p><strong>阻塞不是进程坏了，而是它暂时等条件</strong></p>
+<ul>
+<li>比如一个进程正在执行，突然它要读硬盘文件：CPU很快但硬盘很慢，如果一直占着CPU等硬盘，那就是浪费
+</li>
+<li>不如<strong>主动进入阻塞队列</strong>等 I/O 完成
+</li>
+</ul>
+<p><strong>引起阻塞的事件：</strong></p>
+<ul>
+<li>请求系统服务
+</li>
+<li>启动某种 <strong>I/O</strong> 操作
+</li>
+<li><strong>等待</strong>新数据到达：read(fd, buffer, size) ，如果数据没准备好，进程可能被阻塞
+</li>
+<li>暂时无工作可做
+</li>
+</ul>
+<p><strong>重点：</strong></p>
+<blockquote>阻塞是进程自身的<mark><strong>主动行为</strong></mark></blockquote>
+<p><strong><mark>阻塞底层在做什么？</mark></strong></p>
+<ol>
+<li>保存现场信息：能继续在停下的位置往下执行
+</li>
+<li>状态从执行态改为阻塞态
+</li>
+<li>把 PCB 插入阻塞队列
+</li>
+<li>重新调度CPU
+</li>
+<li>CPU切换给另一个就绪进程
+</li>
+</ol>
+<hr>
+<h3 id="27-进程唤醒-wakeup条件到了把它从等待区叫回来">2.7 进程唤醒 wakeup：条件到了，把它从等待区叫回来</h3>
+<p>阻塞之后，进程不是自己回来，而是要被唤醒</p>
+<p>例如：</p>
+<p>I/O 完成了 数据到了 资源可用了 等待的事件发生了</p>
+<p>这时某个相关进程或操作系统<strong>调用 <code>wakeup</code> 原语</strong></p>
+<p><strong><mark>唤醒过程</mark>：</strong></p>
+<ol>
+<li><strong>从阻塞队列中移出 PCB</strong>  
+</li>
+<li><strong>把状态从阻塞改为就绪</strong>  
+</li>
+<li><strong>插入就绪队列</strong>  
+</li>
+<li><strong>等待 CPU 调度</strong>
+</li>
+</ol>
+<p>注意：<strong><mark>唤醒之后不是马上执行，而是进入就绪队列</mark></strong></p>
+<p>回忆经典关系图：阻塞 → 唤醒 → 就绪</p>
+<figure class="note-image pic_center"><img src="../../Image/Pasted%20image%2020260318232331.png" alt="Pasted image 20260318232331" style="max-width:500px"></figure>
+<hr>
+<h3 id="28-挂起-suspend把进程从内存搬到外存">2.8 挂起 suspend：把进程从内存“搬到外存”</h3>
+<h4 id="区分阻塞和挂起">区分阻塞和挂起</h4>
+<p><strong>阻塞：进程在等事件</strong> <strong>挂起：进程被暂时移出内存</strong></p>
+<p>可以这样理解：</p>
+<ul>
+<li><strong>阻塞 = 人在等材料</strong>  
+</li>
+<li><strong>挂起 = 人被请出教室，档案和东西暂时放仓库</strong>
+</li>
+</ul>
+<h4 id="为什么要挂起"><strong>为什么要挂起？</strong></h4>
+<p><strong>常见原因：</strong></p>
+<ul>
+<li>内存不够  
+</li>
+<li>系统负载太高  
+</li>
+<li>用户或父进程要求暂停  
+</li>
+<li>操作系统需要腾出资源
+</li>
+</ul>
+<p>挂起时，进程可能原来是：</p>
+<ul>
+<li><strong>活动</strong>就绪  
+</li>
+<li><strong>活动</strong>阻塞
+</li>
+</ul>
+<p>挂起后变成：</p>
+<ul>
+<li>活动就绪 → 静止就绪  
+</li>
+<li>活动阻塞 → 静止阻塞
+</li>
+</ul>
+<p><strong>这里的“活动”和“静止”主要看它是否在内存里</strong></p>
+<p><mark><strong>活动 = 在内存中</strong></mark> <mark><strong>静止 = 被换出到外存</strong></mark></p>
+<p>所以状态可以这样理解：</p>
+<ul>
+<li>活动就绪：人在教室里，准备上台  
+</li>
+<li>静止就绪：人不在教室，在外面仓库/宿舍，但事情已经准备好  
+</li>
+<li>活动阻塞：人在教室里，但在等材料  
+</li>
+<li>静止阻塞：人不在教室，而且还在等材料
+</li>
+</ul>
+<p><strong>挂起过程大致是：</strong></p>
+<ol>
+<li>检查<strong>进程状态</strong>  
+</li>
+<li>活动就绪改为静止就绪  
+</li>
+<li>活动阻塞改为静止阻塞  
+</li>
+<li>复制 PCB 到指定内存区域  
+</li>
+<li>把数据复制到外存  
+</li>
+<li>释放内存  
+</li>
+<li>如果它正在执行，则重新调度
+</li>
+</ol>
+<p><strong>本质</strong>：<mark><strong>挂起 = 为了节省内存，把进程暂时换出</strong></mark></p>
+<hr>
+<h3 id="29-激活-active把挂起的进程重新搬回内存">2.9 激活 active：把挂起的进程重新搬回内存</h3>
+<p>激活就是挂起的反向过程</p>
+<h4 id="什么时候激活">什么时候激活？</h4>
+<ul>
+<li>用户请求恢复  
+</li>
+<li>父进程请求恢复  
+</li>
+<li>内存空间足够了  
+</li>
+<li>系统决定让它回来
+</li>
+</ul>
+<h4 id="激活过程">激活过程</h4>
+<ol>
+<li>把进程从外存调入内存  
+</li>
+<li>检查当前状态  
+</li>
+<li>静止就绪改为活动就绪  
+</li>
+<li>静止阻塞改为活动阻塞  
+</li>
+<li>如果进入就绪队列，可能重新调度
+</li>
+</ol>
+<h4 id="重点">重点</h4>
+<p><strong>激活不是一定立刻运行</strong>，而是回到<mark><strong>“活动状态”</strong></mark></p>
+<ol>
+<li>如果它本来是静止就绪：<strong>静止就绪 → 活动就绪</strong>
+<p class="li-extra">它回来后可以竞争 CPU</p>
+</li>
+<li>如果它本来是静止阻塞：<strong>静止阻塞 → 活动阻塞</strong>
+<p class="li-extra">它虽然回到内存了，但还在等事件，所以不能运行</p>
+</li>
+</ol>
+<h3 id="阻塞-vs-挂起">阻塞 vs 挂起</h3>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>概念</th>
+<th>原因</th>
+<th>是否缺 CPU</th>
+<th>是否缺事件/资源</th>
+<th>是否在内存</th>
+</tr></thead><tbody>
+<tr>
+<td>阻塞</td>
+<td>等 I/O、等数据、等事件</td>
+<td>是</td>
+<td>是</td>
+<td>通常还在内存</td>
+</tr>
+<tr>
+<td>挂起</td>
+<td>被换出内存</td>
+<td>是</td>
+<td><strong>不一定</strong></td>
+<td>不在内存</td>
+</tr>
+<tr>
+<td>就绪</td>
+<td>只差 CPU</td>
+<td>是</td>
+<td>不缺</td>
+<td>在内存</td>
+</tr>
+<tr>
+<td>执行</td>
+<td>正在用 CPU</td>
+<td>不缺</td>
+<td>不缺</td>
+<td>在内存</td>
+</tr>
+</tbody></table></div>
+<h3 id="唤醒-vs-激活">唤醒 vs 激活</h3>
+<p><strong>唤醒</strong>：阻塞 → 就绪，<strong>等的事件完成了</strong> <strong>激活</strong>：静止 → 活动，<strong>重新调入内存了</strong></p>
+<h3 id="总结"><strong>总结</strong></h3>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>操作</th>
+<th>原语</th>
+<th>状态变化</th>
+<th>核心动作</th>
+</tr></thead><tbody>
+<tr>
+<td>创建</td>
+<td>create</td>
+<td>无 → 就绪</td>
+<td>申请 PCB、分配资源、初始化、入就绪队列</td>
+</tr>
+<tr>
+<td>终止</td>
+<td>terminate / exit</td>
+<td>任意 → 终止</td>
+<td>停止执行、终止子孙、回收资源、移出 PCB</td>
+</tr>
+<tr>
+<td>阻塞</td>
+<td>block</td>
+<td>执行 → 阻塞</td>
+<td>保存现场、入阻塞队列、重新调度</td>
+</tr>
+<tr>
+<td>唤醒</td>
+<td>wakeup</td>
+<td>阻塞 → 就绪</td>
+<td>出阻塞队列、改为就绪、入就绪队列</td>
+</tr>
+<tr>
+<td>挂起</td>
+<td>suspend</td>
+<td>活动 → 静止</td>
+<td>换出到外存、释放内存</td>
+</tr>
+<tr>
+<td>激活</td>
+<td>active</td>
+<td>静止 → 活动</td>
+<td>调入内存、恢复为活动状态</td>
+</tr>
+</tbody></table></div>
+<h2 id="3-进程同步">3. 进程同步</h2>
+<p><strong>进程同步，就是让多个并发进程在<mark>共享资源、互相合作</mark>时，不乱、不抢、不出错，并且<mark>结果可重复</mark></strong></p>
+<h3 id="31-为什么需要进程同步">3.1 为什么需要进程同步？</h3>
+<p>多个进程可以并发执行，所以不可避免就有并发面临的麻烦：<strong>资源共享</strong></p>
+<p>进程 A 执行一半，CPU 可能切给进程 B 进程 B 执行一半，CPU 又可能切回来</p>
+<p>如果它们都在操作同一个东西，就可能出错</p>
+<p><strong>不是算法错了，而是执行顺序乱了</strong></p>
+<h3 id="32-进程同步到底在同步什么">3.2 进程同步到底在同步什么？</h3>
+<p>❌ 同步 = 所有进程同时运行</p>
+<p>✅ 同步 = 让多个进程按照<strong>某种正确的配合关系</strong>运行</p>
+<p>菜没做好，服务员不能端 菜做好了，厨师不能无限往桌上堆 桌子满了，厨师要等 桌子空了，服务员要等</p>
+<p>因此进程同步包含两类关系：</p>
+<h4 id="1-间接相互制约关系"><strong>1. 间接相互制约关系</strong></h4>
+<p>常见的例子就是 <strong>申请I/O、CPU</strong></p>
+<ul>
+<li>多个进程本身没有直接合作关系，但要 <strong>争同一个资源</strong>
+</li>
+<li>而同一个资源一次只能给一个进程用
+</li>
+</ul>
+<h4 id="2-直接相互制约关系"><strong>2. 直接相互制约关系</strong></h4>
+<p>常见的例子是<strong>输入与运算</strong></p>
+<p>进程 A：负责输入数据 进程 B：负责计算数据 B 必须等 A 输入完才能算</p>
+<p><strong>进程之间有明确的合作顺序</strong></p>
+<h3 id="33-临界资源大家都想用但一次只能一个人用">3.3 临界资源：大家都想用，但一次只能一个人用</h3>
+<p><strong>临界资源</strong>：一次仅允许一个进程访问的共享资源</p>
+<ul>
+<li>可以是硬件：打印机
+</li>
+<li>也可以是软件：共享变量、共享缓冲区、共享文件
+</li>
+</ul>
+<p><strong>共享 + 修改 + 同时访问会出错 ≈ 临界资源</strong></p>
+<h3 id="34-生产者消费者问题进程同步的经典例子">3.4 生产者=消费者问题：进程同步的经典例子</h3>
+<p><strong>这个例子非常重要，后面信号量经常用它讲</strong></p>
+<p>想象一个奶茶店：</p>
+<p>生产者：做奶茶的人 消费者：取奶茶的人 缓冲池：放奶茶的取餐架，取餐架有 n 个位置</p>
+<p><strong>规则是：</strong></p>
+<ol>
+<li>生产者每次放入<strong>一个</strong>产品，占用一个缓冲区 
+</li>
+<li>消费者每次取走<strong>一个</strong>产品，释放一个缓冲区  
+</li>
+<li>生产者不能往满的缓冲池里放
+</li>
+<li>消费者不能从空的缓冲池里取
+</li>
+<li><strong>同一时刻只能有一个进程操作缓冲池</strong>
+</li>
+</ol>
+<p><strong>所以这里有两个问题</strong></p>
+<h4 id="1-顺序同步"><strong>1. 顺序同步</strong></h4>
+<ul>
+<li><strong>缓冲池空时，消费者要等</strong>
+</li>
+<li><strong>缓冲池满时，生产者要等</strong>
+</li>
+</ul>
+<p>—— 同步关系</p>
+<h4 id="2-互斥访问"><strong>2. 互斥访问</strong></h4>
+<p><strong>生产者和消费者不能同时修改缓冲池</strong> —— 互斥关系</p>
+<h3 id="35-经典变量定义缓冲池inoutcounter">3.5 经典变量定义：缓冲池、in、out、counter</h3>
+<h4 id="1-Buffer-缓冲区">1. Buffer 缓冲区</h4>
+<p><mark><strong>数据结构是一个环形队列</strong></mark></p>
+<figure class="note-image"><img src="../../Image/Pasted%20image%2020260425221952.png" alt="Pasted image 20260425221952"></figure>
+<h4 id="2-in指针">2. in指针</h4>
+<p><strong>in：指向下一个可以<mark>放</mark>产品的空缓冲区</strong> e.g. write_in</p>
+<p>生产者每放入一个产品： <code>buffer[in] = 产品</code> <code>in = (in + 1) mod n</code></p>
+<h4 id="3-out指针">3. out指针</h4>
+<p>out：指向下一个<strong>可以<mark>取</mark>产品</strong>的满缓冲区</p>
+<p>消费者每取一个产品： <code>产品 = buffer[out]</code> <code>out = (out + 1) mod n</code></p>
+<h4 id="4-counter变量">4. counter变量</h4>
+<p>counter：当前缓冲池里产品数量</p>
+<p><strong>初始时：</strong></p>
+<p>in = 0 out = 0 counter = 0</p>
+<p><code>counter = 0</code> 表示缓冲区为空，<code>counter = n</code> 表示缓冲区满</p>
+<p><strong>并发<mark>乱序执行</mark>会导致 counter 错误</strong></p>
+<blockquote>环形队列另一种不使用counter的判断方式：<code>in = out</code> 表示缓冲区为空，<code>(in+1) mod n = out</code> 表示缓冲区满</blockquote>
+<h3 id="36-为什么乱序交叉共享变量-counter-会出错">3.6 为什么乱序交叉共享变量 counter 会出错？</h3>
+<p>表面上：</p>
+<p>生产者：counter = counter + 1 消费者：counter = counter - 1</p>
+<p><strong>问题在于</strong>： <code>counter = counter + 1</code> 不是一条<strong>真正不可分割的操作</strong></p>
+<p><strong>它在机器内部通常会拆成多条指令</strong></p>
+<h4 id="1-counter--1-的底层过程">1. counter + 1 的底层过程</h4>
+<p><strong>先存到寄存器，+1后再写回counter</strong></p>
+<ol>
+<li>register1 = counter
+</li>
+<li>register1 = register1 + 1
+</li>
+<li>counter = register1
+</li>
+</ol>
+<p>counter - 1 的底层过程同理：</p>
+<ol>
+<li>register2 = counter
+</li>
+<li>register2 = register2 - 1
+</li>
+<li>counter = register2
+</li>
+</ol>
+<h4 id="2-乱序交叉执行">2. 乱序交叉执行</h4>
+<p>生产者：register1 = counter        // register1 = 5 生产者：register1 = register1 + 1  // register1 = 6</p>
+<p>消费者：register2 = counter        // register2 = 5 消费者：register2 = register2 - 1  // register2 = 4</p>
+<p>生产者：counter = register1        // counter = 6 消费者：counter = register2        // counter = 4</p>
+<p>最后 counter 变成了 4，但正确结果应该是 5</p>
+<p>这种问题叫做：<mark><strong>竞争条件</strong></mark></p>
+<ul>
+<li>多个进程并发访问和操作同一共享数据，最终结果取决于进程执行的<strong>相对时序</strong>
+</li>
+</ul>
+<h3 id="37-临界区-critical-section">3.7 临界区 <strong>critical</strong> section</h3>
+<p><strong>临界区</strong>：进程中访问临界资源的那段代码 比如生产者代码中：</p>
+<p>buffer[in] = nextp in = (in + 1) mod n counter = counter + 1</p>
+<p>这段在操作共享缓冲池和共享变量 counter，所以它属于临界区</p>
+<p>消费者代码中：</p>
+<p>nextc = buffer[out] out = (out + 1) mod n counter = counter - 1</p>
+<p>这段也属于临界区</p>
+<aside class="callout callout-help"><div class="callout-title"><span>?</span><strong>只读不写算临界区吗？</strong></div><div class="callout-body"><p><strong>只读共享数据，不算临界区！必须修改</strong></p>
+<p>Critical 危急的</p></div></aside>
+<h4 id="1-临界区程序结构">1. 临界区程序结构</h4>
+<pre data-lang="txt"><code>repeat
+    entry section;
+    critical section;
+    exit section;
+    remainder section;
+until false;</code></pre>
+<p><strong>entry section 进入区</strong>：进入临界区之前，检查自己能不能进去</p>
+<ul>
+<li>有没有别的进程正在使用临界资源，如果有则等待
+</li>
+</ul>
+<p><strong>同一时刻最多只能有一个进程在临界区内</strong></p>
+<p><strong>exit section 退出区</strong>：离开临界区后，释放使用权</p>
+<p><strong>remainder section 剩余区</strong>：和临界资源无关的代码</p>
+<h3 id="38-同步机制必须遵循的四条规则">3.8 同步机制必须遵循的四条规则</h3>
+<p><strong>空闲让进、忙则等待、有限等待、让权等待</strong></p>
+<ol>
+<li>空闲让进 ：当临界资源空闲时，应允许<strong>一个</strong>请求进入临界区的进程立即进入
+</li>
+<li>忙则等待：当已有进程进入临界区时，其他试图进入临界区的进程必须等待 <strong>【互斥】</strong>
+</li>
+<li><strong>有限等待</strong>：对请求进入临界区的进程，应保证它能在有限时间内进入，不能无限期等待
+</li>
+<li><strong>让权等待</strong>：当进程不能进入临界区时，应阻塞释放 CPU，避免<strong>忙等待</strong>
+</li>
+</ol>
+<h3 id="39-信号量机制解决同步和互斥的核心工具-重点">3.9 信号量机制：解决同步和互斥的核心工具 <strong>（重点）</strong></h3>
+<p><strong>信号量本质</strong>：一个带规则的资源<mark><strong>计数器</strong></mark></p>
+<ul>
+<li>S=1 表示某种资源只有一个
+</li>
+</ul>
+<p><strong>⚠️：它<mark>不是普通整数</mark>，因为不能随便访问它</strong></p>
+<p>⬇️</p>
+<p>信号量只能通过两个原子操作访问</p>
+<ul>
+<li>wait(S) ： P 操作，申请资源 / 进入前检查
+</li>
+<li>signal(S)：V 操作，释放资源 / 离开后归还
+</li>
+</ul>
+<h4 id="1-整型信号量简单但会忙等"><strong>1. 整型信号量：简单但会忙等</strong></h4>
+<p><strong>wait(S)</strong>：如果 S &gt; 0，说明有资源，于是 S = S - 1，拿走一个资源；如果S &lt;= 0，没资源就一直循环等</p>
+<p>wait(S): while S &lt;= 0 do no-op; S = S - 1;</p>
+<p><strong>signal(S)</strong>：S = S + 1表示释放一个资源</p>
+<p>signal(S): S = S + 1;</p>
+<p>整型信号量的问题在于<strong>忙等</strong>，没有拿到资源时一直占着CPU，所以它不满足 <strong>让权等待</strong></p>
+<h4 id="2-记录型信号量真正体现-block--wakeup">2. 记录型信号量：真正体现 block / wakeup</h4>
+<p>为了解决忙等问题，记录型信号量多了一个<mark><strong>等待队列</strong></mark></p>
+<p>结构是：</p>
+<p>type semaphore = record value: integer;        // 资源可用数量 L: list of process;    // 等待进程队列 end</p>
+<p>也就是说，它不只是一个整数，而是： <mark><strong>可用资源数量(S.value) + 等待队列</strong></mark></p>
+<p>形象理解 -- 叫号系统：</p>
+<ul>
+<li><strong>value</strong> = 当前还能服务几个顾客  
+</li>
+<li><strong>L</strong> = 没轮到的人坐在等待区
+</li>
+</ul>
+<h4 id="3-重点记录型信号量的PV操作">3. 重点：记录型信号量的PV操作</h4>
+<p>wait(S): S.value = S.value - 1; if S.value &lt; 0 then block(S.L);</p>
+<p>进程<mark><strong>先申请一个资源（S.value - 1）</strong></mark>，如果真的有（S.value &gt;= 0）则继续执行，否则进程要<strong>阻塞</strong>，进入等待队列 S.L</p>
+<blockquote>block：wait 失败 → block → 释放 CPU → 进入等待队列</blockquote>
+<aside class="callout callout-check"><div class="callout-title"><span>✓</span>Value 精妙之处</div><div class="callout-body"><p><strong>先申请资源， S.value &lt; 0表示阻塞进程的个数</strong>，比如S.value = -2表示有 2 个进程正在等待这个资源</p>
+<p>这样signal直接根据value来判断是否有进程在等，不用额外检查等待队列S.L是否为空</p></div></aside>
+<p>同理：<strong>signal(S)先释放一个资源，再判断是否有人在等待</strong></p>
+<p>signal(S): S.value = S.value + 1; if S.value &lt;= 0 then wakeup(S.L);</p>
+<blockquote>wakeup：signal 释放资源 → wakeup 一个等待进程 → 进入就绪队列</blockquote>
+<h4 id="4-互斥信号量S-初值为-1">4. 互斥信号量：S 初值为 1</h4>
+<p>S.value 初值为 1，表示只允许一个进程访问临界资源，此时信号量转化为互斥信号量</p>
+<p><strong>常见的互斥</strong>：<code>mutex = 1</code></p>
+<h3 id="310-经典互斥例子银行存取款">3.10 经典互斥例子：银行存取款</h3>
+<p>共享变量 counter：银行余额</p>
+<p>两个进程：P1存款300，P2取款200</p>
+<p>如果没有信号量，两个操作交叉执行，最后结果取决于谁最后写回</p>
+<p>解决方案：<strong>加入mutex信号量</strong> 将共享变量读 → 改 → 写变成原语</p>
+<p>P1: wait(mutex); count += 300; signal(mutex);</p>
+<p>P2: wait(mutex); count -= 200; signal(mutex);</p>
+<h3 id="311-AND型信号量">3.11 AND型信号量</h3>
+<h4 id="为什么需要"><strong>为什么需要？</strong></h4>
+<p>假设有两个资源：Dmutex和Emutex，初值都是 1（两把锁）</p>
+<p>有两个进程：</p>
+<ul>
+<li>process A:  
+<p class="li-extra">wait(<strong>Dmutex</strong>);</p>
+<p class="li-extra">wait(Emutex);</p>
+</li>
+<li>process B:  
+<p class="li-extra">wait(<strong>Emutex</strong>);</p>
+<p class="li-extra">wait(Dmutex);</p>
+</li>
+</ul>
+<p>一种执行顺序是：</p>
+<p>A 拿到 Dmutex B 拿到 Emutex A 想拿 Emutex，但被 B 占着，于是 A 阻塞 B 想拿 Dmutex，但被 A 占着，于是 B 阻塞</p>
+<p>结果：</p>
+<p>A 等 B B 等 A</p>
+<p><mark><strong>谁都不释放，死锁</strong></mark></p>
+<p><strong>这就是典型死锁：两个人都拿着一部分资源，都在等对方释放另一部分资源，最后都被阻塞</strong></p>
+<h4 id="基本思想"><strong>基本思想</strong></h4>
+<p>将进程整个运行过程中需要的<mark><strong>所有资源，一次性全部分配给进程</strong></mark>；只要有一个资源不能分配，其它资源也不分配</p>
+<h4 id="Swait-和-Ssignal">Swait 和 Ssignal</h4>
+<p><strong>Swait(S1,S2,...,Sn)</strong> = wait(S1) <mark><strong>AND</strong></mark> wait(S2) 表示同时申请多个资源</p>
+<p>if Si≥1 and … and Sn≥1 then //每种资源数量都大于1才分配 for i ∶ = 1 to n do Si ∶= Si-1; endfor</p>
+<p>Ssignal(S1, S2, ..., Sn)  把占用的多个资源一起释放，并唤醒相关等待进程重新判断</p>
+<h3 id="312-信号量集一次申请多种资源每种还可以要多个">3.12 信号量集：一次申请多种资源，每种还可以要多个</h3>
+<p>前面几种可以这样对比：</p>
+<ul>
+<li><strong>记录型</strong>信号量：<strong>申请 1 种资源，数量 1 个</strong>  
+</li>
+<li>AND 型信号量：<strong>申请 n 种资源</strong>，<strong>每种数量 1 个</strong>  
+</li>
+<li><strong>信号量集：申请 n 种资源，每种数量可以是多个</strong>
+</li>
+</ul>
+<p>比如一个进程运行需要：</p>
+<p>打印机 1 台 磁带机 2 台 内存块 5 块</p>
+<p><strong>这就不是简单的一个信号量能表达的</strong></p>
+<p>信号量集可以表达：</p>
+<p><strong>资源 S</strong>：资源当前数量 <strong>下限值 t</strong>：判断是否允许分配的下限，<code>if Si≥t1 and … and Sn≥tn </code> 所有资源种类大于下限值才分配时，才允许申请</p>
+<blockquote>下限确保资源存在，最直观存在 Swait(S,d,d)</blockquote>
+<p><strong>需求值 d</strong> ：真正要拿走的资源数量</p>
+<p>形式是：<code>Swait(S1, t1, d1, ..., Sn, tn, dn)</code></p>
+<p>如果每种资源都达到对应下限 t： 分配对应需求数量 d 否则： 阻塞</p>
+<p>Swait(S, 3, 3)：一个任务一次需要 3 台设备 Swait(S, 1, 1)：普通记录型信号量 <strong>Swait(S, 1, 0)：相当于一个可控开关</strong>，S &gt;= 1：门开着，大家可以进；S = 0：门关了，谁都不能进</p>
+<h3 id="313-逻辑梳理">3.13 逻辑梳理</h3>
+<p><strong>并发</strong>进程会<strong>共享资源</strong> ↓ 共享资源可能被<strong>同时访问</strong> ↓ 同时访问会造成<strong>竞态条件</strong> ↓ 把访问共享资源的代码称为<strong>临界区</strong> ↓ 临界区必须<strong>互斥</strong>进入 ↓ <strong>同步机制</strong>要满足空闲让进、忙则等待、有限等待、让权等待 ↓ <strong>信号量</strong>提供 P/V 操作 ↓ P 负责申请资源，失败则阻塞 ↓ V 负责释放资源，并唤醒等待进程 ↓ 多个资源同时申请时，用 AND 型信号量或信号量集</p>
+<h2 id="4-经典线程同步">4. 经典线程同步</h2>
+<h3 id="41-进程同步问题的三类矛盾">4.1 进程同步问题的三类矛盾</h3>
+<ol>
+<li><strong>互斥</strong>：<strong>同一个资源</strong>，<strong>同一时刻只能一个进程</strong> 访问
+<ul>
+<li>共享变量，缓冲区
+</li>
+<li>一般用 互斥锁：wait(S) -&gt; critical -&gt; signal(S)
+</li>
+</ul>
+</li>
+<li><strong>同步</strong>：某个动作必须等另一个动作完成之后才能做
+<ul>
+<li>公交车：关门后才能开车，停车后才能下车
+</li>
+<li>通常是：
+<ol>
+<li>A 做完某事：signal(S)「完成条件」
+</li>
+<li>B 做某事前：wait(S)「等待条件」
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><strong>死锁避免</strong>：通常来自进程先拿了一部分资源，然后等待另一部分资源
+</li>
+</ol>
+<h3 id="42-信号量应用">4.2 信号量应用</h3>
+<h4 id="经典例子信号量实现互斥锁"><strong>经典例子：信号量实现互斥锁</strong></h4>
+<pre><code>semaphore mutex = 1;
+
+process:
+    wait(mutex);
+    critical section;
+    signal(mutex);
+    remainder section;</code></pre>
+<p><mark><strong>信号量的重要规则</strong></mark>：<code>wait</code> 和<code>signal</code>必须成对出现，<mark><strong>不等于必须在同一个进程中</strong></mark></p>
+<h4 id="例子生产者消费者模型"><strong>例子：生产者消费者模型</strong></h4>
+<p>三个信号量：</p>
+<ol>
+<li>mutex：互斥锁
+</li>
+<li>empty：还能生产多少
+</li>
+<li>full：剩余多少产品
+</li>
+</ol>
+<p><strong>生产者：</strong></p>
+<pre><code>wait(empty)
+wait(mutex)
+
+buffer[in]=product
+in=(in+1)%count
+
+signal(mutex)
+signal(full)
+</code></pre>
+<p><strong>消费者：</strong></p>
+<pre><code>wait(full)
+wait(mutex)
+
+product = buffer[out]
+out = (out+1)%count
+
+signal(mutex)
+signal(empty)</code></pre>
+<ul>
+<li><code>P(empty)</code> 在生产者里
+</li>
+<li><code>V(empty)</code> 在消费者里
+</li>
+</ul>
+<p><strong>它们是“成对”的，但不在同一个执行单元里</strong></p>
+<p><strong>关键口诀：先私后公</strong></p>
+<ul>
+<li>先执行对资源信号量的 wait，再执行对互斥信号量的 wait
+</li>
+</ul>
+<p>进一步区分：</p>
+<ol>
+<li>互斥/公用信号量：必须在单个进程中成对出现
+</li>
+<li>资源/公有信号量：必须成对出现，但可不同进程
+</li>
+</ol>
+<h4 id="被唤醒进程应该插队头还是排队尾">被唤醒进程应该插队头还是排队尾？</h4>
+<p>规则1：阻塞进程被唤醒后，立即插入队列头，作为下一个执行对象 规则2：阻塞进程被唤醒后，放入队列末尾</p>
+<p><strong>结论：阻塞进程被唤醒后优先执行，可以减少后续阻塞次数</strong></p>
+<p><strong>形象理解：</strong></p>
+<pre><code>一个人因为没座位在等。刚好有人让出座位
+如果立刻让等待的人坐下，效率高
+如果让他重新排到队尾
+这个座位可能又引发一堆新的混乱</code></pre>
+<h4 id="AND信号量实现-生产者消费者">AND信号量实现 生产者消费者</h4>
+<p>刚好mutex和 full/empty 都是需要同时获得才进入 critical section</p>
+<p>生产者：</p>
+<pre><code>Swait(empty, mutex);
+buffer[in] = nextp;
+in = (in + 1) mod n;
+Ssignal(mutex, full);</code></pre>
+<p>消费者：</p>
+<pre><code>Swait(full, mutex);
+nextc = buffer[out];
+out = (out + 1) mod n;
+Ssignal(mutex, empty);</code></pre>
+<h3 id="43-管程把信号量封装起来">4.3 管程：把信号量封装起来</h3>
+<p>把共享数据 + 操作共享数据的方法 + 同步控制 <mark><strong>封装</strong></mark>成一个“受保护的对象”</p>
+<p>比如生产者—消费者封装为：</p>
+<pre><code>producer:
+    PC.put(item);
+
+consumer:
+    PC.get(item);</code></pre>
+<p>把复杂同步细节藏进 <code>PC.put()</code> 和 <code>PC.get()</code> 里面</p>
+<h3 id="44-练习1-公交车问题典型前后顺序同步">4.4 练习1 公交车问题：典型“前后顺序同步”</h3>
+<p>终于不是生产者-消费者了</p>
+<p><strong>角色：</strong></p>
+<ol>
+<li>司机 driver
+</li>
+<li>售票员 busman
+</li>
+</ol>
+<p><strong>司机活动：</strong></p>
+<ol>
+<li>启动车辆
+</li>
+<li>正常运行
+</li>
+<li>到站停车
+</li>
+</ol>
+<p><strong>售票员活动：</strong></p>
+<ol>
+<li>上下乘客
+</li>
+<li>关车门
+</li>
+<li>售票
+</li>
+<li>开车门
+</li>
+<li>上下乘客
+</li>
+</ol>
+<p><strong>同步条件：</strong></p>
+<ol>
+<li>司机必须<strong>等售票员关车门</strong>后才能启动车辆
+</li>
+<li>售票员必须<strong>等司机停车</strong>后才能开车门
+</li>
+</ol>
+<hr>
+<p>两个同步关系设置两个信号量：</p>
+<ol>
+<li><strong><mark>S1：司机能不能启动车</mark></strong>
+</li>
+<li><mark><strong>S2：售票员能不能开车门</strong></mark>
+</li>
+</ol>
+<p>初始：停车+开车门</p>
+<ol>
+<li>S1=0：司机不能启动车
+</li>
+<li>S2=0：表示司机停车事件，一开始还没发生，所以是 0
+</li>
+</ol>
+<p>代码逻辑：</p>
+<p><strong>busman</strong>: while(true) 上下乘客 关车门 <strong>signal(S1)：告诉司机可以启动车了</strong> 售票 <strong>wait(S2)：等待停车</strong> 开车门 上下乘客</p>
+<p><strong>driver</strong> while(true) <strong>wait(S1)：等待关门</strong> 开车 <strong>signal(S2)：告诉售票员可以开门了</strong></p>
+<h3 id="45-练习2-仓库管理入货和出货">4.5 练习2 仓库管理：入货和出货</h3>
+<p><strong>条件：</strong></p>
+<ol>
+<li>仓库有50个空位，最多 50 件货物
+</li>
+<li>入货：登记，存放货物 
+</li>
+<li>出货：登记，取出货物  
+</li>
+<li>登记表无论入货出货都要使用
+</li>
+</ol>
+<p><strong>对应信号量：</strong></p>
+<ol>
+<li>tmutex = 1
+</li>
+<li>shelf = 50：空位数量
+</li>
+<li>item = 0：货物数量
+</li>
+</ol>
+<p>经典生产者消费者变体：</p>
+<p><strong>入货流程：</strong> while(true) wait(<strong>shelf</strong>) wait(tmutex) 存放货物 signal(tmutex) signal(item)</p>
+<p><strong>出货：</strong> while(true) wait(<strong>item</strong>) wait(tmutex) 取出货物 signal(tmutex) signal(shelf)</p>
+<h3 id="46-哲学家进餐问题">4.6 哲学家进餐问题</h3>
+<p>5 个哲学家+圆桌 <strong>5 <mark>根</mark>筷子</strong> 每个哲学家需要左、右两根筷子才能吃饭 每根筷子同一时刻只能被一个哲学家拿</p>
+<figure class="note-image"><img src="../../Image/ChatGPT%20Image%202026%E5%B9%B44%E6%9C%8829%E6%97%A5%2020_26_20%201.png" alt="ChatGPT Image 2026年4月29日 20_26_20 1"></figure>
+<p><strong>筷子是临界资源，需要互斥</strong></p>
+<ul>
+<li><strong>设置chopstick[0..4] = 1</strong>
+</li>
+</ul>
+<p><strong>问题：怎么避免死锁，让至少一个哲学家能吃饭</strong></p>
+<p>最朴素做法：等待左筷子 -&gt; 等待右筷子</p>
+<ul>
+<li>保证不会有两个相邻哲学家同时吃饭
+</li>
+<li>如果都拿左筷子，那也会陷入死锁
+</li>
+</ul>
+<h4 id="方法一最多允许-4-个哲学家同时拿筷子">方法一：最多允许 4 个哲学家同时拿筷子</h4>
+<p>设置一个信号量：</p>
+<pre><code>room = 4</code></pre>
+<p>每个哲学家：</p>
+<pre><code>wait(room);
+wait(left);
+wait(right);
+eat;
+signal(right);
+signal(left);
+signal(room);</code></pre>
+<p>为什么能避免死锁？</p>
+<ul>
+<li>因为最多 4 个人拿左筷子时，<strong>至少有 1 根筷子是空的</strong>
+</li>
+</ul>
+<p>这样总能让&lt;u&gt;某个人&lt;/u&gt;拿到两根筷子并吃饭，吃完释放资源，系统继续推进</p>
+<hr>
+<h4 id="方法二左右筷子都可用时才允许拿">方法二：左右筷子都可用时才允许拿</h4>
+<p>这就是 AND 信号量思想：</p>
+<pre><code>Swait(left, right);eat;Ssignal(left, right);</code></pre>
+<p>要么两根都拿到，要么一根都不拿。</p>
+<p>这样不会出现：</p>
+<pre><code>每个人拿着一根，等另一根</code></pre>
+<p>因为不允许部分占有。</p>
+<hr>
+<h4 id="方法三奇偶哲学家拿筷子顺序不同"><strong>方法三：奇偶哲学家拿筷子顺序不同</strong></h4>
+<p>比如：</p>
+<pre><code>奇数号：先拿左，再拿右
+偶数号：先拿右，再拿左</code></pre>
+<p>这样破坏了所有人按同一方向等待的环形结构</p>
+<p>奇数号和偶数号竞争不同筷子，最后总会有一位哲学家能获得两只筷子而进餐</p>
+<p>这背后的思想是：<mark><strong>打破循环等待条件</strong></mark></p>
+<p>死锁的一个重要原因是循环等待：</p>
+<pre><code>P0 等 P1
+P1 等 P2
+P2 等 P3
+P3 等 P4
+P4 等 P0</code></pre>
+<p>只要破坏这个环，就能避免死锁</p>
+<h3 id="47-读写锁">4.7 读写锁</h3>
+<p><strong>共享数据文件</strong></p>
+<ol>
+<li>多个读者「Reader」可以同时读
+</li>
+<li>同时只能有一个进程写「Writer」
+</li>
+<li>写的时候其他进程不能读
+</li>
+<li>读的时候其他进程不能写
+<p class="li-extra"><strong>读-写/ 写-写：互斥</strong></p>
+</li>
+</ol>
+<h4 id="怎么用信号量解决">怎么用信号量解决？</h4>
+<p>wmutex = 1：读和写进程互斥 rmutex = 1 // 保护 <strong>readcount</strong> <strong>readcount</strong> = 0 // 当前正在读的读者数量</p>
+<h5 id="readcount-为什么需要">readcount 为什么需要？</h5>
+<p>因为多个读者可以同时读 第一个读者进入时，需要阻止写者：</p>
+<pre><code>if readcount == 0:    wait(wmutex);</code></pre>
+<p>意思是：</p>
+<pre><code>我是第一个读者，我要把写者挡在外面</code></pre>
+<p>后续读者进入时：</p>
+<pre><code>readcount &gt; 0</code></pre>
+<p><strong>说明已经有读者在读，写者已经被挡住了，所以后续读者不用再 wait(wmutex)，可以直接加入读</strong></p>
+<p>最后一个读者离开时：</p>
+<pre><code>if readcount == 0:    signal(wmutex);</code></pre>
+<p>意思是：</p>
+<pre><code>现在没有读者了，可以让写者进来了</code></pre>
+<p>所以：</p>
+<pre><code>第一个读者负责关门，最后一个读者负责开门</code></pre>
+<p>所以为了保护readcount，增加rmutex保护共享变量</p>
+<h4 id="代码逻辑">代码逻辑</h4>
+<pre><code>READER:
+    repeat
+        wait(rmutex);
+        if readcount == 0:
+            wait(wmutex);
+        readcount = readcount + 1;
+        signal(rmutex);
+
+        perform read operation;
+
+        wait(rmutex);
+        readcount = readcount - 1;
+        if readcount == 0:
+            signal(wmutex);
+        signal(rmutex);
+    forever
+    
+WRITER:
+    repeat
+        wait(wmutex);
+        perform write operation;
+        signal(wmutex);
+    forever</code></pre>
+<h2 id="5-进程通信">5. 进程通信</h2>
+<p>进程通信就是<strong>进程之间交换信息</strong></p>
+<p>前面学的信号量其实也算通信，但它交换的信息很少，称为「<strong>低级通信</strong>」 —— 效率低，数据量太少，需要自行控制进程 真正的 <strong>「高级进程通信」</strong>，是用户直接使用<strong>操作系统提供的通信指令</strong>，高效传送大量数据</p>
+<h3 id="51-三种高级进程通信方式">5.1 三种高级进程通信方式</h3>
+<p><strong>共享存储器 Share Memory</strong> <strong>消息传递 Message Passing</strong> <strong>管道通信 Pipe</strong></p>
+<h5 id="1-共享存储器Pthreads">1. 共享存储器：Pthreads</h5>
+<p>多个进程共享一块内存区域</p>
+<ul>
+<li><strong>优点：速度快，简单直接</strong>
+</li>
+<li>缺点：要自己处理<strong>互斥和同步</strong>
+<ul>
+<li>常常需要搭配 <strong>互斥锁、信号量、条件变量</strong>
+</li>
+<li><strong>防止并发访问出错</strong>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="2-消息传递报文">2. 消息传递：报文</h5>
+<p>进程之间以<strong>格式化</strong>的消息为单位交换数据</p>
+<ul>
+<li>消息里面有发送者、长度、内容等<mark><strong>字段</strong></mark>
+</li>
+<li><strong>应用最广泛的一种进程间通信机制</strong>
+</li>
+<li>优点：程序员友好，只需要send / receive，由操作系统管理细节
+</li>
+</ul>
+<h4 id="3-管道通信-Linux的">3. 管道通信： Linux的 ｜</h4>
+<p><strong>管道 Pipe</strong>可以理解为一根连接两个进程的“水管” <strong>一个进程写，一个进程读，像文件一样传输字符流</strong></p>
+<p><strong>本质</strong>：连接一个读进程和一个写进程的<mark><strong>共享文件</strong></mark>，也叫 pipe 文件；写进程把字符流送入管道，读进程从管道接收数据</p>
+<p><strong>协调机制：</strong></p>
+<ol>
+<li>读写互斥
+</li>
+<li>同步：写 -&gt; 读
+</li>
+<li>确实存在：三方握手
+</li>
+</ol>
+<p>经典例子：<code>ls | grep txt</code></p>
+<ul>
+<li>ls 的输出 → 管道 → grep 的输入
+</li>
+</ul>
+<h3 id="52-直接通信-vs-间接通信">5.2 直接通信 vs 间接通信</h3>
+<h4 id="1-直接通信点名发送">1. 直接通信：点名发送</h4>
+<p>发送者明确指定接收者 接收者也可以明确指定发送者 ⬇️ 以前用信号量时，要自己写 wait / signal 用消息传递时，send / receive 内部帮你处理等待</p>
+<h4 id="2-间接通信通过信箱转发">2. 间接通信：通过信箱转发</h4>
+<p><strong>发送者 → 信箱 mailbox → 接收者</strong> 间接通信需要某种 <strong><mark>共享数据结构</mark></strong> 作为中介，这个中介一般称为<strong>信箱 mailbox</strong>，所以间接通信又叫<strong>信箱通信</strong></p>
+<p>对应原语有：</p>
+<pre><code>Create(mailbox)
+Delete(mailbox)
+Send(mailbox, message)
+Receive(mailbox, message)</code></pre>
+<p><strong>区分了三种信箱</strong>：</p>
+<ol>
+<li>私用信箱：某个进程自己的邮箱
+</li>
+<li>公用信箱：操作系统建的公共邮箱
+</li>
+<li>共享信箱：一组进程共享的邮箱
+</li>
+</ol>
+    </main>
+  </div>
+  
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const progress = document.querySelector(".read-progress span");
+  const main = document.querySelector("main");
+  const updateProgress = () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const percent = maxScroll > 0 ? Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100)) : 0;
+    progress.style.width = `${percent}%`;
+  };
+  updateProgress();
+  document.addEventListener("scroll", updateProgress, { passive: true });
+
+  const foldItems = [];
+  const setFold = (item, collapsed) => {
+    item.extra.hidden = collapsed;
+    item.li.classList.toggle("is-folded", collapsed);
+    item.button.textContent = collapsed ? "+" : "−";
+    item.button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    item.button.setAttribute("aria-label", collapsed ? "展开此条目的补充内容" : "折叠此条目的补充内容");
+  };
+
+  document.querySelectorAll("main li").forEach((li) => {
+    const blockChildren = Array.from(li.children).filter((el) =>
+      el.matches("p.li-extra, figure, pre, ul, ol, .table-wrap, blockquote")
+    );
+    if (blockChildren.length === 0) return;
+
+    const extra = document.createElement("div");
+    extra.className = "list-extra";
+    blockChildren[0].before(extra);
+    blockChildren.forEach((el) => extra.appendChild(el));
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "fold-toggle";
+    button.textContent = "−";
+    button.setAttribute("aria-label", "折叠此条目的补充内容");
+    button.setAttribute("aria-expanded", "true");
+    const item = { li, extra, button };
+    button.addEventListener("click", () => {
+      setFold(item, !extra.hidden);
+    });
+
+    li.insertBefore(button, li.firstChild);
+    foldItems.push(item);
+  });
+
+  const searchInput = document.getElementById("note-search");
+  const searchStatus = document.getElementById("search-status");
+  const prevButton = document.getElementById("search-prev");
+  const nextButton = document.getElementById("search-next");
+  const clearButton = document.getElementById("search-clear");
+  const collapseAllButton = document.getElementById("collapse-all");
+  const expandAllButton = document.getElementById("expand-all");
+  let hits = [];
+  let currentHit = -1;
+
+  const clearHighlights = () => {
+    document.querySelectorAll(".search-hit").forEach((hit) => {
+      hit.replaceWith(document.createTextNode(hit.textContent));
+    });
+    main.normalize();
+    hits = [];
+    currentHit = -1;
+  };
+
+  const setSearchControls = () => {
+    const hasHits = hits.length > 0;
+    prevButton.disabled = !hasHits;
+    nextButton.disabled = !hasHits;
+    clearButton.disabled = !searchInput.value;
+    if (!searchInput.value) {
+      searchStatus.textContent = "输入关键词后会高亮正文中的匹配内容。";
+    } else if (!hasHits) {
+      searchStatus.textContent = "没有找到匹配内容。";
+    } else {
+      searchStatus.textContent = `找到 ${hits.length} 处匹配，当前第 ${currentHit + 1} 处。`;
+    }
+  };
+
+  const revealHit = (index) => {
+    if (!hits.length) return;
+    currentHit = (index + hits.length) % hits.length;
+    hits.forEach((hit) => hit.classList.remove("current-hit"));
+    const hit = hits[currentHit];
+    hit.classList.add("current-hit");
+    hit.closest(".list-extra")?.removeAttribute("hidden");
+    const foldedLi = hit.closest("li.is-folded");
+    if (foldedLi) {
+      const item = foldItems.find((entry) => entry.li === foldedLi);
+      if (item) setFold(item, false);
+    }
+    hit.scrollIntoView({ behavior: "smooth", block: "center" });
+    setSearchControls();
+  };
+
+  const highlightTextNode = (node, query) => {
+    const text = node.nodeValue;
+    const lower = text.toLowerCase();
+    const needle = query.toLowerCase();
+    let start = 0;
+    let index = lower.indexOf(needle, start);
+    if (index === -1) return;
+
+    const fragment = document.createDocumentFragment();
+    while (index !== -1) {
+      if (index > start) fragment.appendChild(document.createTextNode(text.slice(start, index)));
+      const span = document.createElement("span");
+      span.className = "search-hit";
+      span.textContent = text.slice(index, index + query.length);
+      fragment.appendChild(span);
+      start = index + query.length;
+      index = lower.indexOf(needle, start);
+    }
+    if (start < text.length) fragment.appendChild(document.createTextNode(text.slice(start)));
+    node.replaceWith(fragment);
+  };
+
+  const runSearch = () => {
+    const query = searchInput.value.trim();
+    clearHighlights();
+    if (query.length < 1) {
+      setSearchControls();
+      return;
+    }
+
+    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const parent = node.parentElement;
+        if (!parent || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        if (parent.closest(".study-tools, script, style, button")) return NodeFilter.FILTER_REJECT;
+        return node.nodeValue.toLowerCase().includes(query.toLowerCase())
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => highlightTextNode(node, query));
+    hits = Array.from(document.querySelectorAll("main .search-hit"));
+    if (hits.length) revealHit(0);
+    setSearchControls();
+  };
+
+  let searchTimer = 0;
+  searchInput.addEventListener("input", () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(runSearch, 120);
+  });
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      revealHit(currentHit + (event.shiftKey ? -1 : 1));
+    }
+  });
+  prevButton.addEventListener("click", () => revealHit(currentHit - 1));
+  nextButton.addEventListener("click", () => revealHit(currentHit + 1));
+  clearButton.addEventListener("click", () => {
+    searchInput.value = "";
+    clearHighlights();
+    setSearchControls();
+    searchInput.focus();
+  });
+  collapseAllButton.addEventListener("click", () => foldItems.forEach((item) => setFold(item, true)));
+  expandAllButton.addEventListener("click", () => foldItems.forEach((item) => setFold(item, false)));
+  setSearchControls();
+});
+</script>
+
+</body>
+</html>

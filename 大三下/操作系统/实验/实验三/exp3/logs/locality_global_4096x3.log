@@ -1,0 +1,5 @@
+pid=9225, allocation=4096 MB, pages=1048576, repeat=3, mode=global
+elapsed seconds: 51.264
+minor faults: 6025631
+major faults: 265845
+max RSS: 3752896 KB
