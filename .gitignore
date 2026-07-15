@@ -7,6 +7,15 @@ __pycache__/
 ~$*
 .cache/
 
+# 编译与调试生成物
+*.o
+*.obj
+*.dSYM/
+/大三下/系统编程/习题/课后练习题/sigaction_bug_ok
+/大三下/系统编程/习题/课后练习题/sigaction_bug_bad
+/大三下/系统编程/习题/课后练习题/sigaction_bug_debug
+/大三下/系统编程/习题/课后练习题/sigaction_bug_ubsan
+
 # 本机 Obsidian 工作区状态，仅忽略仓库根目录
 /.obsidian/
 
